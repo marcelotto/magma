@@ -7,9 +7,10 @@ defmodule Magma.TestCase do
 
   using do
     quote do
-      alias Magma.TestData
-      alias Magma.ExampleVault
+      alias Magma.TestVault
       alias Magma.Vault
+
+      import Magma.TestFactories
 
       import unquote(__MODULE__)
     end

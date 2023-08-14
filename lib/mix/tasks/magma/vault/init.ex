@@ -4,31 +4,30 @@ defmodule Mix.Tasks.Magma.Vault.Init do
 
   use Mix.Task
 
+  import Magma.MixHelper
+
   alias Magma.Vault.Initializer
 
   @options [
-    base_vault: :string
+    base_vault: :string,
+    base_vault_path: :string
   ]
 
   def run(args) do
-    case OptionParser.parse(args, strict: @options) do
-      {opts, remaining, []} ->
-        opts
-        |> Keyword.get(:base_vault)
-        |> Initializer.initialize(remaining)
+    with_valid_options(args, @options, fn
+      _opts, [] ->
+        Mix.shell().error("project name missing")
 
-      {_opts, _remaining, invalid} ->
-        """
-        Invalid args: #{inspect(invalid)}
+      opts, [project_name] ->
+        Initializer.initialize(project_name, base_vault(opts))
+    end)
+  end
 
-        Available options:
-
-        #{Enum.map(@options, fn {opt, type} -> "- #{opt} : #{type}\n" end)}
-        """
-        |> Mix.shell().error()
-
-      undefined ->
-        raise "Undefined error: #{undefined}"
+  defp base_vault(opts) do
+    cond do
+      base_vault_theme = Keyword.get(opts, :base_vault) -> String.to_atom(base_vault_theme)
+      base_vault_path = Keyword.get(opts, :base_vault_path) -> base_vault_path
+      true -> nil
     end
   end
 end

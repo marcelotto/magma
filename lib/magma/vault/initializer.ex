@@ -1,16 +1,28 @@
 defmodule Magma.Vault.Initializer do
   alias Magma.Vault
-  alias Magma.Vault.BaseVault
+  alias Magma.Vault.{BaseVault, CodeSync}
+  alias Magma.Matter.Project
+  alias Magma.Concept
 
-  def initialize(base_vault \\ nil, _opts \\ []) do
-    base_vault |> BaseVault.path!() |> create_vault()
+  import Magma.MixHelper
+
+  def initialize(project_name, base_vault \\ nil, opts \\ []) do
+    with :ok <- base_vault |> BaseVault.path!() |> create_vault() do
+      create_project(project_name)
+
+      if Keyword.get(opts, :code_sync, true) do
+        CodeSync.sync(opts)
+      else
+        :ok
+      end
+    end
   end
 
   defp create_vault(base_vault) do
     vault_dest_dir = Vault.path()
 
     if File.exists?(vault_dest_dir) do
-      {:error, :already_existing}
+      {:error, :vault_already_existing}
     else
       Mix.Generator.create_directory(vault_dest_dir)
 
@@ -22,9 +34,10 @@ defmodule Magma.Vault.Initializer do
     end
   end
 
-  defp copy_directory(source, target, _options \\ []) do
-    cmd = "cp -Rv #{source} #{target}"
-    Mix.shell().info(cmd)
-    Mix.shell().cmd(cmd)
+  defp create_project(project_name) do
+    project_name
+    |> Project.new()
+    |> Concept.new!()
+    |> Concept.create()
   end
 end

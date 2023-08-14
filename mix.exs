@@ -5,7 +5,7 @@ defmodule Magma.MixProject do
     [
       app: :magma,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps()
@@ -20,9 +20,11 @@ defmodule Magma.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:yaml_front_matter, "~> 1.0"}
+    ]
   end
 
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/modules"]
   defp elixirc_paths(_), do: ["lib"]
 end
