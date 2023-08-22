@@ -1,5 +1,5 @@
 defmodule Magma.Matter.Module do
-  use Magma.Matter, concept_template: "concept/module.md"
+  use Magma.Matter
 
   @type t :: %__MODULE__{}
 

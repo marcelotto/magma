@@ -1,5 +1,7 @@
 defmodule Magma.Document do
-  @type t :: Magma.Concept.t()
+  @type t ::
+          Magma.Concept.t()
+          | Magma.Artefact.Prompt.t()
 
   @fields [
     # the path of this document
@@ -11,15 +13,17 @@ defmodule Magma.Document do
     tags: nil,
     aliases: nil,
     created_at: nil,
-    created_by: nil,
     # additional YAML front matter
     custom_metadata: nil
   ]
   def fields, do: @fields
 
   @template_path :code.priv_dir(:magma) |> Path.join("templates")
+  def template_path, do: @template_path
 
   @callback dependency :: atom
+
+  @callback template :: module
 
   @callback new_document(t()) :: {:ok, t()} | {:error, any}
 
@@ -27,11 +31,9 @@ defmodule Magma.Document do
 
   @callback create_document(t()) :: {:ok, t()} | {:error, any}
 
-  @callback document_template(t()) :: Path.t()
-
   @callback build_path(t()) :: {:ok, Path.t()}
 
-  alias Magma.Utils
+  alias Magma.{Vault, Utils}
 
   defmacro __using__(opts) do
     additional_fields = Keyword.get(opts, :fields, [])
@@ -41,6 +43,9 @@ defmodule Magma.Document do
       alias Magma.Document
 
       defstruct Magma.Document.fields() ++ unquote(additional_fields)
+
+      @impl true
+      def template, do: Module.concat(__MODULE__, Template)
 
       @impl true
       def new_document(%__MODULE__{} = document), do: {:ok, document}
@@ -70,13 +75,20 @@ defmodule Magma.Document do
       def load(%__MODULE__{} = document), do: Document.load(document)
       def load(path), do: Document.load(__MODULE__, path)
 
+      def load!(document_or_path) do
+        case load(document_or_path) do
+          {:ok, document} -> document
+          {:error, error} -> raise error
+        end
+      end
+
       defoverridable new_document: 1,
                      create_document: 1
     end
   end
 
   def template(%document_type{} = document) do
-    Path.join(@template_path, document_type.document_template(document))
+    Path.join(@template_path, document_type.document_template_path(document))
   end
 
   def new(document_type, %_{} = dependency), do: new(document_type, dependency, [])
@@ -108,23 +120,42 @@ defmodule Magma.Document do
   end
 
   def create(%document_type{} = document) do
-    with {:ok, typed_document} <- document_type.create_document(document),
-         {:ok, created_document} <- create_file_from_template(typed_document) do
+    with {:ok, typed_document} <-
+           document
+           |> init_document()
+           |> document_type.create_document(),
+         {:ok, created_document} <-
+           create_file_from_template(typed_document) do
+      Vault.index(created_document)
       load(created_document)
     end
   end
 
-  defp create_file_from_template(%_document_type{} = document) do
-    assigns = [
-      document: document
-    ]
+  defp init_document(document) do
+    document
+    |> init_created_at()
+    |> init_tags()
+  end
 
-    with :ok <-
-           document
-           |> template()
-           |> Magma.MixHelper.copy_template(document.path, assigns) do
-      {:ok, document}
-    end
+  defp init_created_at(%_{created_at: nil} = document) do
+    %{document | created_at: DateTime.utc_now()}
+  end
+
+  defp init_created_at(document), do: document
+
+  defp init_tags(%_{tags: nil} = document) do
+    %{document | tags: :magma |> Application.get_env(:default_tags) |> List.wrap()}
+  end
+
+  defp init_tags(document), do: document
+
+  defp create_file_from_template(%document_type{} = document) do
+    Magma.MixHelper.create_file(
+      document.path,
+      document_type.template().render(document)
+    )
+
+    {:ok, document}
   end
 
   def load(%document_type{path: path} = _document) do

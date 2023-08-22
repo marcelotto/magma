@@ -25,8 +25,8 @@ defmodule Magma.MixHelper do
     Mix.shell().cmd(cmd)
   end
 
-  def copy_template(source, target, assigns) do
-    Mix.Generator.copy_template(source, target, assigns)
+  def create_file(target, content) do
+    Mix.Generator.create_file(target, content)
     :ok
   end
 end

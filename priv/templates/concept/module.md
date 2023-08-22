@@ -1,15 +1,15 @@
 ---
 magma_type: Concept
 magma_matter: Module
-created_at: <%= DateTime.utc_now() %> 
-tags: [magma-vault]
-aliases: ['Concept of <%= @document.name %>']
+created_at: <%= concept.created_at %> 
+tags: <%= yaml_list(concept.tags) %>
+aliases: <%= yaml_list(concept.aliases) %>
 ---
-# `<%= @document.name %>`
+# `<%= concept.name %>`
 
 ## Description
 
-What is a `<%= @document.name %>`?
+What is a `<%= concept.name %>`?
 
 Facts, problems and properties etc. - your knowledge - about the module.
 
@@ -19,17 +19,26 @@ Facts, problems and properties etc. - your knowledge - about the module.
 
 
 ---
-## Artefacts
+# Artefacts
 
-### Commons
-
-
-### @`moduledoc`
+## Commons
 
 
-### @Cheatsheet
+## ModuleDoc
+
+<%= transclude_prompt(concept, Magma.Artefacts.ModuleDoc) %>
+
+
+### Spec
+
+### Draft
+
+
+
+## Cheatsheet
+
 
 
 ---
-## Reference
+# Reference
 

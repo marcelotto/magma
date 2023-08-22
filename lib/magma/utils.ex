@@ -16,4 +16,22 @@ defmodule Magma.Utils do
       }
     end)
   end
+
+  @doc """
+  Extracts the text between double square brackets.
+
+  ## Examples
+
+      iex> Magma.Utils.extract_link_text("[[Foo bar]]")
+      "Foo bar"
+
+      iex> Magma.Utils.extract_link_text("Foo bar")
+      nil
+
+  """
+  def extract_link_text("[[" <> string) do
+    String.slice(string, 0..-3)
+  end
+
+  def extract_link_text(_), do: nil
 end

@@ -5,7 +5,8 @@ defmodule Magma.TestFactories do
 
   alias Magma.{
     Concept,
-    Matter
+    Matter,
+    Artefacts
   }
 
   def project_matter do
@@ -18,12 +19,18 @@ defmodule Magma.TestFactories do
 
   def project_concept do
     project_matter()
-    |> Concept.new()
+    |> Concept.new!()
   end
 
   def module_concept(mod \\ Nested.Example) do
     mod
     |> module_matter()
-    |> Concept.new()
+    |> Concept.new!()
+  end
+
+  def module_doc_artefact(mod \\ Nested.Example) do
+    mod
+    |> module_concept()
+    |> Artefacts.ModuleDoc.new!()
   end
 end

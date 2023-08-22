@@ -6,15 +6,12 @@ defmodule Magma.Matter do
   @fields [:name]
   def fields, do: @fields
 
-  @callback concept_template :: Path.t()
-
   @callback concept_path(t()) :: Path.t()
 
   @callback new(name, keyword) :: {:ok, t()} | {:error, any}
 
   defmacro __using__(opts) do
     additional_fields = Keyword.get(opts, :fields, [])
-    concept_template = Keyword.fetch!(opts, :concept_template)
 
     quote do
       @behaviour Magma.Matter
@@ -22,11 +19,11 @@ defmodule Magma.Matter do
       defstruct Magma.Matter.fields() ++ unquote(additional_fields)
 
       @impl true
-      def concept_template, do: unquote(concept_template)
-
-      @impl true
       def new(name, args \\ []) do
-        struct(__MODULE__, [{:name, name} | args])
+        %__MODULE__{
+          name: name
+        }
+        |> struct(args)
       end
 
       defoverridable new: 1, new: 2

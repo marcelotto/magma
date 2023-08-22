@@ -3,6 +3,7 @@ defmodule Magma.TestVault do
   Functions for working with the test vault.
   """
   alias Magma.TestData
+  alias Magma.Vault
 
   @dir "example_vault"
   @src_documents_path TestData.path("documents")
@@ -13,6 +14,9 @@ defmodule Magma.TestVault do
 
   def clear do
     File.rm_rf!(path())
+    Vault.Index.clear()
+
+    :ok
   end
 
   def add(path) do
@@ -27,5 +31,11 @@ defmodule Magma.TestVault do
     |> File.cp!(dest)
 
     dest
+  end
+
+  def add_indexed(path) do
+    result = add(path)
+    Vault.index(result)
+    result
   end
 end

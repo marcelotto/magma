@@ -7,9 +7,9 @@ aliases: []
 ---
 # `Some.DocumentWithFrontMatter`
 
-## Draft
+## Description
 
-This is an example draft of the module:
+This is an example description of the module:
 
 Module `Some.DocumentWithFrontMatter` does:
 
@@ -18,18 +18,22 @@ Module `Some.DocumentWithFrontMatter` does:
 
 
 ---
-## Spec
-
-### Expertise
-
-- <%= project.expertise %>
-- Some additional expertise
-
-
----
 ## Notes
 
 ### Example note
 
 Here we have an example note with some text.
+
+---
+# Artefacts
+
+## Commons
+
+### Spec
+
+#### Expertise
+
+- <%= project.expertise %>
+- Some additional expertise
+
 

@@ -11,6 +11,8 @@ defmodule Mix.Tasks.Magma.Vault.Sync.Code do
   @options []
 
   def run(args) do
+    Mix.Task.run("app.start")
+
     with_valid_options(args, @options, fn opts, _remaining ->
       CodeSync.sync(opts)
     end)

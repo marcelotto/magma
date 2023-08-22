@@ -1,5 +1,5 @@
 defmodule Magma.Vault.InitializerTest do
-  use Magma.TestCase, async: false
+  use Magma.Vault.Case, async: false
 
   doctest Magma.Vault.Initializer
 
@@ -9,8 +9,6 @@ defmodule Magma.Vault.InitializerTest do
 
   describe "initialize/0" do
     test "copies the base Obsidian vault and creates concepts for the project and modules" do
-      TestVault.clear()
-
       refute File.exists?(Vault.path())
 
       project_name = "Magma-Project"

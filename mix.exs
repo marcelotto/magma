@@ -21,6 +21,7 @@ defmodule Magma.MixProject do
 
   defp deps do
     [
+      {:panpipe, "~> 0.3"},
       {:yaml_front_matter, "~> 1.0"}
     ]
   end

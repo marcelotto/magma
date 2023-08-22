@@ -14,6 +14,8 @@ defmodule Mix.Tasks.Magma.Vault.Init do
   ]
 
   def run(args) do
+    Mix.Task.run("app.start")
+
     with_valid_options(args, @options, fn
       _opts, [] ->
         Mix.shell().error("project name missing")

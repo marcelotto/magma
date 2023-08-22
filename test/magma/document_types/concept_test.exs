@@ -1,9 +1,9 @@
 defmodule Magma.ConceptTest do
-  use Magma.TestCase, async: false
+  use Magma.Vault.Case, async: false
 
   doctest Magma.Concept
 
-  alias Magma.{Concept, Matter}
+  alias Magma.{Concept, Matter, Artefacts}
 
   describe "new/1" do
     test "with project matter" do
@@ -13,7 +13,12 @@ defmodule Magma.ConceptTest do
                 path: path,
                 name: "Magma",
                 custom_metadata: nil,
-                content: nil
+                content: nil,
+                title: nil,
+                prologue: nil,
+                subject_description: nil,
+                subject_notes: nil,
+                artefact_specs: nil
               }} = Concept.new(subject: Matter.Project.new("Magma"))
 
       assert path == Vault.path("__concepts__/Magma.md")
@@ -26,7 +31,12 @@ defmodule Magma.ConceptTest do
                 path: path,
                 name: "TopLevelExample",
                 custom_metadata: nil,
-                content: nil
+                content: nil,
+                title: nil,
+                prologue: nil,
+                subject_description: nil,
+                subject_notes: nil,
+                artefact_specs: nil
               }} = Concept.new(subject: Matter.Module.new(TopLevelExample))
 
       assert path == Vault.path("__concepts__/modules/TopLevelExample.md")
@@ -40,11 +50,18 @@ defmodule Magma.ConceptTest do
              Concept.new(subject: Matter.Module.new(Nested.Example))
   end
 
+  test "new!/1" do
+    assert {:ok,
+            Nested.Example
+            |> Matter.Module.new()
+            |> Concept.new!()} ==
+             Concept.new(subject: Matter.Module.new(Nested.Example))
+  end
+
   describe "create/2" do
     test "with module matter" do
       expected_path = Vault.path("__concepts__/modules/Nested/Nested.Example.md")
 
-      File.rm(expected_path)
       refute File.exists?(expected_path)
 
       assert {:ok,
@@ -52,9 +69,18 @@ defmodule Magma.ConceptTest do
                 subject: %Matter.Module{name: Nested.Example},
                 name: "Nested.Example",
                 tags: ["magma-vault"],
-                aliases: ["Concept of Nested.Example"],
+                aliases: [],
                 created_at: created_at,
-                custom_metadata: %{}
+                custom_metadata: %{},
+                title: "`Nested.Example`",
+                prologue: [],
+                subject_description: %Magma.DocumentStruct.Section{title: "Description"},
+                subject_notes: %Magma.DocumentStruct.Section{title: "Notes"},
+                artefact_specs: [
+                  {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
+                  {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
+                  {Artefacts.Cheatsheet, %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
+                ]
               } = concept} =
                Nested.Example
                |> Matter.Module.new()
@@ -66,12 +92,13 @@ defmodule Magma.ConceptTest do
       assert Concept.load(concept.path) == {:ok, concept}
 
       assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+
+      assert Vault.document_path(concept.name) == concept.path
     end
 
     test "with project matter" do
       expected_path = Vault.path("__concepts__/Magma.md")
 
-      File.rm(expected_path)
       refute File.exists?(expected_path)
 
       assert {:ok,
@@ -79,9 +106,18 @@ defmodule Magma.ConceptTest do
                 subject: %Matter.Project{name: "Magma"},
                 name: "Magma",
                 tags: ["magma-vault"],
-                aliases: ["Concept of Magma"],
+                aliases: [],
                 created_at: created_at,
-                custom_metadata: %{}
+                custom_metadata: %{},
+                title: "Magma",
+                prologue: [],
+                subject_description: %Magma.DocumentStruct.Section{title: "Description"},
+                subject_notes: %Magma.DocumentStruct.Section{title: "Notes"},
+                artefact_specs: [
+                  {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
+                  {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
+                  {Artefacts.Cheatsheet, %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
+                ]
               } = concept} =
                "Magma"
                |> Matter.Project.new()
@@ -93,6 +129,8 @@ defmodule Magma.ConceptTest do
       assert Concept.load(concept.path) == {:ok, concept}
 
       assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+
+      assert Vault.document_path(concept.name) == concept.path
     end
 
     test "when a file at the document path already exists" do
@@ -110,9 +148,9 @@ defmodule Magma.ConceptTest do
   end
 
   describe "load/2" do
-    test "with module matter" do
-      document_path =
-        TestVault.add("__concepts__/modules/Some/Some.DocumentWithFrontMatter.md")
+    @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+    test "with module matter", %{vault_files: vault_file} do
+      document_path = Vault.path(vault_file)
 
       assert {
                :ok,
@@ -124,7 +162,14 @@ defmodule Magma.ConceptTest do
                  custom_metadata: %{},
                  aliases: [],
                  tags: ["foo", "bar"],
-                 created_at: ~U[2023-07-11 14:25:00Z]
+                 created_at: ~U[2023-07-11 14:25:00Z],
+                 title: "`Some.DocumentWithFrontMatter`",
+                 prologue: [],
+                 subject_description: %Magma.DocumentStruct.Section{title: "Description"},
+                 subject_notes: %Magma.DocumentStruct.Section{title: "Notes"},
+                 artefact_specs: [
+                   commons: %Magma.DocumentStruct.Section{title: "Commons"}
+                 ]
                } = concept
              } = Concept.load(document_path)
 
@@ -139,8 +184,9 @@ defmodule Magma.ConceptTest do
              |> Concept.load() == {:ok, concept}
     end
 
-    test "project matter" do
-      document_path = TestVault.add("__concepts__/Some Project.md")
+    @tag vault_files: "__concepts__/Some Project.md"
+    test "project matter", %{vault_files: vault_file} do
+      document_path = Vault.path(vault_file)
 
       assert {
                :ok,
@@ -152,7 +198,12 @@ defmodule Magma.ConceptTest do
                  custom_metadata: %{},
                  aliases: [],
                  tags: ["foo"],
-                 created_at: ~U[2023-07-11 14:25:00Z]
+                 created_at: ~U[2023-07-11 14:25:00Z],
+                 title: "Some Project",
+                 prologue: [],
+                 subject_description: %Magma.DocumentStruct.Section{title: "Description"},
+                 subject_notes: nil,
+                 artefact_specs: nil
                } = concept
              } =
                Concept.new!(subject: Matter.Project.new("Some Project"))

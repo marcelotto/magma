@@ -7,6 +7,7 @@ defmodule Magma.TestCase do
 
   using do
     quote do
+      alias Magma.TestData
       alias Magma.TestVault
       alias Magma.Vault
 
