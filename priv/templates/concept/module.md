@@ -28,7 +28,6 @@ Facts, problems and properties etc. - your knowledge - about the module.
 
 <%= transclude_prompt(concept, Magma.Artefacts.ModuleDoc) %>
 
-
 ### Spec
 
 ### Draft

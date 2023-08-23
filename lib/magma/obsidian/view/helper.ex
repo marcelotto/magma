@@ -8,6 +8,18 @@ defmodule Magma.Obsidian.View.Helper do
   def transclude(%_{name: name}, :all), do: "![[#{name}]]"
   def transclude(%_{name: name}, section), do: "![[#{name}##{section}]]"
 
+  def button(label, command, opts \\ []) do
+    """
+    ```button
+    name #{label}
+    type command
+    action Shell commands: Execute: #{command}
+    color #{opts[:color] || "default"}
+    ```
+    """
+    |> String.trim_trailing()
+  end
+
   def yaml_list(list) do
     "[" <> (list |> List.wrap() |> Enum.join(", ")) <> "]"
   end

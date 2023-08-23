@@ -5,5 +5,7 @@
   "better-word-count",
   "recent-files-obsidian",
   "hotkeysplus-obsidian",
-  "cm-editor-syntax-highlight-obsidian"
+  "cm-editor-syntax-highlight-obsidian",
+  "buttons",
+  "obsidian-shellcommands"
 ]
