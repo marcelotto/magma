@@ -44,4 +44,27 @@ defmodule Magma.Artefact do
       end
     end
   end
+
+  @doc """
+  Returns the artefact module for the given string.
+
+  ## Example
+
+      iex> Magma.Artefact.type("ModuleDoc")
+      Magma.Artefacts.ModuleDoc
+
+      iex> Magma.Artefact.type("Vault")
+      nil
+
+      iex> Magma.Artefact.type("NonExisting")
+      nil
+
+  """
+  def type(string) when is_binary(string) do
+    module = Module.concat(Magma.Artefacts, string)
+
+    if Code.ensure_loaded?(module) and function_exported?(module, :prompt_path, 1) do
+      module
+    end
+  end
 end

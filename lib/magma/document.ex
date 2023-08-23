@@ -115,7 +115,7 @@ defmodule Magma.Document do
     end
   end
 
-  defp name_from_path(path) do
+  def name_from_path(path) do
     Path.basename(path, Path.extname(path))
   end
 
@@ -200,7 +200,7 @@ defmodule Magma.Document do
   defp extract_type(metadata) do
     case Map.pop(metadata, :magma_type) do
       {nil, _} -> {:error, :magma_type_missing}
-      {type, metadata} -> {:ok, Module.concat(Magma, type), metadata}
+      {magma_type, metadata} -> {:ok, type(magma_type), metadata}
     end
   end
 
@@ -238,6 +238,32 @@ defmodule Magma.Document do
   defp to_datetime(string) do
     with {:ok, datetime, _} <- DateTime.from_iso8601(string) do
       {:ok, datetime}
+    end
+  end
+
+  @doc """
+  Returns the document module for the given string.
+
+  ## Example
+
+      iex> Magma.Document.type("Concept")
+      Magma.Concept
+
+      iex> Magma.Document.type("Artefact.Prompt")
+      Magma.Artefact.Prompt
+
+      iex> Magma.Document.type("Vault")
+      nil
+
+      iex> Magma.Document.type("NonExisting")
+      nil
+
+  """
+  def type(string) when is_binary(string) do
+    module = Module.concat(Magma, string)
+
+    if Code.ensure_loaded?(module) and function_exported?(module, :create_document, 1) do
+      module
     end
   end
 end

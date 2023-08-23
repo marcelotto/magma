@@ -3,7 +3,7 @@ defmodule Magma.Artefact.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefacts, Concept, Utils}
+  alias Magma.{Vault, Artefact, Concept, Utils}
 
   @impl true
   def dependency, do: :artefact
@@ -26,9 +26,7 @@ defmodule Magma.Artefact.Prompt do
       !concept_link ->
         {:error, "magma_concept missing"}
 
-      true ->
-        artefact_module = Module.concat(Artefacts, artefact_type)
-
+      artefact_module = Artefact.type(artefact_type) ->
         concept_link
         |> Utils.extract_link_text()
         |> Vault.document_path()
@@ -47,6 +45,9 @@ defmodule Magma.Artefact.Prompt do
                }}
             end
         end
+
+      true ->
+        {:error, "invalid magma_artefact type: #{artefact_type}"}
     end
   end
 end

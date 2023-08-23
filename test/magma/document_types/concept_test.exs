@@ -79,7 +79,7 @@ defmodule Magma.ConceptTest do
                 artefact_specs: [
                   {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
                   {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
-                  {Artefacts.Cheatsheet, %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
+                  {"Cheatsheet", %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
                 ]
               } = concept} =
                Nested.Example
@@ -116,7 +116,7 @@ defmodule Magma.ConceptTest do
                 artefact_specs: [
                   {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
                   {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
-                  {Artefacts.Cheatsheet, %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
+                  {"Cheatsheet", %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
                 ]
               } = concept} =
                "Magma"

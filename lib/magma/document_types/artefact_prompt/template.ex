@@ -1,6 +1,7 @@
 defmodule Magma.Artefact.Prompt.Template do
   use Magma.Document.Template
-  alias Magma.Artefact
+
+  alias Magma.{Vault, Artefact}
 
   @path Magma.Document.template_path() |> Path.join("artefact_prompt")
 
@@ -18,25 +19,26 @@ defmodule Magma.Artefact.Prompt.Template do
     |> Enum.map(&Path.join(directory, &1))
   end)
   |> Enum.each(fn file ->
-    {:ok, metadata, _body} = YamlFrontMatter.parse_file(file)
+    case Vault.document_type(file) do
+      {:ok, Artefact.Prompt, artefact_type} ->
+        @external_resource file
+        def render(
+              %Artefact.Prompt{artefact: %unquote(artefact_type){} = artefact} = prompt,
+              assigns
+            ) do
+          if false do
+            # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
+            prompt || artefact || assigns
+          else
+            unquote(EEx.compile_file(file))
+          end
+        end
 
-    if metadata["magma_type"] != "Artefact.Prompt" do
-      raise "invalid Artefact.Prompt template at #{file} with magma_type #{metadata["magma_type"]}"
-    end
+      {:ok, document_type, _} ->
+        raise "invalid magma_type in Artefact.Prompt template at #{file}: #{document_type}"
 
-    artefact_type = Module.concat(Magma.Artefacts, Map.fetch!(metadata, "magma_artefact"))
-
-    @external_resource file
-    def render(
-          %Artefact.Prompt{artefact: %unquote(artefact_type){} = artefact} = prompt,
-          assigns
-        ) do
-      if false do
-        # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
-        prompt || artefact || assigns
-      else
-        unquote(EEx.compile_file(file))
-      end
+      {:error, error} ->
+        raise error
     end
   end)
 end

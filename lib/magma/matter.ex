@@ -29,4 +29,30 @@ defmodule Magma.Matter do
       defoverridable new: 1, new: 2
     end
   end
+
+  @doc """
+  Returns the matter module for the given string.
+
+  ## Example
+
+      iex> Magma.Matter.type("Module")
+      Magma.Matter.Module
+
+      iex> Magma.Matter.type("Project")
+      Magma.Matter.Project
+
+      iex> Magma.Matter.type("Vault")
+      nil
+
+      iex> Magma.Matter.type("NonExisting")
+      nil
+
+  """
+  def type(string) when is_binary(string) do
+    module = Module.concat(__MODULE__, string)
+
+    if Code.ensure_loaded?(module) and function_exported?(module, :concept_path, 1) do
+      module
+    end
+  end
 end

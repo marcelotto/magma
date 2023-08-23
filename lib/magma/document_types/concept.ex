@@ -1,5 +1,5 @@
 defmodule Magma.Concept do
-  alias Magma.{Vault, Matter, Artefacts}
+  alias Magma.{Vault, Matter, Artefact}
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
 
@@ -40,9 +40,11 @@ defmodule Magma.Concept do
 
   defp load_front_matter_properties(document) do
     Document.load_front_matter_property(document, :magma_matter, :subject, fn matter_type ->
-      matter_module = Module.concat(Matter, matter_type)
-
-      {:ok, matter_module.new(document.name)}
+      if matter_module = Matter.type(matter_type) do
+        {:ok, matter_module.new(document.name)}
+      else
+        {:error, "invalid magma_matter type: #{matter_type}"}
+      end
     end)
   end
 
@@ -89,6 +91,6 @@ defmodule Magma.Concept do
   defp interpret_artefacts_section({"Commons", section}), do: {:commons, section}
 
   defp interpret_artefacts_section({artefact_type, section}) do
-    {Module.concat(Artefacts, artefact_type), section}
+    {Artefact.type(artefact_type) || artefact_type, section}
   end
 end
