@@ -9,6 +9,11 @@ defmodule Magma.TestFactories do
     Artefacts
   }
 
+  def datetime, do: ~U[2023-08-09 15:16:02.255559Z]
+
+  def datetime(amount_to_add, unit \\ :second),
+    do: datetime() |> DateTime.add(amount_to_add, unit)
+
   def project_matter do
     Matter.Project.new("Magma")
   end

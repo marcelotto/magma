@@ -3,6 +3,8 @@ defmodule Magma.Concept.Template do
 
   alias Magma.{Vault, Concept, Artefact}
 
+  require Concept
+
   @path Magma.Document.template_path() |> Path.join("concept")
 
   @impl true

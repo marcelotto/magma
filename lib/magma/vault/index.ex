@@ -17,14 +17,9 @@ defmodule Magma.Vault.Index do
   def init(_) do
     :ets.new(@table_name, [:named_table, :set, :public, read_concurrency: true])
 
-    {:ok, nil, {:continue, :index}}
-  end
-
-  @impl true
-  def handle_continue(:index, _) do
     index()
 
-    {:noreply, nil}
+    {:ok, nil}
   end
 
   def get_document_path(name) do

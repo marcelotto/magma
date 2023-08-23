@@ -119,13 +119,13 @@ defmodule Magma.Document do
     Path.basename(path, Path.extname(path))
   end
 
-  def create(%document_type{} = document) do
+  def create(%document_type{} = document, opts \\ []) do
     with {:ok, typed_document} <-
            document
            |> init_document()
            |> document_type.create_document(),
          {:ok, created_document} <-
-           create_file_from_template(typed_document) do
+           create_file_from_template(typed_document, opts) do
       Vault.index(created_document)
       load(created_document)
     end
@@ -149,13 +149,31 @@ defmodule Magma.Document do
 
   defp init_tags(document), do: document
 
-  defp create_file_from_template(%document_type{} = document) do
+  defp create_file_from_template(%document_type{} = document, opts) do
     Magma.MixHelper.create_file(
       document.path,
-      document_type.template().render(document)
+      document_type.template().render(document),
+      opts
     )
 
     {:ok, document}
+  end
+
+  def recreate(%_document_type{} = document) do
+    document
+    |> reset_document()
+    |> create(force: true)
+  end
+
+  def recreate!(document) do
+    case recreate(document) do
+      {:ok, document} -> document
+      {:error, error} -> raise error
+    end
+  end
+
+  defp reset_document(document) do
+    %{document | content: nil, created_at: nil}
   end
 
   def load(%document_type{path: path} = _document) do
@@ -164,22 +182,26 @@ defmodule Magma.Document do
     end
   end
 
-  def load(path) when is_binary(path) do
-    with {:ok, metadata, body} <- read(path),
-         {:ok, document_type, metadata} <- extract_type(metadata),
-         document =
-           struct(document_type,
-             path: path,
-             name: name_from_path(path),
-             content: body,
-             custom_metadata: metadata
-           ),
-         {:ok, document} <-
-           document
-           |> load_front_matter_property(:tags, &{:ok, &1})
-           |> load_front_matter_property(:aliases, &{:ok, &1})
-           |> load_front_matter_property(:created_at, &to_datetime/1) do
-      document_type.load_document(document)
+  def load(name_or_path) when is_binary(name_or_path) do
+    if path = Vault.document_path(name_or_path) do
+      with {:ok, metadata, body} <- read(path),
+           {:ok, document_type, metadata} <- extract_type(metadata),
+           document =
+             struct(document_type,
+               path: path,
+               name: name_from_path(path),
+               content: body,
+               custom_metadata: metadata
+             ),
+           {:ok, document} <-
+             document
+             |> load_front_matter_property(:tags, &{:ok, &1})
+             |> load_front_matter_property(:aliases, &{:ok, &1})
+             |> load_front_matter_property(:created_at, &to_datetime/1) do
+        document_type.load_document(document)
+      end
+    else
+      {:error, "#{name_or_path} not found"}
     end
   end
 
@@ -188,9 +210,9 @@ defmodule Magma.Document do
       {:ok, %^document_type{}} = ok ->
         ok
 
-      {:ok, %_unexpected_document_type{} = unexpected_loaded_document} ->
+      {:ok, %unexpected_document_type{}} ->
         {:error,
-         "unexpected_loaded_document: expected #{inspect(document_type)}, but got #{inspect(unexpected_loaded_document)}"}
+         "expected #{inspect(document_type)}, but got #{inspect(unexpected_document_type)}"}
 
       {:error, _} = error ->
         error

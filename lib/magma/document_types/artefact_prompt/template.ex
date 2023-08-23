@@ -3,6 +3,8 @@ defmodule Magma.Artefact.Prompt.Template do
 
   alias Magma.{Vault, Artefact}
 
+  require Artefact.Prompt
+
   @path Magma.Document.template_path() |> Path.join("artefact_prompt")
 
   @impl true

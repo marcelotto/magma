@@ -217,8 +217,27 @@ defmodule Magma.ConceptTest do
       assert Concept.load(document_path) == {:ok, concept}
     end
 
+    @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+    test "with document name", %{vault_files: vault_file} do
+      document_path = Vault.path(vault_file)
+
+      assert Concept.load!("Some.DocumentWithFrontMatter") == Concept.load!(document_path)
+    end
+
     test "when file not exists" do
-      assert Concept.load("not_existing.md") == {:error, :enoent}
+      assert Concept.load("not_existing.md") ==
+               {:error, "not_existing.md not found"}
+    end
+
+    @tag vault_files: [
+           "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
+           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+         ]
+    test "when the file is not a concept document", %{vault_files: [prompt | _]} do
+      assert prompt
+             |> Vault.path()
+             |> Concept.load() ==
+               {:error, "expected Magma.Concept, but got Magma.Artefact.Prompt"}
     end
   end
 end

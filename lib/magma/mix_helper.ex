@@ -19,14 +19,14 @@ defmodule Magma.MixHelper do
     end
   end
 
-  def copy_directory(source, target, _options \\ []) do
+  def copy_directory(source, target, _opts \\ []) do
     cmd = "cp -R #{source} #{target}"
     Mix.shell().info(cmd)
     Mix.shell().cmd(cmd)
   end
 
-  def create_file(target, content) do
-    Mix.Generator.create_file(target, content)
+  def create_file(target, content, opts \\ []) do
+    Mix.Generator.create_file(target, content, opts)
     :ok
   end
 end
