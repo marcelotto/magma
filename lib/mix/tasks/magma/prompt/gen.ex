@@ -18,8 +18,6 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
         Mix.shell().error("artefact type missing")
 
       _opts, [concept_name, artefact_type] ->
-        Magma.Vault.Index.get_document_path(concept_name)
-
         if artefact_module = Artefact.type(artefact_type) do
           with {:ok, concept} <- Concept.load(concept_name),
                {:ok, artefact} <- artefact_module.new(concept),
