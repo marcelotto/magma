@@ -6,7 +6,8 @@ defmodule Magma.TestFactories do
   alias Magma.{
     Concept,
     Matter,
-    Artefacts
+    Artefacts,
+    DocumentStruct
   }
 
   def datetime, do: ~U[2023-08-09 15:16:02.255559Z]
@@ -37,5 +38,16 @@ defmodule Magma.TestFactories do
     mod
     |> module_concept()
     |> Artefacts.ModuleDoc.new!()
+  end
+
+  def document_struct(content) do
+    {:ok, document_struct} = DocumentStruct.parse(content)
+    document_struct
+  end
+
+  def section(content) do
+    case document_struct(content) do
+      %DocumentStruct{sections: [{_, section}]} -> section
+    end
   end
 end
