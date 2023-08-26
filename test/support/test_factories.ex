@@ -6,6 +6,7 @@ defmodule Magma.TestFactories do
   alias Magma.{
     Concept,
     Matter,
+    Artefact,
     Artefacts,
     DocumentStruct
   }
@@ -38,6 +39,12 @@ defmodule Magma.TestFactories do
     mod
     |> module_concept()
     |> Artefacts.ModuleDoc.new!()
+  end
+
+  def module_doc_artefact_prompt(mod \\ Nested.Example) do
+    mod
+    |> module_doc_artefact()
+    |> Artefact.Prompt.new!()
   end
 
   def document_struct(content) do

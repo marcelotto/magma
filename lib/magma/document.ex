@@ -2,6 +2,7 @@ defmodule Magma.Document do
   @type t ::
           Magma.Concept.t()
           | Magma.Artefact.Prompt.t()
+          | Magma.Artefact.PromptResult.t()
 
   @fields [
     # the path of this document

@@ -23,4 +23,8 @@ defmodule Magma.Obsidian.View.Helper do
   def yaml_list(list) do
     "[" <> (list |> List.wrap() |> Enum.join(", ")) <> "]"
   end
+
+  def yaml_nested_map(map) do
+    map |> Map.from_struct() |> Jason.encode!()
+  end
 end

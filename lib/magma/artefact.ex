@@ -8,7 +8,7 @@ defmodule Magma.Artefact do
 
   @callback matter_type :: module
 
-  @callback name(Concept.t()) :: binary
+  @callback build_name(Concept.t()) :: binary
 
   @callback prompt_path(t()) :: Path.t()
 
@@ -30,7 +30,7 @@ defmodule Magma.Artefact do
       def new(%Magma.Concept{subject: %unquote(matter_type){}} = concept, args \\ []) do
         %__MODULE__{
           concept: concept,
-          name: name(concept)
+          name: build_name(concept)
         }
         |> struct(args)
         |> init()

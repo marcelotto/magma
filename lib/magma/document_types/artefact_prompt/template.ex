@@ -28,9 +28,12 @@ defmodule Magma.Artefact.Prompt.Template do
               %Artefact.Prompt{artefact: %unquote(artefact_type){} = artefact} = prompt,
               assigns
             ) do
+          concept = artefact.concept
+          subject = concept.subject
+
           if false do
             # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
-            prompt || artefact || assigns
+            prompt || artefact || concept || subject || assigns
           else
             unquote(EEx.compile_file(file))
           end

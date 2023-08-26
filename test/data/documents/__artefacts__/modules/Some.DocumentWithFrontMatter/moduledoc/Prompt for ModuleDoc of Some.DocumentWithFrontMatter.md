@@ -8,4 +8,10 @@ aliases: []
 ---
 # Prompt for ModuleDoc of Some.DocumentWithFrontMatter
 
+## Setup
+
+You are an assistent for writing Elixir moduledocs.
+
+## Request
+
 Generate a moduledoc for `Some.DocumentWithFrontMatter`.

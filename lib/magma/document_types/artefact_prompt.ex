@@ -4,6 +4,10 @@ defmodule Magma.Artefact.Prompt do
   @type t :: %__MODULE__{}
 
   alias Magma.{Vault, Artefact, Concept, Utils}
+  alias Magma.DocumentStruct
+  alias Magma.DocumentStruct.Section
+
+  require Logger
 
   @impl true
   def dependency, do: :artefact
@@ -48,6 +52,31 @@ defmodule Magma.Artefact.Prompt do
 
       true ->
         {:error, "invalid magma_artefact type: #{artefact_type}"}
+    end
+  end
+
+  def messages(%__MODULE__{} = prompt) do
+    with {:ok, document_struct} <- DocumentStruct.parse(prompt.content) do
+      case document_struct.sections do
+        [
+          {_,
+           %{
+             sections: [
+               {"Setup", setup_section},
+               {"Request", request_section}
+               | more_subsections
+             ]
+           }}
+          | more_sections
+        ] ->
+          unless Enum.empty?(more_sections) && Enum.empty?(more_subsections) do
+            Logger.warning(
+              "#{prompt.name} contains subsections which won't be taken into account. Put them under the request section if you want that."
+            )
+          end
+
+          {:ok, Section.to_string(setup_section), Section.to_string(request_section)}
+      end
     end
   end
 end

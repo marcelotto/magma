@@ -33,7 +33,7 @@ defmodule Magma.Concept do
   @doc false
   def load_document(%__MODULE__{} = concept) do
     with {:ok, concept} <- load_front_matter_properties(concept),
-         {:ok, document_struct} <- DocumentStruct.Parser.parse(concept.content) do
+         {:ok, document_struct} <- DocumentStruct.parse(concept.content) do
       interpret_document_struct(concept, document_struct)
     end
   end
