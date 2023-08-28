@@ -11,13 +11,12 @@ defmodule Magma.Generation.Mock do
     struct(__MODULE__, params)
   end
 
-  def execute(generation, prompt, system_prompt \\ nil, opts \\ [])
+  def execute(generation, prompt, system_prompt \\ nil)
 
   def execute(
         %__MODULE__{expected_prompt: nil, expected_system_prompt: nil} = generation,
         _prompt,
-        _system_prompt,
-        _opts
+        _system_prompt
       ) do
     {:ok, generation.result}
   end
@@ -25,8 +24,7 @@ defmodule Magma.Generation.Mock do
   def execute(
         %__MODULE__{expected_prompt: prompt, expected_system_prompt: system_prompt} = generation,
         prompt,
-        system_prompt,
-        _opts
+        system_prompt
       ) do
     {:ok, generation.result}
   end

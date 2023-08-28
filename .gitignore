@@ -25,6 +25,8 @@ magma-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
+.envrc
+
 /docs.magma/.obsidian/workspace.json
 
 /test/data/example_vault/

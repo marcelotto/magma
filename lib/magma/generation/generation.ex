@@ -6,16 +6,19 @@ defmodule Magma.Generation do
   @type system_prompt :: prompt
   @type result :: binary
 
-  @callback execute(t(), prompt, system_prompt, keyword) :: {:ok, result} | {:error, any}
+  @callback execute(t(), prompt, system_prompt) :: {:ok, result} | {:error, any}
 
   def default do
-    Application.fetch_env!(:magma, :default_generation)
+    Application.get_env(:magma, :default_generation, Magma.Generation.OpenAI)
   end
 
   @doc """
   Returns the generation module for the given string.
 
   ## Example
+
+      iex> Magma.Generation.type("OpenAI")
+      Magma.Generation.OpenAI
 
       iex> Magma.Generation.type("Mock")
       Magma.Generation.Mock
@@ -30,7 +33,7 @@ defmodule Magma.Generation do
   def type(string) when is_binary(string) do
     module = Module.concat(__MODULE__, string)
 
-    if Code.ensure_loaded?(module) and function_exported?(module, :execute, 4) do
+    if Code.ensure_loaded?(module) and function_exported?(module, :execute, 3) do
       module
     end
   end

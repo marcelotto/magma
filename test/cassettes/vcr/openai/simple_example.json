@@ -1,0 +1,48 @@
+[
+  {
+    "request": {
+      "options": {
+        "recv_timeout": 10000
+      },
+      "body": "{\"messages\":[{\"role\":\"system\",\"content\":\"You are an assistent for the Elixir language and answer short in one sentence.\"},{\"role\":\"user\",\"content\":\"Elixir is ...\"}],\"model\":\"gpt-3.5-turbo\",\"temperature\":0.2}",
+      "url": "https://api.openai.com/v1/chat/completions",
+      "headers": {
+        "OpenAI-Organization": "***",
+        "Authorization": "***",
+        "Content-type": "application/json"
+      },
+      "method": "post",
+      "request_body": ""
+    },
+    "response": {
+      "binary": false,
+      "type": "ok",
+      "body": "{\n  \"id\": \"chatcmpl-7sQNhgHdu7RyJQd9Aqh1stj0QL1ul\",\n  \"object\": \"chat.completion\",\n  \"created\": 1693205477,\n  \"model\": \"gpt-3.5-turbo-0613\",\n  \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\": \"assistant\",\n        \"content\": \"a dynamic, functional programming language designed for building scalable and maintainable applications.\"\n      },\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 32,\n    \"completion_tokens\": 15,\n    \"total_tokens\": 47\n  }\n}\n",
+      "headers": {
+        "Date": "Mon, 28 Aug 2023 06:51:17 GMT",
+        "Content-Type": "application/json",
+        "Content-Length": "500",
+        "Connection": "keep-alive",
+        "access-control-allow-origin": "*",
+        "Cache-Control": "no-cache, must-revalidate",
+        "openai-model": "gpt-3.5-turbo-0613",
+        "openai-organization": "user-8bp0yhplxzqjmslnjsrhjvjd",
+        "openai-processing-ms": "700",
+        "openai-version": "2020-10-01",
+        "strict-transport-security": "max-age=15724800; includeSubDomains",
+        "x-ratelimit-limit-requests": "3500",
+        "x-ratelimit-limit-tokens": "90000",
+        "x-ratelimit-remaining-requests": "3499",
+        "x-ratelimit-remaining-tokens": "89959",
+        "x-ratelimit-reset-requests": "17ms",
+        "x-ratelimit-reset-tokens": "27ms",
+        "x-request-id": "884843b6bc3b0f4f5d17532ff77b7f18",
+        "CF-Cache-Status": "DYNAMIC",
+        "Server": "cloudflare",
+        "CF-RAY": "7fda9ff76f009195-FRA",
+        "alt-svc": "h3=\":443\"; ma=86400"
+      },
+      "status_code": 200
+    }
+  }
+]
