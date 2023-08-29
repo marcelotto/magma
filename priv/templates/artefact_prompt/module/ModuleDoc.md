@@ -6,6 +6,7 @@ created_at: <%= prompt.created_at %>
 tags: <%= yaml_list(prompt.tags) %>
 aliases: <%= yaml_list(prompt.aliases) %>
 ---
+<%= button("Execute", "magma.prompt.exec", color: "blue") %>
 <%= button("Update", "magma.prompt.update") %>
 
 # <%= prompt.name %>
