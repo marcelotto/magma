@@ -61,6 +61,8 @@ defmodule Magma.Artefact.PromptResultTest do
 
       assert content ==
                """
+               #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+
                # Generated ModuleDoc of Some.DocumentWithFrontMatter
 
                foo

@@ -50,7 +50,14 @@ defmodule Magma.Artefact.VersionTest do
               } = version} = Artefact.Version.create(version)
 
       assert version.name == "ModuleDoc of Some.DocumentWithFrontMatter"
-      assert version.content == prompt_result.content
+
+      assert version.content ==
+               """
+               # #{version.name}
+
+               The final documentation of `Some.DocumentWithFrontMatter`.
+               """
+
       assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2
     end
   end

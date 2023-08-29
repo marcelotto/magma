@@ -50,6 +50,8 @@ defmodule Magma.Artefact.PromptResult do
          document
          | generation: generation,
            content: """
+           #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+
            # #{build_name(document.prompt.artefact)}
 
            #{result}

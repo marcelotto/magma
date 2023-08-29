@@ -265,6 +265,17 @@ defmodule Magma.Document do
     end
   end
 
+  # an AST transformation would be better, but does an implicit normalization
+  def content_without_prologue(document) do
+    content = document.content
+
+    case String.split(content, ~r{^\# }m, parts: 2) do
+      # no header found
+      [_] -> content
+      [_, stripped_content] -> "# " <> stripped_content
+    end
+  end
+
   @doc """
   Returns the document module for the given string.
 
