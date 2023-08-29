@@ -4,6 +4,8 @@ defmodule Magma.Generation.OpenAI do
   defstruct model: "gpt-3.5-turbo",
             temperature: 0.2
 
+  require Logger
+
   defp default_params, do: Application.get_env(:magma, __MODULE__, [])
 
   def new(params \\ [])
@@ -24,16 +26,42 @@ defmodule Magma.Generation.OpenAI do
   end
 
   def execute(%__MODULE__{} = generation, prompt, system_prompt \\ nil) do
+    Logger.info("Executing OpenAI chat completion...")
+
     generation
     |> Map.from_struct()
     |> Keyword.new()
     |> Keyword.put(:messages, prompt_messages(prompt, system_prompt))
     |> OpenAI.chat_completion()
     |> case do
-      {:ok, %{choices: [%{"finish_reason" => "length", "message" => %{"content" => _result}}]}} ->
+      {:ok,
+       %{
+         choices: [%{"finish_reason" => "length", "message" => %{"content" => _result}}],
+         usage: %{
+           "completion_tokens" => completion_tokens,
+           "prompt_tokens" => prompt_tokens,
+           "total_tokens" => total_tokens
+         }
+       }} ->
+        Logger.error(
+          "OpenAI chat completion with model #{generation.model} token limit exceeded: #{prompt_tokens} + #{completion_tokens} = #{total_tokens} tokens"
+        )
+
         {:error, :token_limit_exceeded}
 
-      {:ok, %{choices: [%{"finish_reason" => "stop", "message" => %{"content" => result}}]}} ->
+      {:ok,
+       %{
+         choices: [%{"finish_reason" => "stop", "message" => %{"content" => result}}],
+         usage: %{
+           "completion_tokens" => completion_tokens,
+           "prompt_tokens" => prompt_tokens,
+           "total_tokens" => total_tokens
+         }
+       }} ->
+        Logger.info(
+          "Finished OpenAI chat completion (#{prompt_tokens} + #{completion_tokens} = #{total_tokens} tokens)"
+        )
+
         {:ok, result}
 
       {:error, _} = error ->

@@ -6,6 +6,8 @@ defmodule Magma.Generation.OpenAITest do
 
   alias Magma.Generation
 
+  @moduletag capture_log: true
+
   setup_all do
     HTTPoison.start()
     :ok
