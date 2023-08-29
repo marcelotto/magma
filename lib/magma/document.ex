@@ -3,6 +3,7 @@ defmodule Magma.Document do
           Magma.Concept.t()
           | Magma.Artefact.Prompt.t()
           | Magma.Artefact.PromptResult.t()
+          | Magma.Artefact.Version.t()
 
   @fields [
     # the path of this document

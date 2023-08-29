@@ -1,0 +1,12 @@
+---
+magma_type: Artefact.PromptResult
+magma_prompt: "[[Prompt for ModuleDoc of Some.DocumentWithFrontMatter]]"
+magma_generation_type: OpenAI
+magma_generation_params: {"model":"gpt-3.5-turbo", "temperature":0.2}
+created_at: 2023-08-23 12:53:00Z
+tags: [magma-vault]
+aliases: []
+---
+# ModuleDoc of Some.DocumentWithFrontMatter
+
+The final documentation of `Some.DocumentWithFrontMatter`.

@@ -12,6 +12,8 @@ defmodule Magma.Artefact do
 
   @callback prompt_path(t()) :: Path.t()
 
+  @callback version_path(t()) :: Path.t()
+
   @callback init(t()) :: {:ok, t()} | {:error, any}
 
   defmacro __using__(opts) do

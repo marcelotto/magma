@@ -47,6 +47,12 @@ defmodule Magma.TestFactories do
     |> Artefact.Prompt.new!()
   end
 
+  def module_doc_artefact_prompt_result(mod \\ Nested.Example) do
+    mod
+    |> module_doc_artefact_prompt()
+    |> Artefact.PromptResult.new!()
+  end
+
   def document_struct(content) do
     {:ok, document_struct} = DocumentStruct.parse(content)
     document_struct
