@@ -1,6 +1,6 @@
 ---
 magma_type: Concept
-magma_matter: Module
+magma_matter_type: Module
 created_at: <%= concept.created_at %> 
 tags: <%= yaml_list(concept.tags) %>
 aliases: <%= yaml_list(concept.aliases) %>

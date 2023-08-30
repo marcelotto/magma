@@ -30,6 +30,15 @@ defmodule Magma.Concept do
   end
 
   @impl true
+  def create_document(%__MODULE__{subject: %matter_type{} = matter} = concept) do
+    if concept.aliases do
+      {:ok, concept}
+    else
+      {:ok, struct(concept, aliases: matter_type.default_concept_aliases(matter))}
+    end
+  end
+
+  @impl true
   @doc false
   def load_document(%__MODULE__{} = concept) do
     with {:ok, concept} <- load_front_matter_properties(concept),
@@ -38,14 +47,25 @@ defmodule Magma.Concept do
     end
   end
 
-  defp load_front_matter_properties(document) do
-    Document.load_front_matter_property(document, :magma_matter, :subject, fn matter_type ->
-      if matter_module = Matter.type(matter_type) do
-        {:ok, matter_module.new(document.name)}
-      else
+  defp load_front_matter_properties(concept) do
+    {matter_type, custom_metadata} = Map.pop(concept.custom_metadata, :magma_matter_type)
+    {matter_name, custom_metadata} = Map.pop(custom_metadata, :magma_matter_name, concept.name)
+
+    cond do
+      !matter_type ->
+        {:error, "magma_matter_type missing"}
+
+      matter_module = Matter.type(matter_type) ->
+        {:ok,
+         %__MODULE__{
+           concept
+           | subject: matter_module.new(matter_name),
+             custom_metadata: custom_metadata
+         }}
+
+      true ->
         {:error, "invalid magma_matter type: #{matter_type}"}
-      end
-    end)
+    end
   end
 
   defp interpret_document_struct(concept, document_struct) do

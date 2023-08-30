@@ -8,6 +8,8 @@ defmodule Magma.Matter do
 
   @callback concept_path(t()) :: Path.t()
 
+  @callback default_concept_aliases(t()) :: list
+
   @callback new(name, keyword) :: {:ok, t()} | {:error, any}
 
   defmacro __using__(opts) do
@@ -19,6 +21,9 @@ defmodule Magma.Matter do
       defstruct Magma.Matter.fields() ++ unquote(additional_fields)
 
       @impl true
+      def default_concept_aliases(%__MODULE__{}), do: []
+
+      @impl true
       def new(name, args \\ []) do
         %__MODULE__{
           name: name
@@ -26,7 +31,7 @@ defmodule Magma.Matter do
         |> struct(args)
       end
 
-      defoverridable new: 1, new: 2
+      defoverridable new: 1, new: 2, default_concept_aliases: 1
     end
   end
 

@@ -30,7 +30,10 @@ defmodule Magma.Artefact.PromptTest do
   end
 
   describe "create/1" do
-    @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+    @tag vault_files: [
+           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
+           "__concepts__/Project.md"
+         ]
     test "moduledoc" do
       module_concept = Some.DocumentWithFrontMatter |> module_concept() |> Concept.load!()
       artefact = Artefacts.ModuleDoc.new!(module_concept)

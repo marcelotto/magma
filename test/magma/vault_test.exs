@@ -7,7 +7,7 @@ defmodule Magma.VaultTest do
 
   @tag vault_files: [
          "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
-         "__concepts__/Some Project.md",
+         "__concepts__/Project.md",
          "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md"
        ]
   test "document_type/1", %{vault_files: [module_concept, project_concept, moduledoc_prompt]} do

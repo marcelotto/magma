@@ -11,7 +11,7 @@ defmodule Magma.ConceptTest do
               %Concept{
                 subject: %Matter.Project{name: "Magma"},
                 path: path,
-                name: "Magma",
+                name: "Project",
                 custom_metadata: nil,
                 content: nil,
                 title: nil,
@@ -21,7 +21,7 @@ defmodule Magma.ConceptTest do
                 artefact_specs: nil
               }} = Concept.new(subject: Matter.Project.new("Magma"))
 
-      assert path == Vault.path("__concepts__/Magma.md")
+      assert path == Vault.path("__concepts__/Project.md")
     end
 
     test "with module matter" do
@@ -97,19 +97,19 @@ defmodule Magma.ConceptTest do
     end
 
     test "with project matter" do
-      expected_path = Vault.path("__concepts__/Magma.md")
+      expected_path = Vault.path("__concepts__/Project.md")
 
       refute File.exists?(expected_path)
 
       assert {:ok,
               %Concept{
                 subject: %Matter.Project{name: "Magma"},
-                name: "Magma",
+                name: "Project",
                 tags: ["magma-vault"],
-                aliases: [],
+                aliases: ["Magma project", "Magma-project"],
                 created_at: created_at,
                 custom_metadata: %{},
-                title: "Magma",
+                title: "Magma project",
                 prologue: [],
                 subject_description: %Magma.DocumentStruct.Section{title: "Description"},
                 subject_notes: %Magma.DocumentStruct.Section{title: "Notes"},
@@ -184,7 +184,7 @@ defmodule Magma.ConceptTest do
              |> Concept.load() == {:ok, concept}
     end
 
-    @tag vault_files: "__concepts__/Some Project.md"
+    @tag vault_files: "__concepts__/Project.md"
     test "project matter", %{vault_files: vault_file} do
       document_path = Vault.path(vault_file)
 
@@ -193,13 +193,13 @@ defmodule Magma.ConceptTest do
                %Magma.Concept{
                  subject: %Matter.Project{name: "Some Project"},
                  path: ^document_path,
-                 name: "Some Project",
+                 name: "Project",
                  content: content,
                  custom_metadata: %{},
-                 aliases: [],
+                 aliases: ["Some Project project", "Some Project-project"],
                  tags: ["foo"],
                  created_at: ~U[2023-07-11 14:25:00Z],
-                 title: "Some Project",
+                 title: "Some Project project",
                  prologue: [],
                  subject_description: %Magma.DocumentStruct.Section{title: "Description"},
                  subject_notes: nil,

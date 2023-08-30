@@ -18,10 +18,10 @@ defmodule Magma.Concept.Template do
     case Vault.document_type(file) do
       {:ok, Concept, matter_type} ->
         @external_resource file
-        def render(%Concept{subject: %unquote(matter_type){} = matter} = concept, assigns) do
+        def render(%Concept{subject: %unquote(matter_type){} = subject} = concept, assigns) do
           # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
           if false do
-            concept || matter || assigns
+            concept || subject || assigns
           else
             unquote(EEx.compile_file(file))
           end

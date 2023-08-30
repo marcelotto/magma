@@ -38,12 +38,12 @@ defmodule Magma.Vault do
         {:error, "invalid magma_type in #{path}: #{inspect(magma_type)}"}
 
       Concept ->
-        magma_matter = metadata["magma_matter"]
+        magma_matter_type = metadata["magma_matter_type"]
 
-        if matter_type = Matter.type(magma_matter) do
-          {:ok, Concept, matter_type}
+        if matter_module = Matter.type(magma_matter_type) do
+          {:ok, Concept, matter_module}
         else
-          {:error, "invalid magma_matter in #{path}: #{inspect(magma_matter)}"}
+          {:error, "invalid magma_matter_type in #{path}: #{inspect(magma_matter_type)}"}
         end
 
       Artefact.Prompt ->

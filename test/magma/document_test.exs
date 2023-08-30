@@ -37,7 +37,8 @@ defmodule Magma.DocumentTest do
 
     @tag vault_files: [
            "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
+           "__concepts__/Project.md"
          ]
     test "with prompt", %{vault_files: [prompt_file | _]} do
       original_prompt =

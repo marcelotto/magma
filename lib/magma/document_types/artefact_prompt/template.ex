@@ -2,6 +2,7 @@ defmodule Magma.Artefact.Prompt.Template do
   use Magma.Document.Template
 
   alias Magma.{Vault, Artefact}
+  alias Magma.Matter.Project
 
   require Artefact.Prompt
 
@@ -30,10 +31,11 @@ defmodule Magma.Artefact.Prompt.Template do
             ) do
           concept = artefact.concept
           subject = concept.subject
+          project = Project.concept()
 
           if false do
             # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
-            prompt || artefact || concept || subject || assigns
+            prompt || artefact || concept || subject || project || assigns
           else
             unquote(EEx.compile_file(file))
           end
