@@ -22,16 +22,14 @@ defmodule Magma.DocumentTest do
       assert struct(new_concept,
                created_at: nil,
                content: nil,
-               subject_description: nil,
-               subject_notes: nil,
-               artefact_specs: nil
+               description: nil,
+               system_prompts: nil
              ) ==
                struct(original_concept,
                  created_at: nil,
                  content: nil,
-                 subject_description: nil,
-                 subject_notes: nil,
-                 artefact_specs: nil
+                 description: nil,
+                 system_prompts: nil
                )
     end
 

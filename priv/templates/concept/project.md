@@ -8,7 +8,7 @@ aliases: <%= yaml_list(concept.aliases) %>
 ---
 # <%= subject.name %> project
 
-## Description
+## <%= Magma.Concept.description_section_title() %>
 
 What is <%= subject.name %>?
 
@@ -20,7 +20,7 @@ Facts, problems and properties etc. - your knowledge - about the project.
 
 
 ---
-# Artefacts
+# <%= Magma.Concept.system_prompt_section_title() %>
 
 ## Commons
 

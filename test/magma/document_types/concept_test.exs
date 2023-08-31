@@ -16,9 +16,8 @@ defmodule Magma.ConceptTest do
                 content: nil,
                 title: nil,
                 prologue: nil,
-                subject_description: nil,
-                subject_notes: nil,
-                artefact_specs: nil
+                description: nil,
+                system_prompts: nil
               }} = Concept.new(subject: Matter.Project.new("Magma"))
 
       assert path == Vault.path("__concepts__/Project.md")
@@ -34,9 +33,8 @@ defmodule Magma.ConceptTest do
                 content: nil,
                 title: nil,
                 prologue: nil,
-                subject_description: nil,
-                subject_notes: nil,
-                artefact_specs: nil
+                description: nil,
+                system_prompts: nil
               }} = Concept.new(subject: Matter.Module.new(TopLevelExample))
 
       assert path == Vault.path("__concepts__/modules/TopLevelExample.md")
@@ -70,13 +68,11 @@ defmodule Magma.ConceptTest do
                 name: "Nested.Example",
                 tags: ["magma-vault"],
                 aliases: [],
-                created_at: created_at,
                 custom_metadata: %{},
                 title: "`Nested.Example`",
                 prologue: [],
-                subject_description: %Magma.DocumentStruct.Section{title: "Description"},
-                subject_notes: %Magma.DocumentStruct.Section{title: "Notes"},
-                artefact_specs: [
+                description: %Magma.DocumentStruct.Section{title: "Description"},
+                system_prompts: [
                   {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
                   {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
                   {"Cheatsheet", %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
@@ -91,7 +87,7 @@ defmodule Magma.ConceptTest do
       assert File.exists?(concept.path)
       assert Concept.load(concept.path) == {:ok, concept}
 
-      assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+      assert DateTime.diff(DateTime.utc_now(), concept.created_at, :second) <= 2
 
       assert Vault.document_path(concept.name) == concept.path
     end
@@ -111,9 +107,8 @@ defmodule Magma.ConceptTest do
                 custom_metadata: %{},
                 title: "Magma project",
                 prologue: [],
-                subject_description: %Magma.DocumentStruct.Section{title: "Description"},
-                subject_notes: %Magma.DocumentStruct.Section{title: "Notes"},
-                artefact_specs: [
+                description: %Magma.DocumentStruct.Section{title: "Description"},
+                system_prompts: [
                   {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
                   {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
                   {"Cheatsheet", %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
@@ -165,9 +160,8 @@ defmodule Magma.ConceptTest do
                  created_at: ~U[2023-07-11 14:25:00Z],
                  title: "`Some.DocumentWithFrontMatter`",
                  prologue: [],
-                 subject_description: %Magma.DocumentStruct.Section{title: "Description"},
-                 subject_notes: %Magma.DocumentStruct.Section{title: "Notes"},
-                 artefact_specs: [
+                 description: %Magma.DocumentStruct.Section{title: "Description"},
+                 system_prompts: [
                    commons: %Magma.DocumentStruct.Section{title: "Commons"}
                  ]
                } = concept
@@ -201,9 +195,8 @@ defmodule Magma.ConceptTest do
                  created_at: ~U[2023-07-11 14:25:00Z],
                  title: "Some Project project",
                  prologue: [],
-                 subject_description: %Magma.DocumentStruct.Section{title: "Description"},
-                 subject_notes: nil,
-                 artefact_specs: nil
+                 description: %Magma.DocumentStruct.Section{title: "Description"},
+                 system_prompts: nil
                } = concept
              } =
                Concept.new!(subject: Matter.Project.new("Some Project"))

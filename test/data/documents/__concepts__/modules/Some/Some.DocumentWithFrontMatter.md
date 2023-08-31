@@ -25,7 +25,7 @@ Module `Some.DocumentWithFrontMatter` does:
 Here we have an example note with some text.
 
 ---
-# Artefacts
+# Artefact system prompts
 
 ## Commons
 

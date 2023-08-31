@@ -17,15 +17,10 @@ defmodule Magma.DocumentStruct.Parser do
            ) do
       {prologue, remaining} = extract_prologue(children)
 
-      sections =
-        remaining
-        |> section_tree()
-        |> index_sections()
-
       {:ok,
        DocumentStruct.new(
          prologue: prologue,
-         sections: sections
+         sections: section_tree(remaining)
        )}
     end
   end
@@ -65,14 +60,5 @@ defmodule Magma.DocumentStruct.Parser do
 
   defp take_until_next_outer_section([content | remaining], outer_level, acc) do
     take_until_next_outer_section(remaining, outer_level, [content | acc])
-  end
-
-  defp index_sections(sections) do
-    for section <- sections do
-      {
-        section.title,
-        %Section{section | sections: index_sections(section.sections)}
-      }
-    end
   end
 end

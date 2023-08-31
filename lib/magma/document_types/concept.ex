@@ -12,14 +12,17 @@ defmodule Magma.Concept do
       # text before the title header
       :prologue,
       # the "Description" section
-      :subject_description,
-      # the "Notes" section
-      :subject_notes,
-      # the "Artefacts" section
-      :artefact_specs
+      :description,
+      # the "Artefact system prompts" section
+      :system_prompts
     ]
 
   @type t :: %__MODULE__{}
+
+  @description_section_title "Description"
+  def description_section_title, do: @description_section_title
+  @system_prompt_section_title "Artefact system prompts"
+  def system_prompt_section_title, do: @system_prompt_section_title
 
   @impl true
   def dependency, do: :subject
@@ -69,48 +72,48 @@ defmodule Magma.Concept do
   end
 
   defp interpret_document_struct(concept, document_struct) do
-    with {:ok, title, description, notes} <- interpret_subject_section(document_struct.sections),
-         {:ok, artefact_specs} <- interpret_artefacts_sections(document_struct.sections) do
+    with {:ok, title, description} <- interpret_subject_section(document_struct.sections),
+         {:ok, system_prompts} <- interpret_system_prompt_sections(document_struct.sections) do
       {:ok,
        %__MODULE__{
          concept
          | title: title,
            prologue: document_struct.prologue,
-           subject_description: description,
-           subject_notes: notes,
-           artefact_specs: artefact_specs
+           description: description,
+           system_prompts: system_prompts
        }}
     end
   end
 
   defp interpret_subject_section([
-         {title, %Section{sections: [{"Description", description}, {"Notes", notes}]}}
+         %Section{
+           title: title,
+           sections: [%Section{title: @description_section_title} = description | _]
+         }
          | _
        ]) do
-    {:ok, title, description, notes}
-  end
-
-  defp interpret_subject_section([
-         {title, %Section{sections: [{"Description", description}]}}
-       ]) do
-    {:ok, title, description, nil}
+    {:ok, title, description}
   end
 
   defp interpret_subject_section(_) do
     {:error, "invalid concept document: Description section missing"}
   end
 
-  defp interpret_artefacts_sections([_, {"Artefacts", %Section{sections: artefacts_sections}} | _]) do
-    {:ok, Enum.map(artefacts_sections, &interpret_artefacts_section/1)}
+  defp interpret_system_prompt_sections([
+         _,
+         %Section{title: @system_prompt_section_title, sections: system_prompt_sections} | _
+       ]) do
+    {:ok, Enum.map(system_prompt_sections, &interpret_system_prompt_section/1)}
   end
 
-  defp interpret_artefacts_sections(_) do
+  defp interpret_system_prompt_sections(_) do
     {:ok, nil}
   end
 
-  defp interpret_artefacts_section({"Commons", section}), do: {:commons, section}
+  defp interpret_system_prompt_section(%Section{title: "Commons"} = section),
+    do: {:commons, section}
 
-  defp interpret_artefacts_section({artefact_type, section}) do
+  defp interpret_system_prompt_section(%Section{title: artefact_type} = section) do
     {Artefact.type(artefact_type) || artefact_type, section}
   end
 end

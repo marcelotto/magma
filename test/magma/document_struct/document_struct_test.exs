@@ -13,7 +13,12 @@ defmodule Magma.DocumentStructTest do
 
     assert {:ok, document_struct} = DocumentStruct.parse(body)
 
-    assert get_in(document_struct, ["Artefacts", "Commons", "Spec", "Expertise"]) ==
+    assert get_in(document_struct, [
+             Magma.Concept.system_prompt_section_title(),
+             "Commons",
+             "Spec",
+             "Expertise"
+           ]) ==
              %DocumentStruct.Section{
                title: "Expertise",
                header: %Panpipe.AST.Header{

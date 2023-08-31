@@ -59,14 +59,13 @@ defmodule Magma.Artefact.Prompt do
     with {:ok, document_struct} <- DocumentStruct.parse(prompt.content) do
       case document_struct.sections do
         [
-          {_,
-           %{
-             sections: [
-               {"Setup", setup_section},
-               {"Request", request_section}
-               | more_subsections
-             ]
-           }}
+          %{
+            sections: [
+              %Section{title: "Setup"} = setup_section,
+              %Section{title: "Request"} = request_section
+              | more_subsections
+            ]
+          }
           | more_sections
         ] ->
           unless Enum.empty?(more_sections) && Enum.empty?(more_subsections) do

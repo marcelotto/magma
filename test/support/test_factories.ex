@@ -60,7 +60,7 @@ defmodule Magma.TestFactories do
 
   def section(content) do
     case document_struct(content) do
-      %DocumentStruct{sections: [{_, section}]} -> section
+      %DocumentStruct{sections: [section]} -> section
     end
   end
 end

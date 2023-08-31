@@ -15,9 +15,9 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
-  def fetch(%_{sections: sections}, key) do
+  def fetch(%_{sections: sections}, title) do
     Enum.find_value(sections, fn
-      {^key, section} -> {:ok, section}
+      %{title: ^title} = section -> {:ok, section}
       _ -> nil
     end) || :error
   end
@@ -37,9 +37,7 @@ defmodule Magma.DocumentStruct.Section do
     if Keyword.get(opts, :subsections, true) && not Enum.empty?(section.sections) do
       result <>
         "\n" <>
-        Enum.map_join(section.sections, "\n", fn {_, subsection} ->
-          to_string(subsection, header: true)
-        end)
+        Enum.map_join(section.sections, "\n", &to_string(&1, header: true))
     else
       result
     end
