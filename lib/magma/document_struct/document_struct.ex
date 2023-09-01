@@ -7,6 +7,10 @@ defmodule Magma.DocumentStruct do
     struct(__MODULE__, args)
   end
 
+  def title(%{sections: [%Section{title: title} | _]}) do
+    String.trim(title)
+  end
+
   defdelegate parse(content), to: Parser
 
   defdelegate fetch(document_struct, key), to: Section

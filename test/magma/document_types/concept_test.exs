@@ -3,7 +3,7 @@ defmodule Magma.ConceptTest do
 
   doctest Magma.Concept
 
-  alias Magma.{Concept, Matter, Artefacts}
+  alias Magma.{Concept, Matter}
 
   describe "new/1" do
     test "with project matter" do
@@ -16,8 +16,7 @@ defmodule Magma.ConceptTest do
                 content: nil,
                 title: nil,
                 prologue: nil,
-                description: nil,
-                system_prompts: nil
+                sections: nil
               }} = Concept.new(subject: Matter.Project.new("Magma"))
 
       assert path == Vault.path("__concepts__/Project.md")
@@ -33,8 +32,7 @@ defmodule Magma.ConceptTest do
                 content: nil,
                 title: nil,
                 prologue: nil,
-                description: nil,
-                system_prompts: nil
+                sections: nil
               }} = Concept.new(subject: Matter.Module.new(TopLevelExample))
 
       assert path == Vault.path("__concepts__/modules/TopLevelExample.md")
@@ -70,13 +68,7 @@ defmodule Magma.ConceptTest do
                 aliases: [],
                 custom_metadata: %{},
                 title: "`Nested.Example`",
-                prologue: [],
-                description: %Magma.DocumentStruct.Section{title: "Description"},
-                system_prompts: [
-                  {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
-                  {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
-                  {"Cheatsheet", %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
-                ]
+                prologue: []
               } = concept} =
                Nested.Example
                |> Matter.Module.new()
@@ -106,13 +98,7 @@ defmodule Magma.ConceptTest do
                 created_at: created_at,
                 custom_metadata: %{},
                 title: "Magma project",
-                prologue: [],
-                description: %Magma.DocumentStruct.Section{title: "Description"},
-                system_prompts: [
-                  {:commons, %Magma.DocumentStruct.Section{title: "Commons"}},
-                  {Artefacts.ModuleDoc, %Magma.DocumentStruct.Section{title: "ModuleDoc"}},
-                  {"Cheatsheet", %Magma.DocumentStruct.Section{title: "Cheatsheet"}}
-                ]
+                prologue: []
               } = concept} =
                "Magma"
                |> Matter.Project.new()
@@ -159,11 +145,7 @@ defmodule Magma.ConceptTest do
                  tags: ["foo", "bar"],
                  created_at: ~U[2023-07-11 14:25:00Z],
                  title: "`Some.DocumentWithFrontMatter`",
-                 prologue: [],
-                 description: %Magma.DocumentStruct.Section{title: "Description"},
-                 system_prompts: [
-                   commons: %Magma.DocumentStruct.Section{title: "Commons"}
-                 ]
+                 prologue: []
                } = concept
              } = Concept.load(document_path)
 
@@ -194,9 +176,7 @@ defmodule Magma.ConceptTest do
                  tags: ["foo"],
                  created_at: ~U[2023-07-11 14:25:00Z],
                  title: "Some Project project",
-                 prologue: [],
-                 description: %Magma.DocumentStruct.Section{title: "Description"},
-                 system_prompts: nil
+                 prologue: []
                } = concept
              } =
                Concept.new!(subject: Matter.Project.new("Some Project"))
