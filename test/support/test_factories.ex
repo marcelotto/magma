@@ -53,6 +53,37 @@ defmodule Magma.TestFactories do
     |> Artefact.PromptResult.new!()
   end
 
+  def content_without_subsections do
+    """
+    ## Setup
+
+    Foo
+    """
+  end
+
+  def content_with_subsections do
+    """
+    ## Setup
+
+    Foo
+
+    ### Subsection 1
+
+    Labore enim excepteur aute veniam.
+
+    #### Subsection 1.2
+
+    Lorem consequat amet minim pariatur, dolore ut.
+
+    ### Subsection 2
+
+    Nisi do voluptate esse culpa sint.
+    """
+  end
+
+  def document_struct(:without_subsections), do: document_struct(content_without_subsections())
+  def document_struct(:with_subsections), do: document_struct(content_with_subsections())
+
   def document_struct(content) do
     {:ok, document_struct} = DocumentStruct.parse(content)
     document_struct
