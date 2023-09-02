@@ -4,6 +4,7 @@ defmodule Magma.DocumentStructTest do
   doctest Magma.DocumentStruct
 
   alias Magma.DocumentStruct
+  alias Magma.DocumentStruct.Section
 
   test "key-based access" do
     {:ok, _metadata, body} =
@@ -71,5 +72,32 @@ defmodule Magma.DocumentStructTest do
                ],
                sections: []
              }
+  end
+
+  describe "section_by_title/1" do
+    test "unnested" do
+      assert %Section{title: "Example title"} =
+               document_struct(:without_subsections)
+               |> DocumentStruct.section_by_title("Example title")
+    end
+
+    test "nested" do
+      assert %Section{title: "Subsection 1"} =
+               document_struct(:with_subsections)
+               |> DocumentStruct.section_by_title("Subsection 1")
+
+      assert %Section{title: "Subsection 1.2"} =
+               document_struct(:with_subsections)
+               |> DocumentStruct.section_by_title("Subsection 1.2")
+
+      assert %Section{title: "Subsection 2"} =
+               document_struct(:with_subsections)
+               |> DocumentStruct.section_by_title("Subsection 2")
+    end
+
+    test "when no section could be found" do
+      assert document_struct(:without_subsections)
+             |> DocumentStruct.section_by_title("No existing") == nil
+    end
   end
 end

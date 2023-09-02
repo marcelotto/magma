@@ -55,7 +55,7 @@ defmodule Magma.TestFactories do
 
   def content_without_subsections do
     """
-    ## Setup
+    ## Example title
 
     Foo
     """
@@ -63,7 +63,7 @@ defmodule Magma.TestFactories do
 
   def content_with_subsections do
     """
-    ## Setup
+    ## Example title
 
     Foo
 

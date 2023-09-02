@@ -74,7 +74,11 @@ defmodule Magma.Artefact.Prompt do
             )
           end
 
-          {:ok, Section.to_string(setup_section), Section.to_string(request_section)}
+          {
+            :ok,
+            Section.to_string(setup_section, header: false),
+            Section.to_string(request_section, header: false)
+          }
       end
     end
   end

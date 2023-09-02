@@ -14,11 +14,19 @@ defmodule Magma.DocumentStruct do
     struct(__MODULE__, args)
   end
 
+  defdelegate parse(content), to: Parser
+
+  defdelegate fetch(document_struct, key), to: Section
+
+  def section_by_title(%{sections: sections}, title) do
+    Enum.find_value(sections, &Section.section_by_title(&1, title))
+  end
+
   def title(%{sections: [%Section{title: title} | _]}) do
     String.trim(title)
   end
 
-  defdelegate parse(content), to: Parser
-
-  defdelegate fetch(document_struct, key), to: Section
+  def ast(%{sections: sections}, opts \\ []) do
+    Enum.flat_map(sections, &Section.ast(&1, opts))
+  end
 end
