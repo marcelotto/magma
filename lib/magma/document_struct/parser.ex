@@ -7,14 +7,7 @@ defmodule Magma.DocumentStruct.Parser do
     content = String.trim(content)
 
     with {:ok, %Panpipe.Document{children: children}} <-
-           Panpipe.ast(content,
-             from:
-               {:markdown,
-                %{
-                  disable: [:yaml_metadata_block, :multiline_tables],
-                  enable: [:wikilinks_title_after_pipe]
-                }}
-           ) do
+           Panpipe.ast(content, from: DocumentStruct.pandoc_extension()) do
       {prologue, remaining} = extract_prologue(children)
 
       {:ok,

@@ -3,6 +3,13 @@ defmodule Magma.DocumentStruct do
 
   alias Magma.DocumentStruct.{Section, Parser}
 
+  @pandoc_extension {:markdown,
+                     %{
+                       disable: [:yaml_metadata_block, :multiline_tables],
+                       enable: [:wikilinks_title_after_pipe]
+                     }}
+  def pandoc_extension, do: @pandoc_extension
+
   def new(args) do
     struct(__MODULE__, args)
   end

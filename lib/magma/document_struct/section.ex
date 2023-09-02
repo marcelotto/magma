@@ -1,6 +1,7 @@
 defmodule Magma.DocumentStruct.Section do
   defstruct [:title, :header, :level, :content, :sections]
 
+  alias Magma.DocumentStruct
   alias Panpipe.AST.Header
 
   import Magma.DocumentStruct.Parser.Helper
@@ -24,7 +25,7 @@ defmodule Magma.DocumentStruct.Section do
 
   def to_string(%__MODULE__{} = section, opts \\ []) do
     children =
-      if Keyword.get(opts, :header, false) do
+      if Keyword.get(opts, :header) do
         [section.header | section.content]
       else
         section.content
@@ -32,7 +33,7 @@ defmodule Magma.DocumentStruct.Section do
 
     result =
       %Panpipe.Document{children: children}
-      |> Panpipe.to_markdown()
+      |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension())
 
     if Keyword.get(opts, :subsections, true) && not Enum.empty?(section.sections) do
       result <>
