@@ -95,7 +95,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             [[Project#Description]]
+             ![[Project#Description]]
              """
              |> section()
              |> Section.to_string(header: true, resolve_transclusions: true) ==
@@ -110,7 +110,7 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
-    @tag skip: "TODO: does not work because of https://github.com/jgm/pandoc/issues/9038"
+    @tag skip: "Pandoc resolves Obsidian transclusions to ![[Some Document|]]"
     test "Pandoc handling of Obsidian transclusions" do
       content =
         """
@@ -278,7 +278,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             [[Project]]
+             ![[Project]]
 
              """
              |> section()
@@ -301,7 +301,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             [[Some.DocumentWithFrontMatter]]
+             ![[Some.DocumentWithFrontMatter]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -349,7 +349,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             [[Project#Description]]
+             ![[Project#Description]]
 
              """
              |> section()
@@ -370,7 +370,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             [[Some.DocumentWithFrontMatter#Notes]]
+             ![[Some.DocumentWithFrontMatter#Notes]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -394,7 +394,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             ### Some subsection [[Project]]
+             ### Some subsection ![[Project]]
 
              """
              |> section()
@@ -417,7 +417,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             ### Example section [[Some.DocumentWithFrontMatter#Description]]
+             ### Example section ![[Some.DocumentWithFrontMatter#Description]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -442,7 +442,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             #### Example notes [[Some.DocumentWithFrontMatter#Notes]]
+             #### Example notes ![[Some.DocumentWithFrontMatter#Notes]]
 
              This text should appear at the end of the transcluded content.
              """

@@ -110,10 +110,16 @@ defmodule Magma.DocumentStruct.Section do
 
   defp do_resolve_transclusions(content, level) do
     Enum.flat_map(content, fn
-      %Panpipe.AST.Para{
-        children: [%Panpipe.AST.Link{title: "wikilink", target: target}]
-      } = para_with_link ->
-        List.wrap(transcluded_content(target, header: true, level: level + 1) || para_with_link)
+      %Panpipe.AST.Figure{
+        children: [
+          %Panpipe.AST.Plain{
+            children: [
+              %Panpipe.AST.Image{title: "wikilink", target: target}
+            ]
+          }
+        ]
+      } = transclusion ->
+        List.wrap(transcluded_content(target, header: true, level: level + 1) || transclusion)
 
       content ->
         List.wrap(content)
@@ -122,7 +128,7 @@ defmodule Magma.DocumentStruct.Section do
 
   defp resolve_transclusion_header(%__MODULE__{header: header} = section) do
     case Enum.reverse(header.children) do
-      [%Panpipe.AST.Link{title: "wikilink", target: target} | rest] ->
+      [%Panpipe.AST.Image{title: "wikilink", target: target} | rest] ->
         {
           %Panpipe.AST.Header{
             header
