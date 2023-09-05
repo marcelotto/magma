@@ -61,7 +61,7 @@ defmodule Magma.Artefact.Prompt do
         [
           %{
             sections: [
-              %Section{title: "Setup"} = setup_section,
+              %Section{title: "System prompt"} = system_prompt_section,
               %Section{title: "Request"} = request_section
               | more_subsections
             ]
@@ -76,7 +76,7 @@ defmodule Magma.Artefact.Prompt do
 
           {
             :ok,
-            Section.to_string(setup_section, header: false),
+            Section.to_string(system_prompt_section, header: false),
             Section.to_string(request_section, header: false)
           }
       end

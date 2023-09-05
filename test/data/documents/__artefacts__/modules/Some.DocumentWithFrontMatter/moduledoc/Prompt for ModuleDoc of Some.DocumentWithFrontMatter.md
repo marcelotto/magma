@@ -21,7 +21,7 @@ color default
 
 # Prompt for ModuleDoc of Some.DocumentWithFrontMatter
 
-## Setup
+## System prompt
 
 You are an assistent for writing Elixir moduledocs.
 
