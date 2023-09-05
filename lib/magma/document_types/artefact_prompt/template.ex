@@ -2,7 +2,13 @@ defmodule Magma.Artefact.Prompt.Template do
   use Magma.Document.Template
 
   alias Magma.{Vault, Artefact}
+  alias Magma.DocumentStruct.Section
   alias Magma.Matter.Project
+
+  import Magma.Matter.Module, only: [code: 1]
+
+  import Magma.Concept,
+    only: [description: 1, artefact_system_prompt: 2]
 
   require Artefact.Prompt
 
@@ -48,4 +54,7 @@ defmodule Magma.Artefact.Prompt.Template do
         raise error
     end
   end)
+
+  defp include(nil, _), do: nil
+  defp include(section, opts), do: Section.to_string(section, opts) |> String.trim()
 end

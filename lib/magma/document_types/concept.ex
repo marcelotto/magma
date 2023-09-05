@@ -65,4 +65,20 @@ defmodule Magma.Concept do
       end
     end
   end
+
+  defdelegate fetch(concept, key), to: DocumentStruct
+
+  def description(%__MODULE__{} = concept) do
+    get_in(concept, [concept.title, description_section_title()])
+  end
+
+  def artefact_system_prompts(%__MODULE__{} = concept) do
+    concept[system_prompt_section_title()]
+  end
+
+  def artefact_system_prompt(%__MODULE__{} = concept, path) do
+    concept
+    |> artefact_system_prompts()
+    |> get_in(List.wrap(path))
+  end
 end

@@ -1,4 +1,6 @@
 defmodule Magma.Generation do
+  import Magma.Utils.Guards
+
   @type options :: keyword
 
   @type t :: struct
@@ -54,7 +56,7 @@ defmodule Magma.Generation do
   """
   def short_name(%module{}), do: short_name(module)
 
-  def short_name(module) when is_atom(module) do
+  def short_name(module) when maybe_module(module) do
     case Module.split(module) do
       ["Magma", "Generation" | rest] -> Module.concat(rest)
       _ -> raise("invalid Magma.Generation: #{inspect(module)}")

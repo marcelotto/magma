@@ -4,6 +4,7 @@ defmodule Magma.ConceptTest do
   doctest Magma.Concept
 
   alias Magma.{Concept, Matter}
+  alias Magma.DocumentStruct.Section
 
   describe "new/1" do
     test "with project matter" do
@@ -212,5 +213,29 @@ defmodule Magma.ConceptTest do
              |> Concept.load() ==
                {:error, "expected Magma.Concept, but got Magma.Artefact.Prompt"}
     end
+  end
+
+  @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+  test "description/1", %{vault_files: vault_file} do
+    concept = vault_file |> Vault.path() |> Concept.load!()
+
+    assert %Section{
+             title: "Description",
+             level: 2,
+             content: [
+               %Panpipe.AST.Para{children: [%Panpipe.AST.Str{string: "This"} | _]} | _
+             ]
+           } = Concept.description(concept)
+  end
+
+  @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+  test "artefact_system_prompt/1", %{vault_files: vault_file} do
+    concept = vault_file |> Vault.path() |> Concept.load!()
+
+    assert %Section{
+             title: "Spec",
+             level: 3,
+             sections: [%Magma.DocumentStruct.Section{title: "Expertise"} | _]
+           } = Concept.artefact_system_prompt(concept, ["Commons", "Spec"])
   end
 end
