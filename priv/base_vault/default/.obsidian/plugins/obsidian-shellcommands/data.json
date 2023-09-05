@@ -28,7 +28,7 @@
       "id": "xmm32qlmdb",
       "platform_specific_commands": {
         "default": "mix magma.prompt.update {{title}}",
-        "darwin": "source $HOME/.asdf/asdf.sh && mix magma.prompt.update {{title}}"
+        "darwin": "source $HOME/.asdf/asdf.sh && source .envrc && mix magma.prompt.update {{title}}"
       },
       "shells": {},
       "alias": "magma.prompt.update",
@@ -63,7 +63,7 @@
       "id": "iilr0trw8n",
       "platform_specific_commands": {
         "default": "mix magma.prompt.exec {{title}}",
-        "darwin": "source $HOME/.asdf/asdf.sh && mix magma.prompt.exec {{title}}"
+        "darwin": "source $HOME/.asdf/asdf.sh && source .envrc && mix magma.prompt.exec {{title}}"
       },
       "shells": {},
       "alias": "magma.prompt.exec",
@@ -98,7 +98,7 @@
       "id": "vixt2mv7ba",
       "platform_specific_commands": {
         "default": "mix magma.artefact.select_draft {{title}}",
-        "darwin": "source $HOME/.asdf/asdf.sh && mix magma.artefact.select_draft {{title}}"
+        "darwin": "source $HOME/.asdf/asdf.sh && source .envrc && mix magma.artefact.select_draft {{title}}"
       },
       "shells": {},
       "alias": "magma.artefact.select_draft",
