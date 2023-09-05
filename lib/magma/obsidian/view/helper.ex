@@ -20,6 +20,17 @@ defmodule Magma.Obsidian.View.Helper do
     |> String.trim_trailing()
   end
 
+  def delete_current_file_button do
+    """
+    ```button
+    name Delete
+    type command
+    action Delete current file
+    color red
+    ```
+    """
+  end
+
   def yaml_list(list) do
     "[" <> (list |> List.wrap() |> Enum.join(", ")) <> "]"
   end
