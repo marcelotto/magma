@@ -19,8 +19,8 @@ defmodule Magma.Concept.Template do
       {:ok, Concept, matter_type} ->
         @external_resource file
         def render(%Concept{subject: %unquote(matter_type){} = subject} = concept, assigns) do
-          # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
           if false do
+            # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
             concept || subject || assigns
           else
             unquote(EEx.compile_file(file))
@@ -35,13 +35,10 @@ defmodule Magma.Concept.Template do
     end
   end)
 
-  def transclude_prompt(concept, artefact) do
-    prompt = concept |> artefact.new!() |> Artefact.Prompt.new!()
-
-    """
-    > [!NOTE] #{link_to(prompt)}
-    > #{transclude(prompt)}
-    """
-    |> String.trim_trailing()
+  def link_to_prompt(concept, artefact) do
+    concept
+    |> artefact.new!()
+    |> Artefact.Prompt.new!()
+    |> link_to()
   end
 end
