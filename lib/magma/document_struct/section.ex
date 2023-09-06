@@ -5,8 +5,6 @@ defmodule Magma.DocumentStruct.Section do
   alias Magma.Document
   alias Panpipe.AST.Header
 
-  import Magma.DocumentStruct.Parser.Helper
-
   require Logger
 
   def new(%Header{level: level} = header, content, sections) do
@@ -170,6 +168,16 @@ defmodule Magma.DocumentStruct.Section do
         Logger.warning("[[#{document_name}]] could not be resolved")
         nil
     end
+  end
+
+  defp header_title(%Header{children: [child]}) do
+    Panpipe.to_markdown(child)
+  end
+
+  defp header_title(%Header{children: children}) do
+    %Panpipe.AST.Para{children: children}
+    |> Panpipe.to_markdown()
+    |> String.trim()
   end
 
   defp trim_leading_ast([%Panpipe.AST.Space{} | rest]), do: trim_leading_ast(rest)
