@@ -325,6 +325,55 @@ defmodule Magma.DocumentStruct.ParserTest do
                              ]
                            }
                          ]
+                       },
+                       %Magma.DocumentStruct.Section{
+                         title: "ModuleDoc",
+                         header: %Panpipe.AST.Header{
+                           children: [%Panpipe.AST.Str{parent: nil, string: "ModuleDoc"}],
+                           parent: nil,
+                           level: 2,
+                           attr: %Panpipe.AST.Attr{
+                             identifier: "moduledoc",
+                             classes: [],
+                             key_value_pairs: %{}
+                           }
+                         },
+                         level: 2,
+                         content: [],
+                         sections: [
+                           %Magma.DocumentStruct.Section{
+                             title: "Spec",
+                             header: %Panpipe.AST.Header{
+                               children: [%Panpipe.AST.Str{parent: nil, string: "Spec"}],
+                               parent: nil,
+                               level: 3,
+                               attr: %Panpipe.AST.Attr{
+                                 identifier: "spec-1",
+                                 classes: [],
+                                 key_value_pairs: %{}
+                               }
+                             },
+                             level: 3,
+                             content: [],
+                             sections: []
+                           },
+                           %Magma.DocumentStruct.Section{
+                             title: "Draft",
+                             header: %Panpipe.AST.Header{
+                               children: [%Panpipe.AST.Str{parent: nil, string: "Draft"}],
+                               parent: nil,
+                               level: 3,
+                               attr: %Panpipe.AST.Attr{
+                                 identifier: "draft",
+                                 classes: [],
+                                 key_value_pairs: %{}
+                               }
+                             },
+                             level: 3,
+                             content: [],
+                             sections: []
+                           }
+                         ]
                        }
                      ]
                    }

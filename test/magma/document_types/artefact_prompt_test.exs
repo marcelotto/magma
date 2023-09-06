@@ -57,7 +57,8 @@ defmodule Magma.Artefact.PromptTest do
   describe "messages/1" do
     @describetag vault_files: [
                    "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-                   "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+                   "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
+                   "__concepts__/Project.md"
                  ]
 
     test "with one setup and one request section", %{vault_files: [prompt_file | _]} do
@@ -124,6 +125,34 @@ defmodule Magma.Artefact.PromptTest do
                           "Generate a moduledoc for `Some.DocumentWithFrontMatter`.\n"
                         }
              end) =~ "#{prompt.name} contains subsections which won't be taken into account"
+    end
+
+    test "transclusion are resolved", %{vault_files: [prompt_file | _]} do
+      prompt =
+        prompt_file
+        |> Vault.path()
+        |> Artefact.Prompt.load!()
+        |> Map.update!(
+          :content,
+          &(&1 <>
+              """
+
+              ### Background knowledge of the Some Project project ![[Project#Description]]
+              """)
+        )
+
+      assert Artefact.Prompt.messages(prompt) ==
+               {
+                 :ok,
+                 "You are an assistent for writing Elixir moduledocs.\n",
+                 """
+                 Generate a moduledoc for `Some.DocumentWithFrontMatter`.
+
+                 ### Background knowledge of the Some Project project
+
+                 This is the project description.
+                 """
+               }
     end
   end
 end
