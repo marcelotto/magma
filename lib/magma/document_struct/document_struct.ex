@@ -4,10 +4,15 @@ defmodule Magma.DocumentStruct do
   alias Magma.DocumentStruct.{Section, Parser}
 
   @pandoc_extension {:markdown,
-                     %{
-                       disable: [:yaml_metadata_block, :multiline_tables],
-                       enable: [:wikilinks_title_after_pipe]
-                     }}
+   %{
+     enable: [:wikilinks_title_after_pipe],
+     disable: [
+       :yaml_metadata_block,
+       :multiline_tables,
+       # for unknown reasons Pandoc sometimes generates header attributes where there should be none, when this is enabled
+       :header_attributes
+     ]
+   }}
   def pandoc_extension, do: @pandoc_extension
 
   def new(args) do
@@ -22,8 +27,10 @@ defmodule Magma.DocumentStruct do
     Enum.find_value(sections, &Section.section_by_title(&1, title))
   end
 
-  def title(%{sections: [%Section{title: title} | _]}) do
-    String.trim(title)
+  def main_section(%{sections: [%Section{} = main_section | _]}), do: main_section
+
+  def title(document) do
+    String.trim(main_section(document).title)
   end
 
   def ast(%{sections: sections}, opts \\ []) do

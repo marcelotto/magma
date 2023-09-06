@@ -6,7 +6,7 @@ defmodule Magma.DocumentStruct.SectionTest do
   alias Magma.DocumentStruct.Section
 
   describe "section_by_title/1" do
-    test "unnested" do
+    test "flat" do
       assert %Section{title: "Example title"} =
                section(:without_subsections)
                |> Section.section_by_title("Example title")
@@ -269,6 +269,7 @@ defmodule Magma.DocumentStruct.SectionTest do
   describe "resolve_transclusions/1" do
     @describetag vault_files: [
                    "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
+                   "__concepts__/modules/Some/Some.DocumentWithTransclusion.md",
                    "__concepts__/Project.md"
                  ]
 
@@ -329,17 +330,6 @@ defmodule Magma.DocumentStruct.SectionTest do
                Here we have an example note with some text.
 
                ------------------------------------------------------------------------
-
-               ### Artefact system prompts
-
-               #### Commons
-
-               ##### Spec
-
-               ###### Expertise
-
-               -   \\<%= project.expertise %\\>
-               -   Some additional expertise
                """
     end
 
@@ -461,6 +451,46 @@ defmodule Magma.DocumentStruct.SectionTest do
                ------------------------------------------------------------------------
 
                This text should appear at the end of the transcluded content.
+               """
+    end
+
+    test "recursive transclusion resolution" do
+      assert """
+             ## Example title
+
+             ![[Some.DocumentWithTransclusion]]
+
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string(header: true, resolve_transclusions: false) ==
+               """
+               ## Example title
+
+               ### `Some.DocumentWithTransclusion`
+
+               #### Description
+
+               This is an example description of the module:
+
+               `Some.DocumentWithFrontMatter` is relevant so we include its description
+
+               ##### Description
+
+               This is an example description of the module:
+
+               Module `Some.DocumentWithFrontMatter` does:
+
+               -   x
+               -   y
+
+               ------------------------------------------------------------------------
+
+               #### Background knowledge about the project
+
+               ##### Description
+
+               This is the project description.
                """
     end
   end

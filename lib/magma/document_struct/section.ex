@@ -33,8 +33,9 @@ defmodule Magma.DocumentStruct.Section do
   @doc false
   def ast(%__MODULE__{} = section, opts \\ []) do
     {with_header, opts} = Keyword.pop(opts, :header, true)
+    {resolve_transclusions, opts} = Keyword.pop(opts, :resolve_transclusions, false)
 
-    if Keyword.get(opts, :resolve_transclusions) do
+    if resolve_transclusions do
       resolve_transclusions(section)
     else
       section
@@ -85,87 +86,109 @@ defmodule Magma.DocumentStruct.Section do
   end
 
   def resolve_transclusions(%__MODULE__{} = section) do
-    resolved_content = do_resolve_transclusions(section.content, section.level)
-    resolved_sections = Enum.map(section.sections, &resolve_transclusions/1)
+    {resolved_content, resolved_sections} =
+      do_resolve_transclusions(section.content, section.level)
 
-    case resolve_transclusion_header(section) do
-      nil ->
-        %__MODULE__{
-          section
-          | content: resolved_content,
-            sections: resolved_sections
-        }
+    resolved_sections = resolved_sections ++ Enum.map(section.sections, &resolve_transclusions/1)
 
-      {new_header, resolved_ast} ->
-        %__MODULE__{
-          section
-          | header: new_header,
-            content: resolved_ast ++ resolved_content,
-            sections: resolved_sections
-        }
+    if resolved_section = resolve_transclusion_header(section) do
+      resolved_section
+      |> append(resolved_content)
+      |> Map.update!(:sections, &(&1 ++ resolved_sections))
+    else
+      %__MODULE__{
+        section
+        | content: resolved_content,
+          sections: resolved_sections
+      }
     end
   end
 
   defp do_resolve_transclusions(content, level) do
-    Enum.flat_map(content, fn
-      %Panpipe.AST.Figure{
-        children: [
-          %Panpipe.AST.Plain{
-            children: [
-              %Panpipe.AST.Image{title: "wikilink", target: target}
-            ]
-          }
-        ]
-      } = transclusion ->
-        List.wrap(transcluded_content(target, header: true, level: level + 1) || transclusion)
+    {new_content, new_sections} =
+      Enum.reduce(content, {[], []}, fn
+        %Panpipe.AST.Figure{
+          children: [
+            %Panpipe.AST.Plain{
+              children: [
+                %Panpipe.AST.Image{title: "wikilink", target: target}
+              ]
+            }
+          ]
+        } = transclusion,
+        {new_content, new_sections} = acc ->
+          if resolved_transclusion = transcluded_content(target, level + 1) do
+            {new_content, [resolved_transclusion | new_sections]}
+          else
+            acc_append(transclusion, acc)
+          end
 
-      content ->
-        List.wrap(content)
-    end)
+        content, acc ->
+          acc_append(content, acc)
+      end)
+
+    {Enum.reverse(new_content), Enum.reverse(new_sections)}
+  end
+
+  defp acc_append(content, {new_content, []}), do: {[content | new_content], []}
+
+  defp acc_append(content, {new_content, [current | rest]}),
+    do: {new_content, [append(current, content) | rest]}
+
+  defp append(%__MODULE__{sections: []} = section, ast) do
+    %__MODULE__{section | content: section.content ++ List.wrap(ast)}
+  end
+
+  defp append(%__MODULE__{} = section, ast) do
+    %__MODULE__{section | sections: List.update_at(section.sections, -1, &append(&1, ast))}
   end
 
   defp resolve_transclusion_header(%__MODULE__{header: header} = section) do
     case Enum.reverse(header.children) do
       [%Panpipe.AST.Image{title: "wikilink", target: target} | rest] ->
-        {
-          %Panpipe.AST.Header{
+        if resolved_transclusion = transcluded_content(target, section.level) do
+          new_header = %Panpipe.AST.Header{
             header
             | children: rest |> trim_leading_ast() |> Enum.reverse(),
               attr: nil
-          },
-          transcluded_content(target, level: section.level, header: false)
-        }
+          }
+
+          %__MODULE__{resolved_transclusion | header: new_header, title: header_title(new_header)}
+        end
 
       _ ->
         nil
     end
   end
 
-  defp transcluded_content(target, opts) do
+  defp transcluded_content(target, level) do
     case String.split(target, "#") do
-      [document_name] -> do_transcluded_content(document_name, nil, opts)
-      [document_name, section] -> do_transcluded_content(document_name, section, opts)
+      [document_name] -> do_transcluded_content(document_name, nil, level)
+      [document_name, section] -> do_transcluded_content(document_name, section, level)
     end
   end
 
-  defp do_transcluded_content(document_name, section_title, opts) do
+  defp do_transcluded_content(document_name, section_title, level) do
     with {:ok, document} <- Document.load(document_name) do
       cond do
         !section_title ->
-          DocumentStruct.ast(document, opts)
+          document
+          |> DocumentStruct.main_section()
+          |> resolve_transclusions()
+          |> set_level(level)
 
         section = DocumentStruct.section_by_title(document, section_title) ->
           section
-          |> ast(opts)
-          |> do_resolve_transclusions(opts)
+          |> resolve_transclusions()
+          |> set_level(level)
 
         true ->
           Logger.warning("No section #{section_title} in #{document_name} found")
           nil
       end
     else
-      _ ->
-        Logger.warning("[[#{document_name}]] could not be resolved")
+      {:error, error} ->
+        Logger.warning("failed to load [[#{document_name}]] during resolution: #{inspect(error)}")
         nil
     end
   end

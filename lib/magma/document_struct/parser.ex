@@ -3,19 +3,25 @@ defmodule Magma.DocumentStruct.Parser do
   alias Magma.DocumentStruct.Section
   alias Panpipe.AST.Header
 
-  def parse(content) do
-    content = String.trim(content)
-
-    with {:ok, %Panpipe.Document{children: children}} <-
-           Panpipe.ast(content, from: DocumentStruct.pandoc_extension()) do
-      {prologue, remaining} = extract_prologue(children)
-
-      {:ok,
-       DocumentStruct.new(
-         prologue: prologue,
-         sections: section_tree(remaining)
-       )}
+  def parse(content) when is_binary(content) do
+    with {:ok, document} <-
+           content
+           |> String.trim()
+           |> Panpipe.ast(from: DocumentStruct.pandoc_extension()) do
+      to_section(document)
     end
+  end
+
+  def to_section(%Panpipe.Document{children: children}), do: to_section(children)
+
+  def to_section(ast_elements) when is_list(ast_elements) do
+    {prologue, remaining} = extract_prologue(ast_elements)
+
+    {:ok,
+     DocumentStruct.new(
+       prologue: prologue,
+       sections: section_tree(remaining)
+     )}
   end
 
   defp extract_prologue(children) do
