@@ -5,6 +5,8 @@ defmodule Magma.DocumentStruct.SectionTest do
 
   alias Magma.DocumentStruct.Section
 
+  import ExUnit.CaptureLog
+
   describe "section_by_title/1" do
     test "flat" do
       assert %Section{title: "Example title"} =
@@ -267,6 +269,23 @@ defmodule Magma.DocumentStruct.SectionTest do
   end
 
   describe "resolve_transclusions/1" do
+    @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithTransclusion.md"
+    test "transclusion of unknown document" do
+      section =
+        """
+        ## Example title
+
+        Foo:
+
+        ![[Some.DocumentWithFrontMatter]]
+        """
+        |> section()
+
+      assert capture_log(fn ->
+               assert Section.resolve_transclusions(section) == section
+             end) =~ "failed to load [[Some.DocumentWithFrontMatter]] during resolution"
+    end
+
     @describetag vault_files: [
                    "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
                    "__concepts__/modules/Some/Some.DocumentWithTransclusion.md",
@@ -486,12 +505,82 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                ------------------------------------------------------------------------
 
+               Some final remarks.
+
                #### Background knowledge about the project
 
                ##### Description
 
                This is the project description.
+
+               Again, some final remarks.
+
+               ##### Subsection after transclusion
                """
+    end
+
+    @tag vault_files: [
+           "__concepts__/modules/Some/Some.DocumentWithDirectCycle.md",
+           "__concepts__/modules/Some/Some.DocumentWithDirectCycle2.md"
+         ]
+    test "recursive transclusion resolution with direct cycle" do
+      assert_raise RuntimeError,
+                   "recursive cycle during transclusion resolution of Some.DocumentWithDirectCycle#Description",
+                   fn ->
+                     """
+                     ## Example title
+
+                     ![[Some.DocumentWithDirectCycle]]
+
+                     """
+                     |> section()
+                     |> Section.resolve_transclusions()
+                   end
+
+      assert_raise RuntimeError,
+                   "recursive cycle during transclusion resolution of Some.DocumentWithDirectCycle2#Description",
+                   fn ->
+                     """
+                     ## Example title
+
+                     ### Cycle ![[Some.DocumentWithDirectCycle2]]
+
+                     """
+                     |> section()
+                     |> Section.resolve_transclusions()
+                   end
+    end
+
+    @tag vault_files: [
+           "__concepts__/modules/Some/Some.DocumentWithIndirectCycle1.md",
+           "__concepts__/modules/Some/Some.DocumentWithIndirectCycle2.md"
+         ]
+    test "recursive transclusion resolution with indirect cycle" do
+      assert_raise RuntimeError,
+                   "recursive cycle during transclusion resolution of Some.DocumentWithIndirectCycle1#Description",
+                   fn ->
+                     """
+                     ## Example title
+
+                     ![[Some.DocumentWithIndirectCycle1]]
+
+                     """
+                     |> section()
+                     |> Section.resolve_transclusions()
+                   end
+
+      assert_raise RuntimeError,
+                   "recursive cycle during transclusion resolution of Some.DocumentWithIndirectCycle2",
+                   fn ->
+                     """
+                     ## Example title
+
+                     ![[Some.DocumentWithIndirectCycle2]]
+
+                     """
+                     |> section()
+                     |> Section.resolve_transclusions()
+                   end
     end
   end
 end

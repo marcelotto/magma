@@ -15,4 +15,10 @@ This is an example description of the module:
 
 ![[Some.DocumentWithFrontMatter#Description]]
 
+Some final remarks.
+
 ## Background knowledge about the project ![[Project]] 
+
+Again, some final remarks.
+
+### Subsection after transclusion
