@@ -7,6 +7,96 @@ defmodule Magma.DocumentStruct.SectionTest do
 
   import ExUnit.CaptureLog
 
+  describe "empty?/1" do
+    test "with content" do
+      refute """
+             # Section
+
+             Foo
+             """
+             |> section()
+             |> Section.empty?()
+    end
+
+    test "without content" do
+      assert """
+             # Section
+
+
+             """
+             |> section()
+             |> Section.empty?()
+    end
+
+    test "with content in subsections only" do
+      refute """
+             # Section
+
+             ## Subsection
+
+             Foo
+             """
+             |> section()
+             |> Section.empty?()
+    end
+
+    test "without content and subsection without content" do
+      refute """
+             # Section
+
+             ## Subsection
+
+             """
+             |> section()
+             |> Section.empty?()
+    end
+  end
+
+  describe "empty_content?/1" do
+    test "with content" do
+      refute """
+             # Section
+
+             Foo
+             """
+             |> section()
+             |> Section.empty_content?()
+    end
+
+    test "without content" do
+      assert """
+             # Section
+
+
+             """
+             |> section()
+             |> Section.empty_content?()
+    end
+
+    test "with content in subsections only" do
+      refute """
+             # Section
+
+             ## Subsection
+
+             Foo
+             """
+             |> section()
+             |> Section.empty_content?()
+    end
+
+    test "without content and subsection without content" do
+      assert """
+             # Section
+
+             ## Subsection
+
+             """
+             |> section()
+             |> Section.empty_content?()
+    end
+  end
+
   describe "section_by_title/1" do
     test "flat" do
       assert %Section{title: "Example title"} =
@@ -314,6 +404,8 @@ defmodule Magma.DocumentStruct.SectionTest do
                #### Description
 
                This is the project description.
+
+               #### Knowledge Base
                """
 
       assert """
@@ -419,6 +511,8 @@ defmodule Magma.DocumentStruct.SectionTest do
                #### Description
 
                This is the project description.
+
+               #### Knowledge Base
                """
 
       assert """
@@ -473,6 +567,25 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
+    test "custom header transclusion with empty content" do
+      assert """
+             ## Example title
+
+             Foo:
+
+             ### This should be removed ![[Project#Knowledge Base]]
+
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string(header: true, resolve_transclusions: false) ==
+               """
+               ## Example title
+
+               Foo:
+               """
+    end
+
     test "recursive transclusion resolution" do
       assert """
              ## Example title
@@ -512,6 +625,8 @@ defmodule Magma.DocumentStruct.SectionTest do
                ##### Description
 
                This is the project description.
+
+               ##### Knowledge Base
 
                Again, some final remarks.
 

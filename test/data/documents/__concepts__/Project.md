@@ -11,3 +11,5 @@ aliases: [Some Project project, Some Project-project]
 ## Description
 
 This is the project description.
+
+## Knowledge Base

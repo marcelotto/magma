@@ -24,6 +24,13 @@ defmodule Magma.DocumentStruct.Section do
     end) || :error
   end
 
+  def empty?(%__MODULE__{content: [], sections: []}), do: true
+  def empty?(%__MODULE__{}), do: false
+
+  def empty_content?(%__MODULE__{} = section) do
+    section.content == [] && Enum.all?(section.sections, &empty_content?/1)
+  end
+
   def section_by_title(%__MODULE__{title: title} = section, title), do: section
 
   def section_by_title(%__MODULE__{} = section, title) do
@@ -97,18 +104,26 @@ defmodule Magma.DocumentStruct.Section do
     {resolved_subsections, visited} =
       Enum.reduce(section.sections, {[], visited}, fn
         subsection, {resolved_subsections, visited} ->
-          {resolved_subsection, visited} = do_resolve_transclusions(subsection, visited)
-          {[resolved_subsection | resolved_subsections], visited}
+          case do_resolve_transclusions(subsection, visited) do
+            {nil, visited} ->
+              {resolved_subsections, visited}
+
+            {resolved_subsection, visited} ->
+              {[resolved_subsection | resolved_subsections], visited}
+          end
       end)
 
     resolved_sections = new_sections ++ Enum.reverse(resolved_subsections)
 
     case resolve_transclusion_header(section, visited) do
       {resolved_section, visited} ->
-        {
+        resolved_section =
           resolved_section
           |> append(resolved_content)
-          |> Map.update!(:sections, &(&1 ++ resolved_sections)),
+          |> Map.update!(:sections, &(&1 ++ resolved_sections))
+
+        {
+          unless(empty_content?(resolved_section), do: resolved_section),
           visited
         }
 
