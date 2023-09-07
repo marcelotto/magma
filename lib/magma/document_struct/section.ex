@@ -17,6 +17,16 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
+  defp header_title(%Header{children: [child]}) do
+    Panpipe.to_markdown(child)
+  end
+
+  defp header_title(%Header{children: children}) do
+    %Panpipe.AST.Para{children: children}
+    |> Panpipe.to_markdown()
+    |> String.trim()
+  end
+
   def fetch(%_{sections: sections}, title) do
     Enum.find_value(sections, fn
       %{title: ^title} = section -> {:ok, section}
@@ -40,13 +50,8 @@ defmodule Magma.DocumentStruct.Section do
   @doc false
   def ast(%__MODULE__{} = section, opts \\ []) do
     {with_header, opts} = Keyword.pop(opts, :header, true)
-    {resolve_transclusions, opts} = Keyword.pop(opts, :resolve_transclusions, false)
 
-    if resolve_transclusions do
-      resolve_transclusions(section)
-    else
-      section
-    end
+    section
     |> set_level(Keyword.get(opts, :level))
     |> do_ast(with_header, opts)
   end
@@ -259,16 +264,30 @@ defmodule Magma.DocumentStruct.Section do
 
   def extract_document_name(name), do: name |> parse_document_name() |> elem(0)
 
-  defp header_title(%Header{children: [child]}) do
-    Panpipe.to_markdown(child)
-  end
-
-  defp header_title(%Header{children: children}) do
-    %Panpipe.AST.Para{children: children}
-    |> Panpipe.to_markdown()
-    |> String.trim()
-  end
-
   defp trim_leading_ast([%Panpipe.AST.Space{} | rest]), do: trim_leading_ast(rest)
   defp trim_leading_ast(ast), do: ast
+
+  def remove_comments(%__MODULE__{} = section) do
+    %__MODULE__{
+      section
+      | content: Enum.flat_map(section.content, &List.wrap(do_remove_comments(&1))),
+        sections: Enum.map(section.sections, &remove_comments/1)
+    }
+  end
+
+  def do_remove_comments(%Panpipe.AST.RawBlock{format: "html", string: "<!--" <> comment} = ast) do
+    unless String.ends_with?(comment, "-->") do
+      ast
+    end
+  end
+
+  def do_remove_comments(ast) do
+    Panpipe.transform(ast, fn
+      %Panpipe.AST.RawInline{format: "html", string: "<!--" <> comment} ->
+        if String.ends_with?(comment, "-->"), do: []
+
+      _ ->
+        nil
+    end)
+  end
 end

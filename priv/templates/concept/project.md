@@ -10,9 +10,11 @@ aliases: <%= yaml_list(concept.aliases) %>
 
 ## <%= Magma.Concept.description_section_title() %>
 
-What is <%= subject.name %>?
+<!-- 
+What is the <%= subject.name %> project about?
 
 Facts, problems and properties etc. - your knowledge - about the project.
+-->
 
 
 ---

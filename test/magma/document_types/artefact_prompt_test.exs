@@ -154,5 +154,35 @@ defmodule Magma.Artefact.PromptTest do
                  """
                }
     end
+
+    test "comments are not rendered", %{vault_files: [prompt_file | _]} do
+      prompt =
+        prompt_file
+        |> Vault.path()
+        |> Artefact.Prompt.load!()
+        |> Map.update!(
+          :content,
+          &(&1 <>
+              """
+
+              This is a document with <!-- inline --> comments.
+
+              <!--
+              across
+
+              multiple
+
+              lines
+              -->
+              """)
+        )
+
+      assert Artefact.Prompt.messages(prompt) ==
+               {
+                 :ok,
+                 "You are an assistent for writing Elixir moduledocs.\n",
+                 "Generate a moduledoc for `Some.DocumentWithFrontMatter`.\n\nThis is a document with comments.\n"
+               }
+    end
   end
 end

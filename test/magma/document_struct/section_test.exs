@@ -180,28 +180,6 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
-    @tag vault_files: "__concepts__/Project.md"
-    test "resolve_transclusions option" do
-      assert """
-             ## Example title
-
-             Foo:
-
-             ![[Project#Description]]
-             """
-             |> section()
-             |> Section.to_string(header: true, resolve_transclusions: true) ==
-               """
-               ## Example title
-
-               Foo:
-
-               ### Description
-
-               This is the project description.
-               """
-    end
-
     @tag skip: "Pandoc resolves Obsidian transclusions to ![[Some Document|]]"
     test "Pandoc handling of Obsidian transclusions" do
       content =
@@ -215,7 +193,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert content
              |> section()
-             |> Section.to_string(header: true, resolve_transclusions: false) == content
+             |> Section.to_string(header: true) == content
     end
   end
 
@@ -393,7 +371,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true, resolve_transclusions: false) ==
+             |> Section.to_string(header: true) ==
                """
                ## Example title
 
@@ -417,7 +395,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false, resolve_transclusions: false) ==
+             |> Section.to_string(header: false) ==
                """
                Foo:
 
@@ -455,7 +433,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true, resolve_transclusions: false) ==
+             |> Section.to_string(header: true) ==
                """
                ## Example title
 
@@ -475,7 +453,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false, resolve_transclusions: false) ==
+             |> Section.to_string(header: false) ==
                """
                Foo:
 
@@ -500,7 +478,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true, resolve_transclusions: false) ==
+             |> Section.to_string(header: true) ==
                """
                ## Example title
 
@@ -524,7 +502,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false, resolve_transclusions: false) ==
+             |> Section.to_string(header: false) ==
                """
                Foo:
 
@@ -551,7 +529,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false, resolve_transclusions: false) ==
+             |> Section.to_string(header: false) ==
                """
                Foo:
 
@@ -578,7 +556,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true, resolve_transclusions: false) ==
+             |> Section.to_string(header: true) ==
                """
                ## Example title
 
@@ -595,7 +573,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true, resolve_transclusions: false) ==
+             |> Section.to_string(header: true) ==
                """
                ## Example title
 
@@ -697,5 +675,33 @@ defmodule Magma.DocumentStruct.SectionTest do
                      |> Section.resolve_transclusions()
                    end
     end
+  end
+
+  test "remove_comments/1" do
+    assert """
+           # `Some.DocumentWithComments`
+
+           ## Description
+
+           This is a document with <!-- inline --> comments.
+
+           <!--
+           across
+
+           multiple
+
+           lines
+           -->
+           """
+           |> section()
+           |> Section.remove_comments()
+           |> Section.to_string() ==
+             """
+             # `Some.DocumentWithComments`
+
+             ## Description
+
+             This is a document with comments.
+             """
   end
 end
