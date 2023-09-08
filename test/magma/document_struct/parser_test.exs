@@ -370,7 +370,14 @@ defmodule Magma.DocumentStruct.ParserTest do
                                }
                              },
                              level: 3,
-                             content: [],
+                             content: [
+                               %Panpipe.AST.RawBlock{
+                                 children: [],
+                                 parent: nil,
+                                 format: "html",
+                                 string: "<!--\nA comment ...\n-->"
+                               }
+                             ],
                              sections: []
                            }
                          ]

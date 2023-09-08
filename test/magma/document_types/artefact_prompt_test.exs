@@ -42,15 +42,75 @@ defmodule Magma.Artefact.PromptTest do
       assert {:ok,
               %Artefact.Prompt{
                 artefact: ^artefact,
-                name: name,
                 tags: ["magma-vault"],
                 aliases: [],
-                created_at: created_at,
                 custom_metadata: %{}
-              }} = Artefact.Prompt.create(prompt)
+              } = prompt} = Artefact.Prompt.create(prompt)
 
-      assert name == "Prompt for #{artefact.name}"
-      assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+      assert prompt.name == "Prompt for #{artefact.name}"
+      assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2
+
+      assert prompt.content ==
+               """
+               **Generated results**
+
+               #{Magma.Obsidian.View.Helper.prompt_results_table()}
+               **Actions**
+
+               #{Magma.Obsidian.View.Helper.button("Execute", "magma.prompt.exec", color: "blue")}
+               #{Magma.Obsidian.View.Helper.button("Update", "magma.prompt.update")}
+
+               # #{prompt.name}
+
+               ## System prompt
+
+               You are MagmaGPT, a software developer on the "Some Project" project with a lot of experience with Elixir and writing high-quality documentation.
+
+               Your task is to write documentation for Elixir modules.
+
+               Specification of the responses you give:
+
+               - Language: English
+               - Format: Markdown
+               - Documentation that is clear, concise and comprehensible and covers the main aspects of the requested module.
+               - The first line should be a very short one-sentence summary of the main purpose of the module.
+               - Generate just the comment for the module, not for its individual functions.
+
+
+               ### Background knowledge of the Some Project project ![[Project#Description]]
+
+
+               ## Request
+
+               Generate documentation for module `Some.DocumentWithFrontMatter`.
+
+
+
+               <!--
+               A comment ...
+               -->
+
+
+               ### Description of the module
+
+               This is an example description of the module:
+
+               Module `Some.DocumentWithFrontMatter` does:
+
+               -   x
+               -   y
+
+               ------------------------------------------------------------------------
+
+
+               ### Module code
+
+               This is the code of the module to be documented. Ignore commented out code.
+
+               ```elixir
+
+               ```
+               """
     end
   end
 

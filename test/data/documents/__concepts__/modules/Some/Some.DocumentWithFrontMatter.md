@@ -43,3 +43,6 @@ Here we have an example note with some text.
 
 ### Draft
 
+<!--
+A comment ...
+-->

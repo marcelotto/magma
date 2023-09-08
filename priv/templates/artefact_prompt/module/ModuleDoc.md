@@ -30,13 +30,13 @@ Specification of the responses you give:
 - The first line should be a very short one-sentence summary of the main purpose of the module.
 - Generate just the comment for the module, not for its individual functions.
 
- 
+
 ### Background knowledge of the <%= project.subject.name %> project ![[Project#Description]]
 
 
 ## Request
 
-Generate documentation for module `<%= subject.name %>`.
+Generate documentation for module `<%= concept.name %>`.
 
 <%= concept |> artefact_system_prompt(["ModuleDoc", "Spec"]) |> include(header: false, level: 2) %>
 
@@ -48,7 +48,9 @@ Generate documentation for module `<%= subject.name %>`.
 <%= concept |> description() |> include(header: false, level: 3) %>
 
 
-### Module code 
+### Module code
+
+This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 <%= code(subject) %>
