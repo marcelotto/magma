@@ -38,4 +38,16 @@ defmodule Magma.Obsidian.View.Helper do
   def yaml_nested_map(map) do
     map |> Map.from_struct() |> Jason.encode!()
   end
+
+  def prompt_results_table do
+    """
+    ```dataview
+    TABLE
+    	tags AS Tags,
+    	magma_generation_type AS Generator,
+    	magma_generation_params AS Params
+    WHERE magma_prompt = [[]]
+    ```
+    """
+  end
 end
