@@ -1,6 +1,8 @@
 defmodule Magma.Artefacts.ModuleDoc do
   use Magma.Artefact, matter: Magma.Matter.Module
 
+  alias Magma.{Concept, Matter}
+
   @type t :: %__MODULE__{}
 
   @impl true
@@ -8,8 +10,8 @@ defmodule Magma.Artefacts.ModuleDoc do
 
   def prompt_name(concept), do: "Prompt for #{build_name(concept)}"
 
-  def base_path(%__MODULE__{concept: concept}) do
-    Path.join(["modules", concept.name, "moduledoc"])
+  def base_path(%__MODULE__{concept: %Concept{subject: %Matter.Module{name: module}}}) do
+    Path.join(["modules" | Module.split(module)])
   end
 
   @impl true

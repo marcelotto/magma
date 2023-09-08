@@ -337,7 +337,7 @@ defmodule Magma.DocumentStruct.SectionTest do
   end
 
   describe "resolve_transclusions/1" do
-    @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithTransclusion.md"
+    @tag vault_files: "concepts/modules/Some/Some.DocumentWithTransclusion.md"
     test "transclusion of unknown document" do
       section =
         """
@@ -355,9 +355,9 @@ defmodule Magma.DocumentStruct.SectionTest do
     end
 
     @describetag vault_files: [
-                   "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
-                   "__concepts__/modules/Some/Some.DocumentWithTransclusion.md",
-                   "__concepts__/Project.md"
+                   "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+                   "concepts/modules/Some/Some.DocumentWithTransclusion.md",
+                   "concepts/Project.md"
                  ]
 
     test "document transclusion" do
@@ -613,8 +613,8 @@ defmodule Magma.DocumentStruct.SectionTest do
     end
 
     @tag vault_files: [
-           "__concepts__/modules/Some/Some.DocumentWithDirectCycle.md",
-           "__concepts__/modules/Some/Some.DocumentWithDirectCycle2.md"
+           "concepts/modules/Some/Some.DocumentWithDirectCycle.md",
+           "concepts/modules/Some/Some.DocumentWithDirectCycle2.md"
          ]
     test "recursive transclusion resolution with direct cycle" do
       assert_raise RuntimeError,
@@ -645,8 +645,8 @@ defmodule Magma.DocumentStruct.SectionTest do
     end
 
     @tag vault_files: [
-           "__concepts__/modules/Some/Some.DocumentWithIndirectCycle1.md",
-           "__concepts__/modules/Some/Some.DocumentWithIndirectCycle2.md"
+           "concepts/modules/Some/Some.DocumentWithIndirectCycle1.md",
+           "concepts/modules/Some/Some.DocumentWithIndirectCycle2.md"
          ]
     test "recursive transclusion resolution with indirect cycle" do
       assert_raise RuntimeError,

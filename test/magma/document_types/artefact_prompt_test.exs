@@ -25,14 +25,15 @@ defmodule Magma.Artefact.PromptTest do
 
       assert name == "Prompt for ModuleDoc of Nested.Example"
 
-      assert path == Vault.path("__artefacts__/modules/Nested.Example/moduledoc/#{name}.md")
+      assert path ==
+               Vault.path("artefacts/generated/modules/Nested/Example/#{name}.md")
     end
   end
 
   describe "create/1" do
     @tag vault_files: [
-           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
-           "__concepts__/Project.md"
+           "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+           "concepts/Project.md"
          ]
     test "moduledoc" do
       module_concept = Some.DocumentWithFrontMatter |> module_concept() |> Concept.load!()
@@ -116,9 +117,9 @@ defmodule Magma.Artefact.PromptTest do
 
   describe "messages/1" do
     @describetag vault_files: [
-                   "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-                   "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
-                   "__concepts__/Project.md"
+                   "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
+                   "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+                   "concepts/Project.md"
                  ]
 
     test "with one setup and one request section", %{vault_files: [prompt_file | _]} do

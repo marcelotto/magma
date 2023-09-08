@@ -31,7 +31,7 @@ defmodule Magma.DocumentStruct.ParserTest do
 
   test "with nested sections" do
     {:ok, _metadata, body} =
-      "documents/__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+      "documents/concepts/modules/Some/Some.DocumentWithFrontMatter.md"
       |> TestData.path()
       |> YamlFrontMatter.parse_file()
 

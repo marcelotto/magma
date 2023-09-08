@@ -18,7 +18,7 @@ defmodule Magma.Artefact.Version do
           prompt: %Artefact.Prompt{artefact: %artefact_type{} = artefact}
         }
       }) do
-    {:ok, artefact |> artefact_type.version_path() |> Vault.artefact_path()}
+    {:ok, artefact |> artefact_type.version_path() |> Vault.artefact_version_path()}
   end
 
   @impl true

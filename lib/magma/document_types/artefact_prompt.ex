@@ -14,7 +14,7 @@ defmodule Magma.Artefact.Prompt do
 
   @impl true
   def build_path(%__MODULE__{artefact: %artefact_type{} = artefact}) do
-    {:ok, artefact |> artefact_type.prompt_path() |> Vault.artefact_path()}
+    {:ok, artefact |> artefact_type.prompt_path() |> Vault.artefact_generation_path()}
   end
 
   @impl true

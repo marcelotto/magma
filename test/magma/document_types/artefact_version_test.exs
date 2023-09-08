@@ -12,26 +12,25 @@ defmodule Magma.Artefact.VersionTest do
       assert {:ok,
               %Artefact.Version{
                 prompt_result: ^prompt_result,
-                path: path,
-                name: name,
                 tags: nil,
                 aliases: nil,
                 created_at: nil,
                 custom_metadata: nil,
                 content: nil
-              }} = Artefact.Version.new(prompt_result)
+              } = version} = Artefact.Version.new(prompt_result)
 
-      assert name == "ModuleDoc of Nested.Example"
+      assert version.name == "ModuleDoc of Nested.Example"
 
-      assert path == Vault.path("__artefacts__/modules/Nested.Example/moduledoc/#{name}.md")
+      assert version.path ==
+               Vault.path("artefacts/final/modules/Nested/Example/#{version.name}.md")
     end
   end
 
   describe "create/1" do
     @tag vault_files: [
-           "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/prompt_results/Generated ModuleDoc of Some.DocumentWithFrontMatter (2023-08-23T12:53:00).md",
-           "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+           "artefacts/generated/modules/Some/DocumentWithFrontMatter/__prompt_results__/Generated ModuleDoc of Some.DocumentWithFrontMatter (2023-08-23T12:53:00).md",
+           "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
+           "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
          ]
     test "moduledoc", %{vault_files: [prompt_result_file | _]} do
       prompt_result =

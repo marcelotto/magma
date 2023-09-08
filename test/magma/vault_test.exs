@@ -6,9 +6,9 @@ defmodule Magma.VaultTest do
   alias Magma.{Vault, Document}
 
   @tag vault_files: [
-         "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md",
-         "__concepts__/Project.md",
-         "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md"
+         "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+         "concepts/Project.md",
+         "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md"
        ]
   test "document_type/1", %{vault_files: [module_concept, project_concept, moduledoc_prompt]} do
     assert module_concept |> Document.name_from_path() |> Vault.document_type() ==

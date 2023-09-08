@@ -3,14 +3,21 @@ defmodule Magma.Vault do
   alias Magma.Vault.Index
 
   @default_path "docs.magma"
-  @concept_path_prefix "__concepts__"
-  @artefact_path_prefix "__artefacts__"
+  @concept_path_prefix "concepts"
+  @artefact_path_prefix "artefacts"
+  @artefact_generation_path_prefix Path.join(@artefact_path_prefix, "generated")
+  @artefact_version_path_prefix Path.join(@artefact_path_prefix, "final")
 
   def path, do: Application.get_env(:magma, :dir, @default_path) |> Path.expand()
   def path(segments), do: Path.join([path() | List.wrap(segments)])
 
   def concept_path(segments \\ nil), do: path([@concept_path_prefix | List.wrap(segments)])
-  def artefact_path(segments \\ nil), do: path([@artefact_path_prefix | List.wrap(segments)])
+
+  def artefact_generation_path(segments \\ nil),
+    do: path([@artefact_generation_path_prefix | List.wrap(segments)])
+
+  def artefact_version_path(segments \\ nil),
+    do: path([@artefact_version_path_prefix | List.wrap(segments)])
 
   defdelegate create(project_name, base_vault \\ nil, opts \\ []),
     to: Magma.Vault.Initializer,

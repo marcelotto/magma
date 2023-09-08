@@ -20,7 +20,7 @@ defmodule Magma.ConceptTest do
                 sections: nil
               }} = Concept.new(subject: Matter.Project.new("Magma"))
 
-      assert path == Vault.path("__concepts__/Project.md")
+      assert path == Vault.path("concepts/Project.md")
     end
 
     test "with module matter" do
@@ -36,7 +36,7 @@ defmodule Magma.ConceptTest do
                 sections: nil
               }} = Concept.new(subject: Matter.Module.new(TopLevelExample))
 
-      assert path == Vault.path("__concepts__/modules/TopLevelExample.md")
+      assert path == Vault.path("concepts/modules/TopLevelExample.md")
     end
   end
 
@@ -57,7 +57,7 @@ defmodule Magma.ConceptTest do
 
   describe "create/2" do
     test "with module matter" do
-      expected_path = Vault.path("__concepts__/modules/Nested/Nested.Example.md")
+      expected_path = Vault.path("concepts/modules/Nested/Nested.Example.md")
 
       refute File.exists?(expected_path)
 
@@ -86,7 +86,7 @@ defmodule Magma.ConceptTest do
     end
 
     test "with project matter" do
-      expected_path = Vault.path("__concepts__/Project.md")
+      expected_path = Vault.path("concepts/Project.md")
 
       refute File.exists?(expected_path)
 
@@ -117,7 +117,7 @@ defmodule Magma.ConceptTest do
 
     test "when a file at the document path already exists" do
       document_path =
-        TestVault.add("__concepts__/modules/Some/Some.DocumentWithFrontMatter.md")
+        TestVault.add("concepts/modules/Some/Some.DocumentWithFrontMatter.md")
 
       {:ok, existing_document} = Concept.load(document_path)
 
@@ -130,7 +130,7 @@ defmodule Magma.ConceptTest do
   end
 
   describe "load/2" do
-    @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+    @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
     test "with module matter", %{vault_files: vault_file} do
       document_path = Vault.path(vault_file)
 
@@ -161,7 +161,7 @@ defmodule Magma.ConceptTest do
              |> Concept.load() == {:ok, concept}
     end
 
-    @tag vault_files: "__concepts__/Project.md"
+    @tag vault_files: "concepts/Project.md"
     test "project matter", %{vault_files: vault_file} do
       document_path = Vault.path(vault_file)
 
@@ -191,7 +191,7 @@ defmodule Magma.ConceptTest do
       assert Concept.load(document_path) == {:ok, concept}
     end
 
-    @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+    @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
     test "with document name", %{vault_files: vault_file} do
       document_path = Vault.path(vault_file)
 
@@ -204,8 +204,8 @@ defmodule Magma.ConceptTest do
     end
 
     @tag vault_files: [
-           "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+           "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
+           "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
          ]
     test "when the file is not a concept document", %{vault_files: [prompt | _]} do
       assert prompt
@@ -215,7 +215,7 @@ defmodule Magma.ConceptTest do
     end
   end
 
-  @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+  @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
   test "description/1", %{vault_files: vault_file} do
     concept = vault_file |> Vault.path() |> Concept.load!()
 
@@ -228,7 +228,7 @@ defmodule Magma.ConceptTest do
            } = Concept.description(concept)
   end
 
-  @tag vault_files: "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+  @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
   test "artefact_system_prompt/1", %{vault_files: vault_file} do
     concept = vault_file |> Vault.path() |> Concept.load!()
 

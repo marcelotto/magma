@@ -29,15 +29,15 @@ defmodule Magma.Artefact.PromptResultTest do
 
       assert path ==
                Vault.path(
-                 "__artefacts__/modules/Nested.Example/moduledoc/prompt_results/#{name}.md"
+                 "artefacts/generated/modules/Nested/Example/__prompt_results__/#{name}.md"
                )
     end
   end
 
   describe "create/1" do
     @tag vault_files: [
-           "__artefacts__/modules/Some.DocumentWithFrontMatter/moduledoc/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "__concepts__/modules/Some/Some.DocumentWithFrontMatter.md"
+           "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
+           "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
          ]
     test "moduledoc", %{vault_files: [prompt_file | _]} do
       prompt =
