@@ -17,11 +17,9 @@ Facts, problems and properties etc. - your knowledge - about the project.
 -->
 
 
----
 ## Notes
 
 
----
 # <%= Magma.Concept.system_prompt_section_title() %>
 
 ## Commons
@@ -33,6 +31,5 @@ Facts, problems and properties etc. - your knowledge - about the project.
 ## Cheatsheet
 
 
----
 # Reference
 

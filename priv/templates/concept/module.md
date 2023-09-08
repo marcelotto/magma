@@ -15,11 +15,9 @@ What is a `<%= concept.name %>`?
 Facts, problems and properties etc. - your knowledge - about the module.
 -->
 
----
 ## Notes
 
 
----
 # <%= Magma.Concept.system_prompt_section_title() %>
 
 ## Commons
@@ -39,6 +37,5 @@ Facts, problems and properties etc. - your knowledge - about the module.
 
 
 
----
 # Reference
 
