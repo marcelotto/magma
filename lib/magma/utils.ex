@@ -7,7 +7,7 @@ defmodule Magma.Utils do
       iex> Magma.Utils.atomize_keys(%{"a" => 1, "b" => %{"c" => 3, "d" => 4}})
       %{a: 1, b: %{c: 3, d: 4}}
   """
-  @spec atomize_keys(map :: Map.t()) :: Map.t()
+  @spec atomize_keys(map) :: map
   def atomize_keys(map) do
     Map.new(map, fn {key, value} ->
       {
