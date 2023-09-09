@@ -36,8 +36,8 @@ defmodule Magma.Artefact.PromptResultTest do
 
   describe "create/1" do
     @tag vault_files: [
-           "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
          ]
     test "moduledoc", %{vault_files: [prompt_file | _]} do
       prompt =
@@ -51,7 +51,7 @@ defmodule Magma.Artefact.PromptResultTest do
               %Artefact.PromptResult{
                 prompt: ^prompt,
                 generation: %Generation.Mock{},
-                name: "Generated ModuleDoc of Some.DocumentWithFrontMatter (" <> _,
+                name: "Generated ModuleDoc of Nested.Example (" <> _,
                 content: content,
                 tags: ["magma-vault"],
                 aliases: [],
@@ -69,7 +69,7 @@ defmodule Magma.Artefact.PromptResultTest do
                color red
                ```
 
-               # Generated ModuleDoc of Some.DocumentWithFrontMatter
+               # Generated ModuleDoc of Nested.Example
 
                foo
 
@@ -80,7 +80,7 @@ defmodule Magma.Artefact.PromptResultTest do
       generation =
         Generation.Mock.new!(
           expected_system_prompt: "You are an assistent for writing Elixir moduledocs.\n",
-          expected_prompt: "Generate a moduledoc for `Some.DocumentWithFrontMatter`.\n",
+          expected_prompt: "Generate a moduledoc for `Nested.Example`.\n",
           result: "bar"
         )
 
@@ -90,7 +90,7 @@ defmodule Magma.Artefact.PromptResultTest do
               %Artefact.PromptResult{
                 prompt: ^prompt,
                 generation: ^generation,
-                name: "Generated ModuleDoc of Some.DocumentWithFrontMatter (" <> _,
+                name: "Generated ModuleDoc of Nested.Example (" <> _,
                 tags: ["magma-vault"],
                 aliases: [],
                 custom_metadata: %{}

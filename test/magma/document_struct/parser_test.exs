@@ -31,7 +31,7 @@ defmodule Magma.DocumentStruct.ParserTest do
 
   test "with nested sections" do
     {:ok, _metadata, body} =
-      "documents/concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+      "documents/concepts/modules/Nested/Nested.Example.md"
       |> TestData.path()
       |> YamlFrontMatter.parse_file()
 
@@ -46,7 +46,7 @@ defmodule Magma.DocumentStruct.ParserTest do
                      header: %Panpipe.AST.Header{
                        attr: %Panpipe.AST.Attr{
                          classes: [],
-                         identifier: "some.documentwithfrontmatter",
+                         identifier: "nested.example",
                          key_value_pairs: %{}
                        },
                        children: [
@@ -57,7 +57,7 @@ defmodule Magma.DocumentStruct.ParserTest do
                              key_value_pairs: %{}
                            },
                            parent: nil,
-                           string: "Some.DocumentWithFrontMatter"
+                           string: "Nested.Example"
                          }
                        ],
                        level: 1,
@@ -98,7 +98,7 @@ defmodule Magma.DocumentStruct.ParserTest do
                                    key_value_pairs: %{}
                                  },
                                  parent: nil,
-                                 string: "Some.DocumentWithFrontMatter"
+                                 string: "Nested.Example"
                                },
                                %Panpipe.AST.Space{parent: nil},
                                %Panpipe.AST.Str{parent: nil, string: "does:"}
@@ -206,7 +206,7 @@ defmodule Magma.DocumentStruct.ParserTest do
                          title: "Notes"
                        }
                      ],
-                     title: "`Some.DocumentWithFrontMatter`"
+                     title: "`Nested.Example`"
                    },
                    %Section{
                      title: Magma.Concept.system_prompt_section_title(),

@@ -6,7 +6,7 @@ defmodule Magma.DocumentTest do
   alias Magma.{Document, Concept, Artefact}
 
   describe "recreate/1" do
-    @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+    @tag vault_files: "concepts/modules/Nested/Nested.Example.md"
     test "with concept", %{vault_files: concept_file} do
       original_concept =
         concept_file
@@ -32,8 +32,8 @@ defmodule Magma.DocumentTest do
     end
 
     @tag vault_files: [
-           "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md",
            "concepts/Project.md"
          ]
     test "with prompt", %{vault_files: [prompt_file | _]} do

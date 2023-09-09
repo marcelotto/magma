@@ -5,13 +5,13 @@ created_at: 2023-07-11T14:25:00Z
 tags: [foo, bar]
 aliases: []
 ---
-# `Some.DocumentWithFrontMatter`
+# `Nested.Example`
 
 ## Description
 
 This is an example description of the module:
 
-Module `Some.DocumentWithFrontMatter` does:
+Module `Nested.Example` does:
 
 - x
 - y

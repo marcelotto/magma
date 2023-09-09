@@ -28,9 +28,9 @@ defmodule Magma.Artefact.VersionTest do
 
   describe "create/1" do
     @tag vault_files: [
-           "artefacts/generated/modules/Some/DocumentWithFrontMatter/__prompt_results__/Generated ModuleDoc of Some.DocumentWithFrontMatter (2023-08-23T12:53:00).md",
-           "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+           "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00).md",
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
          ]
     test "moduledoc", %{vault_files: [prompt_result_file | _]} do
       prompt_result =
@@ -48,13 +48,13 @@ defmodule Magma.Artefact.VersionTest do
                 custom_metadata: %{}
               } = version} = Artefact.Version.create(version)
 
-      assert version.name == "ModuleDoc of Some.DocumentWithFrontMatter"
+      assert version.name == "ModuleDoc of Nested.Example"
 
       assert version.content ==
                """
                # #{version.name}
 
-               The final documentation of `Some.DocumentWithFrontMatter`.
+               The final documentation of `Nested.Example`.
                """
 
       assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2

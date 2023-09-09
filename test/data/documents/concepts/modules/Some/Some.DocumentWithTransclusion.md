@@ -11,9 +11,9 @@ aliases: []
 
 This is an example description of the module: 
 
-`Some.DocumentWithFrontMatter` is relevant so we include its description
+`Nested.Example` is relevant so we include its description
 
-![[Some.DocumentWithFrontMatter#Description]]
+![[Nested.Example#Description]]
 
 Some final remarks.
 

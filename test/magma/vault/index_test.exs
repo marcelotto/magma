@@ -4,9 +4,9 @@ defmodule Magma.Vault.IndexTest do
   alias Magma.Vault.Index
 
   describe "get_document_path/1" do
-    @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+    @tag vault_files: "concepts/modules/Nested/Nested.Example.md"
     test "with name of existing document", %{vault_files: document_path} do
-      assert Index.get_document_path("Some.DocumentWithFrontMatter") ==
+      assert Index.get_document_path("Nested.Example") ==
                TestVault.path(document_path)
     end
 

@@ -345,17 +345,17 @@ defmodule Magma.DocumentStruct.SectionTest do
 
         Foo:
 
-        ![[Some.DocumentWithFrontMatter]]
+        ![[Nested.Example]]
         """
         |> section()
 
       assert capture_log(fn ->
                assert Section.resolve_transclusions(section) == section
-             end) =~ "failed to load [[Some.DocumentWithFrontMatter]] during resolution"
+             end) =~ "failed to load [[Nested.Example]] during resolution"
     end
 
     @describetag vault_files: [
-                   "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+                   "concepts/modules/Nested/Nested.Example.md",
                    "concepts/modules/Some/Some.DocumentWithTransclusion.md",
                    "concepts/Project.md"
                  ]
@@ -391,7 +391,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             ![[Some.DocumentWithFrontMatter]]
+             ![[Nested.Example]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -399,13 +399,13 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
                Foo:
 
-               ### `Some.DocumentWithFrontMatter`
+               ### `Nested.Example`
 
                #### Description
 
                This is an example description of the module:
 
-               Module `Some.DocumentWithFrontMatter` does:
+               Module `Nested.Example` does:
 
                -   x
                -   y
@@ -449,7 +449,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             ![[Some.DocumentWithFrontMatter#Notes]]
+             ![[Nested.Example#Notes]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -498,7 +498,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             ### Example section ![[Some.DocumentWithFrontMatter#Description]]
+             ### Example section ![[Nested.Example#Description]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -510,7 +510,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                This is an example description of the module:
 
-               Module `Some.DocumentWithFrontMatter` does:
+               Module `Nested.Example` does:
 
                -   x
                -   y
@@ -523,7 +523,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             #### Example notes ![[Some.DocumentWithFrontMatter#Notes]]
+             #### Example notes ![[Nested.Example#Notes]]
 
              This text should appear at the end of the transcluded content.
              """
@@ -583,13 +583,13 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                This is an example description of the module:
 
-               `Some.DocumentWithFrontMatter` is relevant so we include its description
+               `Nested.Example` is relevant so we include its description
 
                ##### Description
 
                This is an example description of the module:
 
-               Module `Some.DocumentWithFrontMatter` does:
+               Module `Nested.Example` does:
 
                -   x
                -   y

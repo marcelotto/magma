@@ -117,7 +117,7 @@ defmodule Magma.ConceptTest do
 
     test "when a file at the document path already exists" do
       document_path =
-        TestVault.add("concepts/modules/Some/Some.DocumentWithFrontMatter.md")
+        TestVault.add("concepts/modules/Nested/Nested.Example.md")
 
       {:ok, existing_document} = Concept.load(document_path)
 
@@ -130,22 +130,22 @@ defmodule Magma.ConceptTest do
   end
 
   describe "load/2" do
-    @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+    @tag vault_files: "concepts/modules/Nested/Nested.Example.md"
     test "with module matter", %{vault_files: vault_file} do
       document_path = Vault.path(vault_file)
 
       assert {
                :ok,
                %Magma.Concept{
-                 subject: %Matter.Module{name: Some.DocumentWithFrontMatter},
+                 subject: %Matter.Module{name: Nested.Example},
                  path: ^document_path,
-                 name: "Some.DocumentWithFrontMatter",
+                 name: "Nested.Example",
                  content: content,
                  custom_metadata: %{},
                  aliases: [],
                  tags: ["foo", "bar"],
                  created_at: ~U[2023-07-11 14:25:00Z],
-                 title: "`Some.DocumentWithFrontMatter`",
+                 title: "`Nested.Example`",
                  prologue: []
                } = concept
              } = Concept.load(document_path)
@@ -157,7 +157,7 @@ defmodule Magma.ConceptTest do
              |> String.trim()
              |> String.ends_with?(String.trim(content))
 
-      assert Concept.new!(subject: Matter.Module.new(Some.DocumentWithFrontMatter))
+      assert Concept.new!(subject: Matter.Module.new(Nested.Example))
              |> Concept.load() == {:ok, concept}
     end
 
@@ -191,11 +191,11 @@ defmodule Magma.ConceptTest do
       assert Concept.load(document_path) == {:ok, concept}
     end
 
-    @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+    @tag vault_files: "concepts/modules/Nested/Nested.Example.md"
     test "with document name", %{vault_files: vault_file} do
       document_path = Vault.path(vault_file)
 
-      assert Concept.load!("Some.DocumentWithFrontMatter") == Concept.load!(document_path)
+      assert Concept.load!("Nested.Example") == Concept.load!(document_path)
     end
 
     test "when file not exists" do
@@ -204,8 +204,8 @@ defmodule Magma.ConceptTest do
     end
 
     @tag vault_files: [
-           "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-           "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
          ]
     test "when the file is not a concept document", %{vault_files: [prompt | _]} do
       assert prompt
@@ -215,7 +215,7 @@ defmodule Magma.ConceptTest do
     end
   end
 
-  @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+  @tag vault_files: "concepts/modules/Nested/Nested.Example.md"
   test "description/1", %{vault_files: vault_file} do
     concept = vault_file |> Vault.path() |> Concept.load!()
 
@@ -228,7 +228,7 @@ defmodule Magma.ConceptTest do
            } = Concept.description(concept)
   end
 
-  @tag vault_files: "concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+  @tag vault_files: "concepts/modules/Nested/Nested.Example.md"
   test "artefact_system_prompt/1", %{vault_files: vault_file} do
     concept = vault_file |> Vault.path() |> Concept.load!()
 

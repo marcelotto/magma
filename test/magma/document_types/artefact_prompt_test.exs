@@ -32,11 +32,11 @@ defmodule Magma.Artefact.PromptTest do
 
   describe "create/1" do
     @tag vault_files: [
-           "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+           "concepts/modules/Nested/Nested.Example.md",
            "concepts/Project.md"
          ]
     test "moduledoc" do
-      module_concept = Some.DocumentWithFrontMatter |> module_concept() |> Concept.load!()
+      module_concept = Nested.Example |> module_concept() |> Concept.load!()
       artefact = Artefacts.ModuleDoc.new!(module_concept)
       prompt = Artefact.Prompt.new!(artefact)
 
@@ -83,7 +83,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## Request
 
-               Generate documentation for module `Some.DocumentWithFrontMatter`.
+               Generate documentation for module `Nested.Example`.
 
 
 
@@ -96,7 +96,7 @@ defmodule Magma.Artefact.PromptTest do
 
                This is an example description of the module:
 
-               Module `Some.DocumentWithFrontMatter` does:
+               Module `Nested.Example` does:
 
                -   x
                -   y
@@ -109,6 +109,9 @@ defmodule Magma.Artefact.PromptTest do
                This is the code of the module to be documented. Ignore commented out code.
 
                ```elixir
+               defmodule Nested.Example do
+                 def foo, do: :bar
+               end
 
                ```
                """
@@ -117,8 +120,8 @@ defmodule Magma.Artefact.PromptTest do
 
   describe "messages/1" do
     @describetag vault_files: [
-                   "artefacts/generated/modules/Some/DocumentWithFrontMatter/Prompt for ModuleDoc of Some.DocumentWithFrontMatter.md",
-                   "concepts/modules/Some/Some.DocumentWithFrontMatter.md",
+                   "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+                   "concepts/modules/Nested/Nested.Example.md",
                    "concepts/Project.md"
                  ]
 
@@ -132,7 +135,7 @@ defmodule Magma.Artefact.PromptTest do
                {
                  :ok,
                  "You are an assistent for writing Elixir moduledocs.\n",
-                 "Generate a moduledoc for `Some.DocumentWithFrontMatter`.\n"
+                 "Generate a moduledoc for `Nested.Example`.\n"
                }
     end
 
@@ -157,7 +160,7 @@ defmodule Magma.Artefact.PromptTest do
                         {
                           :ok,
                           "You are an assistent for writing Elixir moduledocs.\n",
-                          "Generate a moduledoc for `Some.DocumentWithFrontMatter`.\n"
+                          "Generate a moduledoc for `Nested.Example`.\n"
                         }
              end) =~ "#{prompt.name} contains subsections which won't be taken into account"
     end
@@ -183,7 +186,7 @@ defmodule Magma.Artefact.PromptTest do
                         {
                           :ok,
                           "You are an assistent for writing Elixir moduledocs.\n",
-                          "Generate a moduledoc for `Some.DocumentWithFrontMatter`.\n"
+                          "Generate a moduledoc for `Nested.Example`.\n"
                         }
              end) =~ "#{prompt.name} contains subsections which won't be taken into account"
     end
@@ -207,7 +210,7 @@ defmodule Magma.Artefact.PromptTest do
                  :ok,
                  "You are an assistent for writing Elixir moduledocs.\n",
                  """
-                 Generate a moduledoc for `Some.DocumentWithFrontMatter`.
+                 Generate a moduledoc for `Nested.Example`.
 
                  ### Background knowledge of the Some Project project
 
@@ -242,7 +245,7 @@ defmodule Magma.Artefact.PromptTest do
                {
                  :ok,
                  "You are an assistent for writing Elixir moduledocs.\n",
-                 "Generate a moduledoc for `Some.DocumentWithFrontMatter`.\n\nThis is a document with comments.\n"
+                 "Generate a moduledoc for `Nested.Example`.\n\nThis is a document with comments.\n"
                }
     end
   end

@@ -8,7 +8,7 @@ defmodule Magma.DocumentStructTest do
 
   test "key-based access" do
     {:ok, _metadata, body} =
-      "documents/concepts/modules/Some/Some.DocumentWithFrontMatter.md"
+      "documents/concepts/modules/Nested/Nested.Example.md"
       |> TestData.path()
       |> YamlFrontMatter.parse_file()
 
