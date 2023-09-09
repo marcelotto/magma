@@ -15,10 +15,14 @@ defmodule Magma.Artefact.Version do
   @impl true
   def build_path(%__MODULE__{
         prompt_result: %Artefact.PromptResult{
-          prompt: %Artefact.Prompt{artefact: %artefact_type{} = artefact}
+          prompt: %Artefact.Prompt{artefact: artefact}
         }
       }) do
-    {:ok, artefact |> artefact_type.version_path() |> Vault.artefact_version_path()}
+    build_path(artefact)
+  end
+
+  def build_path(%artefact_type{} = artefact) do
+    {:ok, artefact |> artefact_type.build_version_path() |> Vault.artefact_version_path()}
   end
 
   @impl true

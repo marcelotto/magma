@@ -8,22 +8,10 @@ defmodule Magma.Matter.ModuleTest do
   describe "code/1" do
     test "returns the code of the given module" do
       assert Matter.Module.code(TopLevelExample) ==
-               """
-               defmodule TopLevelExample do
-                 #  use Magma, "Short description"
-
-                 def foo, do: :bar
-               end
-               """
+               File.read!("test/modules/top_level_example.ex")
 
       assert Matter.Module.code(Nested.Example) ==
-               """
-               defmodule Nested.Example do
-                 #  use Magma, "Short description"
-
-                 def foo, do: :bar
-               end
-               """
+               File.read!("test/modules/nested/example.ex")
     end
 
     test "not a module" do

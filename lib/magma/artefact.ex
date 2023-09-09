@@ -10,9 +10,9 @@ defmodule Magma.Artefact do
 
   @callback build_name(Concept.t()) :: binary
 
-  @callback prompt_path(t()) :: Path.t()
+  @callback build_prompt_path(t()) :: Path.t()
 
-  @callback version_path(t()) :: Path.t()
+  @callback build_version_path(t()) :: Path.t()
 
   @callback init(t()) :: {:ok, t()} | {:error, any}
 
@@ -65,7 +65,7 @@ defmodule Magma.Artefact do
   def type(string) when is_binary(string) do
     module = Module.concat(Magma.Artefacts, string)
 
-    if Code.ensure_loaded?(module) and function_exported?(module, :prompt_path, 1) do
+    if Code.ensure_loaded?(module) and function_exported?(module, :build_prompt_path, 1) do
       module
     end
   end

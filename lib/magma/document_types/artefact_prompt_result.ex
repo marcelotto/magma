@@ -18,7 +18,7 @@ defmodule Magma.Artefact.PromptResult do
       ) do
     {:ok,
      [
-       artefact |> artefact_type.prompt_path() |> Path.dirname(),
+       artefact |> artefact_type.build_prompt_path() |> Path.dirname(),
        "__prompt_results__",
        "#{build_name(artefact)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()}).md"
      ]

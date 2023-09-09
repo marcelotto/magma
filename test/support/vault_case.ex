@@ -11,6 +11,8 @@ defmodule Magma.Vault.Case do
     quote do
       use Magma.TestCase
 
+      import unquote(__MODULE__)
+
       setup context do
         TestVault.clear()
         Magma.Vault.Case.setup_files(context[:vault_files])
@@ -27,5 +29,9 @@ defmodule Magma.Vault.Case do
 
   def setup_files(file) do
     TestVault.add_indexed(file)
+  end
+
+  def abs_path(abs_path) do
+    Path.expand(abs_path, File.cwd!())
   end
 end
