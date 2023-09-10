@@ -337,15 +337,24 @@ defmodule Magma.DocumentStruct.SectionTest do
   end
 
   describe "resolve_transclusions/1" do
-    @tag vault_files: "concepts/modules/Some/Some.DocumentWithTransclusion.md"
     test "transclusion of unknown document" do
       section =
         """
         ## Example title
 
-        Foo:
-
         ![[Nested.Example]]
+        """
+        |> section()
+
+      assert capture_log(fn ->
+               assert Section.resolve_transclusions(section) == section
+             end) =~ "failed to load [[Nested.Example]] during resolution"
+
+      section =
+        """
+        ## Example title
+
+        ### Alt. title ![[Nested.Example]]
         """
         |> section()
 

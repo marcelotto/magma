@@ -197,21 +197,25 @@ defmodule Magma.DocumentStruct.Section do
           raise "recursive cycle during transclusion resolution of #{target}"
         end
 
-        if {resolved_transclusion, visited} = transcluded_content(target, section.level, visited) do
-          new_header = %Panpipe.AST.Header{
-            header
-            | children: rest |> trim_leading_ast() |> Enum.reverse(),
-              attr: nil
-          }
+        case transcluded_content(target, section.level, visited) do
+          {resolved_transclusion, visited} ->
+            new_header = %Panpipe.AST.Header{
+              header
+              | children: rest |> trim_leading_ast() |> Enum.reverse(),
+                attr: nil
+            }
 
-          {
-            %__MODULE__{
-              resolved_transclusion
-              | header: new_header,
-                title: header_title(new_header)
-            },
-            visited
-          }
+            {
+              %__MODULE__{
+                resolved_transclusion
+                | header: new_header,
+                  title: header_title(new_header)
+              },
+              visited
+            }
+
+          nil ->
+            nil
         end
 
       _ ->
