@@ -130,12 +130,12 @@ defmodule Magma.DocumentStruct.SectionTest do
     end
 
     test "single section (with header)" do
-      assert Section.to_string(section(:without_subsections), header: true) ==
+      assert Section.to_string(section(:without_subsections)) ==
                content_without_subsections()
     end
 
     test "with subsections" do
-      assert Section.to_string(section(:with_subsections), header: true) ==
+      assert Section.to_string(section(:with_subsections)) ==
                content_with_subsections()
 
       assert Section.to_string(section(:with_subsections), header: false, subsections: false) ==
@@ -143,7 +143,7 @@ defmodule Magma.DocumentStruct.SectionTest do
     end
 
     test "level option" do
-      assert Section.to_string(section(:with_subsections), header: true, level: 3) ==
+      assert Section.to_string(section(:with_subsections), level: 3) ==
                """
                ### Example title
 
@@ -193,7 +193,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert content
              |> section()
-             |> Section.to_string(header: true) == content
+             |> Section.to_string() == content
     end
   end
 
@@ -201,14 +201,14 @@ defmodule Magma.DocumentStruct.SectionTest do
     test "zero shift" do
       assert section(:with_subsections)
              |> Section.shift_level(0)
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                content_with_subsections()
     end
 
     test "valid shifts" do
       assert section(:with_subsections)
              |> Section.shift_level(+1)
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ### Example title
 
@@ -229,7 +229,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert section(:with_subsections)
              |> Section.shift_level(+3)
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ##### Example title
 
@@ -250,7 +250,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert section(:with_subsections)
              |> Section.shift_level(-1)
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                # Example title
 
@@ -281,14 +281,14 @@ defmodule Magma.DocumentStruct.SectionTest do
     test "when already at the given level" do
       assert section(:with_subsections)
              |> Section.set_level(2)
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                content_with_subsections()
     end
 
     test "shifting" do
       assert section(:with_subsections)
              |> Section.set_level(3)
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ### Example title
 
@@ -309,7 +309,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert section(:with_subsections)
              |> Section.set_level(1)
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                # Example title
 
@@ -371,7 +371,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ## Example title
 
@@ -433,7 +433,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ## Example title
 
@@ -478,7 +478,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ## Example title
 
@@ -556,7 +556,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ## Example title
 
@@ -573,7 +573,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: true) ==
+             |> Section.to_string() ==
                """
                ## Example title
 
