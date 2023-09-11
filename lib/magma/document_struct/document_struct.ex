@@ -9,6 +9,7 @@ defmodule Magma.DocumentStruct do
      disable: [
        :yaml_metadata_block,
        :multiline_tables,
+       :smart,
        # for unknown reasons Pandoc sometimes generates header attributes where there should be none, when this is enabled
        :header_attributes,
        # this extension causes HTML comments to be converted to code blocks

@@ -71,7 +71,7 @@ defmodule Magma.DocumentStruct.Section do
 
   def to_string(%__MODULE__{} = section, opts \\ []) do
     %Panpipe.Document{children: ast(section, opts)}
-    |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension())
+    |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension(), wrap: "none")
   end
 
   def set_level(%__MODULE__{} = section, nil), do: section
