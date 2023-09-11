@@ -1,8 +1,7 @@
 defmodule Magma.DocumentStruct.Section do
   defstruct [:title, :header, :level, :content, :sections]
 
-  alias Magma.DocumentStruct
-  alias Magma.Document
+  alias Magma.{DocumentStruct, Document, Concept, Vault}
   alias Panpipe.AST.Header
 
   require Logger
@@ -224,38 +223,64 @@ defmodule Magma.DocumentStruct.Section do
   end
 
   defp transcluded_content(target, level, visited) do
-    target
-    |> parse_document_name()
-    |> do_transcluded_content()
-    |> case do
-      nil ->
-        nil
+    {document_name, section_title} = parse_document_name(target)
 
-      {section, visited_document} ->
-        {section, visited} =
-          do_resolve_transclusions(section, MapSet.put(visited, visited_document))
-
-        {set_level(section, level), visited}
-    end
-  end
-
-  defp do_transcluded_content({document_name, section_title}) do
-    with {:ok, document} <- Document.load(document_name) do
-      cond do
-        !section_title ->
-          {DocumentStruct.main_section(document), document_name}
-
-        section = DocumentStruct.section_by_title(document, section_title) ->
-          {section, document_name}
-
-        true ->
-          Logger.warning("No section #{section_title} in #{document_name} found")
-          nil
-      end
+    with {:ok, document_struct} <- transcluded_document_struct(document_name),
+         {:ok, section} <- fetch_transcluded_content(document_struct, section_title) do
+      {section, visited} = do_resolve_transclusions(section, MapSet.put(visited, document_name))
+      {set_level(section, level), visited}
     else
       {:error, error} ->
         Logger.warning("failed to load [[#{document_name}]] during resolution: #{inspect(error)}")
         nil
+    end
+  end
+
+  defp transcluded_document_struct(document_name) do
+    case Document.load(document_name) do
+      {:ok, %{sections: _} = document} ->
+        {:ok, document}
+
+      {:ok, document} ->
+        DocumentStruct.parse(document.content)
+
+      {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->
+        with {:ok, _metadata, body} <-
+               document_name
+               # We can assume here that the file exists, because the initial Document.load/1 could find a file
+               |> Vault.document_path()
+               |> YamlFrontMatter.parse_file() do
+          DocumentStruct.parse(body)
+        end
+
+      {:error, _} = error ->
+        error
+    end
+  end
+
+  defp fetch_transcluded_content(%Concept{} = concept, nil) do
+    {:ok, DocumentStruct.main_section(concept)}
+  end
+
+  defp fetch_transcluded_content(%DocumentStruct{sections: [section]}, nil) do
+    {:ok, section}
+  end
+
+  defp fetch_transcluded_content(%DocumentStruct{sections: [first | rest]}, nil) do
+    {:ok,
+     %__MODULE__{
+       first
+       | sections:
+           Enum.map(first.sections, &shift_level(&1, 1)) ++
+             Enum.map(rest, &shift_level(&1, 1))
+     }}
+  end
+
+  defp fetch_transcluded_content(%{sections: _} = document_struct, section_title) do
+    if section = DocumentStruct.section_by_title(document_struct, section_title) do
+      {:ok, section}
+    else
+      {:error, "No section #{section_title} found"}
     end
   end
 

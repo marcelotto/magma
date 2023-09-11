@@ -573,6 +573,176 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
+    @tag vault_files: "plain/Document.md"
+    test "plain Markdown documents" do
+      assert """
+             ## Example title
+
+             ![[Document]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ### Alt. title ![[Document]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Alt. title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ![[Document#Title]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ### Alt. title ![[Document#Title]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Alt. title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+    end
+
+    @tag vault_files: "plain/DocumentWithMultipleMainSections.md"
+    test "plain Markdown documents with multiple top-level section" do
+      assert """
+             ## Example title
+
+             ![[DocumentWithMultipleMainSections]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               ##### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+
+               #### Reference
+
+               This is another top-level section.
+               """
+
+      assert """
+             ## Example title
+
+             ### Alt. title ![[DocumentWithMultipleMainSections]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Alt. title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               ##### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+
+               #### Reference
+
+               This is another top-level section.
+               """
+
+      assert """
+             ## Example title
+
+             ![[DocumentWithMultipleMainSections#Title]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ### Alt. title ![[DocumentWithMultipleMainSections#Reference]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Alt. title
+
+               This is another top-level section.
+               """
+    end
+
     test "recursive transclusion resolution" do
       assert """
              ## Example title
