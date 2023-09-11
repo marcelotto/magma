@@ -743,6 +743,29 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
+    test "when the same document is transcluded multiple times" do
+      assert """
+             ## Example title
+
+             ![[Project#Description]]
+
+             ![[Project#Knowledge Base]]
+
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Description
+
+               This is the project description.
+
+               ### Knowledge Base
+               """
+    end
+
     test "recursive transclusion resolution" do
       assert """
              ## Example title

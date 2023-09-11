@@ -97,55 +97,36 @@ defmodule Magma.DocumentStruct.Section do
   end
 
   def resolve_transclusions(%__MODULE__{} = section) do
-    {result, _} = do_resolve_transclusions(section, MapSet.new())
-    result
+    do_resolve_transclusions(section, [])
   end
 
   defp do_resolve_transclusions(section, visited) do
-    {resolved_content, new_sections, visited} =
+    {resolved_content, new_sections} =
       resolve_content_transclusions(section.content, section.level, visited)
 
-    {resolved_subsections, visited} =
-      Enum.reduce(section.sections, {[], visited}, fn
-        subsection, {resolved_subsections, visited} ->
-          case do_resolve_transclusions(subsection, visited) do
-            {nil, visited} ->
-              {resolved_subsections, visited}
+    resolved_sections =
+      new_sections ++
+        Enum.flat_map(section.sections, &(&1 |> do_resolve_transclusions(visited) |> List.wrap()))
 
-            {resolved_subsection, visited} ->
-              {[resolved_subsection | resolved_subsections], visited}
-          end
-      end)
+    if resolved_section = resolve_transclusion_header(section, visited) do
+      resolved_section =
+        resolved_section
+        |> append(resolved_content)
+        |> Map.update!(:sections, &(&1 ++ resolved_sections))
 
-    resolved_sections = new_sections ++ Enum.reverse(resolved_subsections)
-
-    case resolve_transclusion_header(section, visited) do
-      {resolved_section, visited} ->
-        resolved_section =
-          resolved_section
-          |> append(resolved_content)
-          |> Map.update!(:sections, &(&1 ++ resolved_sections))
-
-        {
-          unless(empty_content?(resolved_section), do: resolved_section),
-          visited
-        }
-
-      nil ->
-        {
-          %__MODULE__{
-            section
-            | content: resolved_content,
-              sections: resolved_sections
-          },
-          visited
-        }
+      unless(empty_content?(resolved_section), do: resolved_section)
+    else
+      %__MODULE__{
+        section
+        | content: resolved_content,
+          sections: resolved_sections
+      }
     end
   end
 
   defp resolve_content_transclusions(content, level, visited) do
-    {new_content, new_sections, visited} =
-      Enum.reduce(content, {[], [], visited}, fn
+    {new_content, new_sections} =
+      Enum.reduce(content, {[], []}, fn
         %Panpipe.AST.Figure{
           children: [
             %Panpipe.AST.Plain{
@@ -155,31 +136,29 @@ defmodule Magma.DocumentStruct.Section do
             }
           ]
         } = transclusion,
-        {new_content, new_sections, visited} = acc ->
+        {new_content, new_sections} = acc ->
           if extract_document_name(target) in visited do
             raise "recursive cycle during transclusion resolution of #{target}"
           end
 
-          case transcluded_content(target, level + 1, visited) do
-            {resolved_transclusion, visited} ->
-              {new_content, [resolved_transclusion | new_sections], visited}
-
-            nil ->
-              acc_append(transclusion, acc)
+          if resolved_transclusion = transcluded_content(target, level + 1, visited) do
+            {new_content, [resolved_transclusion | new_sections]}
+          else
+            acc_append(transclusion, acc)
           end
 
         content, acc ->
           acc_append(content, acc)
       end)
 
-    {Enum.reverse(new_content), Enum.reverse(new_sections), visited}
+    {Enum.reverse(new_content), Enum.reverse(new_sections)}
   end
 
-  defp acc_append(content, {new_content, [], visited}),
-    do: {[content | new_content], [], visited}
+  defp acc_append(content, {new_content, []}),
+    do: {[content | new_content], []}
 
-  defp acc_append(content, {new_content, [current | rest], visited}),
-    do: {new_content, [append(current, content) | rest], visited}
+  defp acc_append(content, {new_content, [current | rest]}),
+    do: {new_content, [append(current, content) | rest]}
 
   defp append(%__MODULE__{sections: []} = section, ast) do
     %__MODULE__{section | content: section.content ++ List.wrap(ast)}
@@ -196,25 +175,18 @@ defmodule Magma.DocumentStruct.Section do
           raise "recursive cycle during transclusion resolution of #{target}"
         end
 
-        case transcluded_content(target, section.level, visited) do
-          {resolved_transclusion, visited} ->
-            new_header = %Panpipe.AST.Header{
-              header
-              | children: rest |> trim_leading_ast() |> Enum.reverse(),
-                attr: nil
-            }
+        if resolved_transclusion = transcluded_content(target, section.level, visited) do
+          new_header = %Panpipe.AST.Header{
+            header
+            | children: rest |> trim_leading_ast() |> Enum.reverse(),
+              attr: nil
+          }
 
-            {
-              %__MODULE__{
-                resolved_transclusion
-                | header: new_header,
-                  title: header_title(new_header)
-              },
-              visited
-            }
-
-          nil ->
-            nil
+          %__MODULE__{
+            resolved_transclusion
+            | header: new_header,
+              title: header_title(new_header)
+          }
         end
 
       _ ->
@@ -227,8 +199,9 @@ defmodule Magma.DocumentStruct.Section do
 
     with {:ok, document_struct} <- transcluded_document_struct(document_name),
          {:ok, section} <- fetch_transcluded_content(document_struct, section_title) do
-      {section, visited} = do_resolve_transclusions(section, MapSet.put(visited, document_name))
-      {set_level(section, level), visited}
+      section
+      |> do_resolve_transclusions([document_name | visited])
+      |> set_level(level)
     else
       {:error, error} ->
         Logger.warning("failed to load [[#{document_name}]] during resolution: #{inspect(error)}")
@@ -247,7 +220,7 @@ defmodule Magma.DocumentStruct.Section do
       {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->
         with {:ok, _metadata, body} <-
                document_name
-               # We can assume here that the file exists, because the initial Document.load/1 could find a file
+               # We can assume here that the file exists, because the initial Document.load/1 has found the file already
                |> Vault.document_path()
                |> YamlFrontMatter.parse_file() do
           DocumentStruct.parse(body)
