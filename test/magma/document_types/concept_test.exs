@@ -168,19 +168,19 @@ defmodule Magma.ConceptTest do
       assert {
                :ok,
                %Magma.Concept{
-                 subject: %Matter.Project{name: "Some Project"},
+                 subject: %Matter.Project{name: "Some"},
                  path: ^document_path,
                  name: "Project",
                  content: content,
                  custom_metadata: %{},
-                 aliases: ["Some Project project", "Some Project-project"],
+                 aliases: ["Some project", "Some-project"],
                  tags: ["foo"],
                  created_at: ~U[2023-07-11 14:25:00Z],
-                 title: "Some Project project",
+                 title: "Some project",
                  prologue: []
                } = concept
              } =
-               Concept.new!(subject: Matter.Project.new("Some Project"))
+               Concept.new!(subject: Matter.Project.new("Some"))
                |> Concept.load()
 
       assert document_path

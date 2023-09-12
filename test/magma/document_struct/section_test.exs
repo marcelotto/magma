@@ -386,7 +386,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Foo:
 
-               ### Some Project project
+               ### Some project
 
                #### Description
 

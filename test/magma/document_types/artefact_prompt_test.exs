@@ -66,7 +66,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## System prompt
 
-               You are MagmaGPT, a software developer on the "Some Project" project with a lot of experience with Elixir and writing high-quality documentation.
+               You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
 
                Your task is to write documentation for Elixir modules.
 
@@ -79,7 +79,7 @@ defmodule Magma.Artefact.PromptTest do
                - Generate just the comment for the module, not for its individual functions.
 
 
-               ### Background knowledge of the Some Project project ![[Project#Description]]
+               ### Background knowledge of the Some project ![[Project#Description]]
 
 
                ## Request
@@ -204,7 +204,7 @@ defmodule Magma.Artefact.PromptTest do
           &(&1 <>
               """
 
-              ### Background knowledge of the Some Project project ![[Project#Description]]
+              ### Background knowledge of the Some project ![[Project#Description]]
               """)
         )
 
@@ -215,7 +215,7 @@ defmodule Magma.Artefact.PromptTest do
                  """
                  Generate a moduledoc for `Nested.Example`.
 
-                 ### Background knowledge of the Some Project project
+                 ### Background knowledge of the Some project
 
                  This is the project description.
                  """
