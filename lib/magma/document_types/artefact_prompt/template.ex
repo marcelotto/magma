@@ -57,4 +57,18 @@ defmodule Magma.Artefact.Prompt.Template do
 
   defp include(nil, _), do: nil
   defp include(section, opts), do: Section.to_string(section, opts) |> String.trim()
+
+  defp controls do
+    """
+    **Generated results**
+
+    #{prompt_results_table()}
+
+    **Actions**
+
+    #{button("Execute", "magma.prompt.exec", color: "blue")}
+    #{button("Update", "magma.prompt.update")}
+    """
+    |> String.trim_trailing()
+  end
 end

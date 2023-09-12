@@ -62,12 +62,7 @@ defmodule Magma.Artefact.PromptResultTest do
       assert content ==
                """
                #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
-               ```button
-               name Delete
-               type command
-               action Delete current file
-               color red
-               ```
+               #{Magma.Obsidian.View.Helper.delete_current_file_button()}
 
                # Generated ModuleDoc of Nested.Example
 

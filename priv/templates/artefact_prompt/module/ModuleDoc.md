@@ -6,13 +6,7 @@ created_at: <%= prompt.created_at %>
 tags: <%= yaml_list(prompt.tags) %>
 aliases: <%= yaml_list(prompt.aliases) %>
 ---
-**Generated results**
-
-<%= prompt_results_table() %>
-**Actions**
-
-<%= button("Execute", "magma.prompt.exec", color: "blue") %>
-<%= button("Update", "magma.prompt.update") %>
+<%= controls() %>
 
 # <%= prompt.name %>
 

@@ -56,6 +56,7 @@ defmodule Magma.Artefact.PromptTest do
                **Generated results**
 
                #{Magma.Obsidian.View.Helper.prompt_results_table()}
+
                **Actions**
 
                #{Magma.Obsidian.View.Helper.button("Execute", "magma.prompt.exec", color: "blue")}

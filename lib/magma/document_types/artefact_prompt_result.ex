@@ -51,6 +51,7 @@ defmodule Magma.Artefact.PromptResult do
            content: """
            #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
            #{Magma.Obsidian.View.Helper.delete_current_file_button()}
+
            # #{build_name(document.prompt.artefact)}
 
            #{result}

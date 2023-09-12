@@ -29,6 +29,7 @@ defmodule Magma.Obsidian.View.Helper do
     color red
     ```
     """
+    |> String.trim_trailing()
   end
 
   def yaml_list(list) do
@@ -49,5 +50,6 @@ defmodule Magma.Obsidian.View.Helper do
     WHERE magma_prompt = [[]]
     ```
     """
+    |> String.trim_trailing()
   end
 end
