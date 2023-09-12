@@ -10,7 +10,13 @@ defmodule Magma.Matter do
 
   @callback default_concept_aliases(t()) :: list
 
-  @callback new(name, keyword) :: {:ok, t()} | {:error, any}
+  @callback new(keyword) :: t()
+
+  @callback extract_from_metadata(
+              document_name :: binary,
+              document_title :: binary,
+              document_metadata :: keyword
+            ) :: {:ok, t(), keyword} | {:error, any}
 
   defmacro __using__(opts) do
     additional_fields = Keyword.get(opts, :fields, [])
@@ -24,14 +30,27 @@ defmodule Magma.Matter do
       def default_concept_aliases(%__MODULE__{}), do: []
 
       @impl true
-      def new(name, args \\ []) do
-        %__MODULE__{
-          name: name
-        }
-        |> struct(args)
+      def extract_from_metadata(document_name, _document_title, metadata) do
+        {:ok, new(name: document_name), metadata}
       end
 
-      defoverridable new: 1, new: 2, default_concept_aliases: 1
+      defoverridable default_concept_aliases: 1, extract_from_metadata: 3
+    end
+  end
+
+  def extract_from_metadata(document_name, document_title, metadata) do
+    with {:ok, matter_type, remaining_metadata} <- extract_type(metadata) do
+      matter_type.extract_from_metadata(document_name, document_title, remaining_metadata)
+    end
+  end
+
+  defp extract_type(metadata) do
+    {matter_type, remaining} = Map.pop(metadata, :magma_matter_type)
+
+    cond do
+      !matter_type -> {:error, "magma_matter_type missing"}
+      matter_module = type(matter_type) -> {:ok, matter_module, remaining}
+      true -> {:error, "invalid magma_matter type: #{matter_type}"}
     end
   end
 

@@ -1,4 +1,6 @@
 defmodule Magma.Matter.Module do
+  # We don't have any additional fields, since we can get everything
+  # via the Elixir and Erlang reflection API from the module name
   use Magma.Matter
 
   import Magma.Utils.Guards
@@ -8,15 +10,15 @@ defmodule Magma.Matter.Module do
   @path_prefix "modules"
 
   @impl true
-  def new(name, args \\ [])
+  def new(name: name), do: new(name)
 
-  def new(name, args) when is_binary(name) do
-    Elixir
-    |> Module.concat(name)
-    |> super(args)
+  def new(name) when is_binary(name) do
+    Elixir |> Module.concat(name) |> new()
   end
 
-  def new(name, args), do: super(name, args)
+  def new(module) when maybe_module(module) do
+    %__MODULE__{name: module}
+  end
 
   @impl true
   def concept_path(%__MODULE__{name: module}) do

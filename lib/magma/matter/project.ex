@@ -6,6 +6,21 @@ defmodule Magma.Matter.Project do
   alias Magma.{Matter, Concept}
 
   @impl true
+  def new(name: name), do: new(name)
+
+  def new(name) do
+    %__MODULE__{name: name}
+  end
+
+  @impl true
+  def extract_from_metadata(_document_name, _document_title, metadata) do
+    case Map.pop(metadata, :magma_matter_name) do
+      {nil, _} -> {:error, "magma_matter_name with project name missing in Project document"}
+      {matter_name, remaining} -> {:ok, new(matter_name), remaining}
+    end
+  end
+
+  @impl true
   def concept_path(%__MODULE__{}), do: "Project.md"
 
   def default_concept_aliases(%__MODULE__{name: name}), do: ["#{name} project", "#{name}-project"]

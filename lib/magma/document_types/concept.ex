@@ -41,28 +41,19 @@ defmodule Magma.Concept do
   @impl true
   @doc false
   def load_document(%__MODULE__{} = concept) do
-    with {:ok, document_struct} <- DocumentStruct.parse(concept.content) do
-      {matter_type, custom_metadata} = Map.pop(concept.custom_metadata, :magma_matter_type)
-      {matter_name, custom_metadata} = Map.pop(custom_metadata, :magma_matter_name, concept.name)
-
-      cond do
-        !matter_type ->
-          {:error, "magma_matter_type missing"}
-
-        matter_module = Matter.type(matter_type) ->
-          {:ok,
-           %__MODULE__{
-             concept
-             | subject: matter_module.new(matter_name),
-               title: DocumentStruct.title(document_struct),
-               prologue: document_struct.prologue,
-               sections: document_struct.sections,
-               custom_metadata: custom_metadata
-           }}
-
-        true ->
-          {:error, "invalid magma_matter type: #{matter_type}"}
-      end
+    with {:ok, document_struct} <- DocumentStruct.parse(concept.content),
+         title = DocumentStruct.title(document_struct),
+         {:ok, matter, custom_metadata} <-
+           Matter.extract_from_metadata(concept.name, title, concept.custom_metadata) do
+      {:ok,
+       %__MODULE__{
+         concept
+         | subject: matter,
+           title: title,
+           prologue: document_struct.prologue,
+           sections: document_struct.sections,
+           custom_metadata: custom_metadata
+       }}
     end
   end
 
