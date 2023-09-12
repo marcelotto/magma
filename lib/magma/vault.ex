@@ -59,7 +59,7 @@ defmodule Magma.Vault do
         if artefact_type = Artefact.type(magma_artefact) do
           {:ok, Artefact.Prompt, artefact_type}
         else
-          {:error, "invalid magma_artefact in #{path}: #{inspect(artefact_type)}"}
+          {:error, "invalid magma_artefact in #{path}: #{inspect(magma_artefact)}"}
         end
     end
   end
