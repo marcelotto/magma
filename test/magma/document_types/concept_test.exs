@@ -11,48 +11,41 @@ defmodule Magma.ConceptTest do
       assert {:ok,
               %Concept{
                 subject: %Matter.Project{name: "Magma"},
-                path: path,
                 name: "Project",
                 custom_metadata: nil,
                 content: nil,
                 title: nil,
                 prologue: nil,
                 sections: nil
-              }} = Concept.new(subject: Matter.Project.new("Magma"))
+              } = concept} = Concept.new(subject: Matter.Project.new!("Magma"))
 
-      assert path == Vault.path("concepts/Project.md")
+      assert concept.path == Vault.path("concepts/Project.md")
     end
 
     test "with module matter" do
       assert {:ok,
               %Concept{
                 subject: %Matter.Module{name: TopLevelExample},
-                path: path,
                 name: "TopLevelExample",
                 custom_metadata: nil,
                 content: nil,
                 title: nil,
                 prologue: nil,
                 sections: nil
-              }} = Concept.new(subject: Matter.Module.new(TopLevelExample))
+              } = concept} = Concept.new(subject: Matter.Module.new!(TopLevelExample))
 
-      assert path == Vault.path("concepts/modules/TopLevelExample.md")
+      assert concept.path == Vault.path("concepts/modules/TopLevelExample.md")
     end
   end
 
   test "new/2" do
-    assert Nested.Example
-           |> Matter.Module.new()
-           |> Concept.new([]) ==
-             Concept.new(subject: Matter.Module.new(Nested.Example))
+    assert Concept.new(module_matter(), []) ==
+             Concept.new(subject: module_matter())
   end
 
   test "new!/1" do
-    assert {:ok,
-            Nested.Example
-            |> Matter.Module.new()
-            |> Concept.new!()} ==
-             Concept.new(subject: Matter.Module.new(Nested.Example))
+    assert {:ok, Concept.new!(module_matter())} ==
+             Concept.new(subject: module_matter())
   end
 
   describe "create/2" do
@@ -72,7 +65,7 @@ defmodule Magma.ConceptTest do
                 prologue: []
               } = concept} =
                Nested.Example
-               |> Matter.Module.new()
+               |> Matter.Module.new!()
                |> Concept.new!()
                |> Concept.create()
 
@@ -102,7 +95,7 @@ defmodule Magma.ConceptTest do
                 prologue: []
               } = concept} =
                "Magma"
-               |> Matter.Project.new()
+               |> Matter.Project.new!()
                |> Concept.new!()
                |> Concept.create()
 
@@ -157,7 +150,7 @@ defmodule Magma.ConceptTest do
              |> String.trim()
              |> String.ends_with?(String.trim(content))
 
-      assert Concept.new!(subject: Matter.Module.new(Nested.Example))
+      assert Concept.new!(subject: Matter.Module.new!(Nested.Example))
              |> Concept.load() == {:ok, concept}
     end
 
@@ -180,7 +173,7 @@ defmodule Magma.ConceptTest do
                  prologue: []
                } = concept
              } =
-               Concept.new!(subject: Matter.Project.new("Some"))
+               Concept.new!(subject: Matter.Project.new!("Some"))
                |> Concept.load()
 
       assert document_path

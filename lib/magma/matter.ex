@@ -10,7 +10,7 @@ defmodule Magma.Matter do
 
   @callback default_concept_aliases(t()) :: list
 
-  @callback new(keyword) :: t()
+  @callback new(keyword) :: {:ok, t(), keyword} | {:error, any}
 
   @callback extract_from_metadata(
               document_name :: binary,
@@ -31,7 +31,9 @@ defmodule Magma.Matter do
 
       @impl true
       def extract_from_metadata(document_name, _document_title, metadata) do
-        {:ok, new(name: document_name), metadata}
+        with {:ok, matter} <- new(name: document_name) do
+          {:ok, matter, metadata}
+        end
       end
 
       defoverridable default_concept_aliases: 1, extract_from_metadata: 3

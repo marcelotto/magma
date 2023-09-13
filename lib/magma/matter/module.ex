@@ -17,7 +17,14 @@ defmodule Magma.Matter.Module do
   end
 
   def new(module) when maybe_module(module) do
-    %__MODULE__{name: module}
+    {:ok, %__MODULE__{name: module}}
+  end
+
+  def new!(attrs) do
+    case new(attrs) do
+      {:ok, matter} -> matter
+      {:error, error} -> raise error
+    end
   end
 
   @impl true

@@ -9,14 +9,26 @@ defmodule Magma.Matter.Project do
   def new(name: name), do: new(name)
 
   def new(name) do
-    %__MODULE__{name: name}
+    {:ok, %__MODULE__{name: name}}
+  end
+
+  def new!(attrs) do
+    case new(attrs) do
+      {:ok, matter} -> matter
+      {:error, error} -> raise error
+    end
   end
 
   @impl true
   def extract_from_metadata(_document_name, _document_title, metadata) do
     case Map.pop(metadata, :magma_matter_name) do
-      {nil, _} -> {:error, "magma_matter_name with project name missing in Project document"}
-      {matter_name, remaining} -> {:ok, new(matter_name), remaining}
+      {nil, _} ->
+        {:error, "magma_matter_name with project name missing in Project document"}
+
+      {matter_name, remaining} ->
+        with {:ok, matter} <- new(matter_name) do
+          {:ok, matter, remaining}
+        end
     end
   end
 
@@ -33,7 +45,7 @@ defmodule Magma.Matter.Project do
 
   def modules do
     with {:ok, modules} <- :application.get_key(app_name(), :modules) do
-      Enum.map(modules, &Matter.Module.new(&1))
+      Enum.map(modules, &Matter.Module.new!(&1))
     end
   end
 end

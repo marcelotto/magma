@@ -13,8 +13,8 @@ defmodule Magma.Matter.ProjectTest do
   test "modules/0" do
     assert modules = Project.modules()
     assert is_list(modules)
-    assert Matter.Module.new(Magma) in modules
-    assert Matter.Module.new(Vault) in modules
-    assert Matter.Module.new(Project) in modules
+    assert Matter.Module.new!(Magma) in modules
+    assert Matter.Module.new!(Vault) in modules
+    assert Matter.Module.new!(Project) in modules
   end
 end

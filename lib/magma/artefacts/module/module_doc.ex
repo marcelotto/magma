@@ -38,7 +38,7 @@ defmodule Magma.Artefacts.ModuleDoc do
   # We can not use the Magma.Vault.Index here because this function will be used also at compile-time.
   def version_path(mod) when maybe_module(mod) do
     mod
-    |> Matter.Module.new()
+    |> Matter.Module.new!()
     |> Concept.new!()
     |> new!()
     |> Artefact.Version.build_path()

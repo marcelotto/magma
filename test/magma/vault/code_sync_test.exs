@@ -21,7 +21,7 @@ defmodule Magma.Vault.CodeSyncTest do
       |> Enum.each(fn module ->
         assert {:ok, %Concept{} = concept} =
                  module
-                 |> Matter.Module.new()
+                 |> Matter.Module.new!()
                  |> Concept.new!()
                  |> Concept.load()
 

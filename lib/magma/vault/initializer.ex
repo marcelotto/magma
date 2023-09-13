@@ -36,7 +36,7 @@ defmodule Magma.Vault.Initializer do
 
   defp create_project(project_name) do
     project_name
-    |> Project.new()
+    |> Project.new!()
     |> Concept.new!()
     |> Concept.create()
   end

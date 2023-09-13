@@ -17,11 +17,11 @@ defmodule Magma.TestFactories do
     do: datetime() |> DateTime.add(amount_to_add, unit)
 
   def project_matter do
-    Matter.Project.new("Magma")
+    Matter.Project.new!("Magma")
   end
 
   def module_matter(mod \\ Nested.Example) do
-    Matter.Module.new(mod)
+    Matter.Module.new!(mod)
   end
 
   def project_concept do

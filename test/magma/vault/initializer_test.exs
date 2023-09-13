@@ -21,13 +21,13 @@ defmodule Magma.Vault.InitializerTest do
       assert File.exists?(Vault.path([".obsidian", "community-plugins.json"]))
 
       assert {:ok, %Concept{}} =
-               Matter.Module.new(Magma)
+               Matter.Module.new!(Magma)
                |> Concept.new!()
                |> Concept.load()
 
       assert {:ok, %Concept{}} =
                project_name
-               |> Matter.Project.new()
+               |> Matter.Project.new!()
                |> Concept.new!()
                |> Concept.load()
     end
