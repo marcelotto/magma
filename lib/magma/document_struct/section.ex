@@ -210,7 +210,7 @@ defmodule Magma.DocumentStruct.Section do
   end
 
   defp transcluded_document_struct(document_name) do
-    case Document.load(document_name) do
+    case Document.Loader.load(document_name) do
       {:ok, %{sections: _} = document} ->
         {:ok, document}
 
@@ -220,7 +220,7 @@ defmodule Magma.DocumentStruct.Section do
       {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->
         with {:ok, _metadata, body} <-
                document_name
-               # We can assume here that the file exists, because the initial Document.load/1 has found the file already
+               # We can assume here that the file exists, because the initial loader has found the file already
                |> Vault.document_path()
                |> YamlFrontMatter.parse_file() do
           DocumentStruct.parse(body)
