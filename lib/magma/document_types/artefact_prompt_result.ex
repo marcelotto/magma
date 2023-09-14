@@ -5,8 +5,18 @@ defmodule Magma.Artefact.PromptResult do
 
   alias Magma.{Vault, Artefact, Generation, Utils}
 
-  @impl true
-  def dependency, do: :prompt
+  def new(prompt, attrs \\ []) do
+    struct(__MODULE__, [{:prompt, prompt} | attrs])
+    |> Document.init_created_at()
+    |> Document.init_path()
+  end
+
+  def new!(prompt, attrs \\ []) do
+    case new(prompt, attrs) do
+      {:ok, document} -> document
+      {:error, error} -> raise error
+    end
+  end
 
   def build_name(%artefact_type{concept: concept}) do
     "Generated #{artefact_type.build_name(concept)}"
@@ -24,19 +34,6 @@ defmodule Magma.Artefact.PromptResult do
      ]
      |> Vault.artefact_generation_path()}
   end
-
-  @impl true
-  def new_document(%__MODULE__{} = document) do
-    {:ok, init_created_at(document)}
-  end
-
-  def new_document(document), do: super(document)
-
-  defp init_created_at(%__MODULE__{created_at: nil} = document) do
-    %{document | created_at: DateTime.utc_now()}
-  end
-
-  defp init_created_at(%__MODULE__{} = document), do: document
 
   @impl true
   def create_document(%__MODULE__{} = document) do

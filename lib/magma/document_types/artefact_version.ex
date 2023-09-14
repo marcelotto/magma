@@ -5,8 +5,17 @@ defmodule Magma.Artefact.Version do
 
   alias Magma.{Vault, Artefact, Utils}
 
-  @impl true
-  def dependency, do: :prompt_result
+  def new(prompt_result, attrs \\ []) do
+    struct(__MODULE__, [{:prompt_result, prompt_result} | attrs])
+    |> Document.init_path()
+  end
+
+  def new!(prompt_result, attrs \\ []) do
+    case new(prompt_result, attrs) do
+      {:ok, document} -> document
+      {:error, error} -> raise error
+    end
+  end
 
   def build_name(%artefact_type{concept: concept}) do
     artefact_type.build_name(concept)

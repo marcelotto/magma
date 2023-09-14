@@ -8,16 +8,21 @@ defmodule Magma.ConceptTest do
 
   describe "new/1" do
     test "with project matter" do
+      title = "Magma"
+
       assert {:ok,
               %Concept{
-                subject: %Matter.Project{name: "Magma"},
+                subject: %Matter.Project{name: ^title},
                 name: "Project",
                 custom_metadata: nil,
                 content: nil,
                 title: nil,
                 prologue: nil,
                 sections: nil
-              } = concept} = Concept.new(subject: Matter.Project.new!("Magma"))
+              } = concept} =
+               title
+               |> Matter.Project.new!()
+               |> Concept.new()
 
       assert concept.path == Vault.path("concepts/Project.md")
     end
@@ -32,20 +37,18 @@ defmodule Magma.ConceptTest do
                 title: nil,
                 prologue: nil,
                 sections: nil
-              } = concept} = Concept.new(subject: Matter.Module.new!(TopLevelExample))
+              } = concept} =
+               TopLevelExample
+               |> Matter.Module.new!()
+               |> Concept.new()
 
       assert concept.path == Vault.path("concepts/modules/TopLevelExample.md")
     end
   end
 
-  test "new/2" do
-    assert Concept.new(module_matter(), []) ==
-             Concept.new(subject: module_matter())
-  end
-
   test "new!/1" do
     assert {:ok, Concept.new!(module_matter())} ==
-             Concept.new(subject: module_matter())
+             Concept.new(module_matter())
   end
 
   describe "create/2" do
@@ -150,7 +153,9 @@ defmodule Magma.ConceptTest do
              |> String.trim()
              |> String.ends_with?(String.trim(content))
 
-      assert Concept.new!(subject: Matter.Module.new!(Nested.Example))
+      assert Nested.Example
+             |> Matter.Module.new!()
+             |> Concept.new!()
              |> Concept.load() == {:ok, concept}
     end
 
@@ -173,7 +178,9 @@ defmodule Magma.ConceptTest do
                  prologue: []
                } = concept
              } =
-               Concept.new!(subject: Matter.Project.new!("Some"))
+               "Some"
+               |> Matter.Project.new!()
+               |> Concept.new!()
                |> Concept.load()
 
       assert document_path

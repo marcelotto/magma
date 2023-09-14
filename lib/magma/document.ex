@@ -23,11 +23,7 @@ defmodule Magma.Document do
   @template_path :code.priv_dir(:magma) |> Path.join("templates")
   def template_path, do: @template_path
 
-  @callback dependency :: atom
-
   @callback template :: module
-
-  @callback new_document(t()) :: {:ok, t()} | {:error, any}
 
   @callback load_document(t()) :: {:ok, t()} | {:error, any}
 
@@ -50,27 +46,7 @@ defmodule Magma.Document do
       def template, do: Module.concat(__MODULE__, Template)
 
       @impl true
-      def new_document(%__MODULE__{} = document), do: {:ok, document}
-
-      @impl true
       def create_document(%__MODULE__{} = document), do: {:ok, document}
-
-      def new(fields_or_dependency), do: Document.new(__MODULE__, fields_or_dependency)
-      def new(dependency, fields), do: Document.new(__MODULE__, dependency, fields)
-
-      def new!(fields_or_dependency) do
-        case new(fields_or_dependency) do
-          {:ok, document} -> document
-          {:error, error} -> raise error
-        end
-      end
-
-      def new!(dependency, fields) do
-        case new(dependency, fields) do
-          {:ok, document} -> document
-          {:error, error} -> raise error
-        end
-      end
 
       def create(%__MODULE__{} = document), do: Document.create(document)
 
@@ -84,37 +60,12 @@ defmodule Magma.Document do
         end
       end
 
-      defoverridable new_document: 1,
-                     create_document: 1
+      defoverridable create_document: 1
     end
   end
 
   def template(%document_type{} = document) do
     Path.join(@template_path, document_type.document_template_path(document))
-  end
-
-  def new(document_type, %_{} = dependency), do: new(document_type, dependency, [])
-
-  def new(document_type, fields) do
-    with {:ok, document} <-
-           document_type
-           |> struct(fields)
-           |> document_type.new_document() do
-      with_path(document)
-    end
-  end
-
-  def new(document_type, %_{} = dependency, fields) do
-    new(document_type, Keyword.put(fields, document_type.dependency(), dependency))
-  end
-
-  @doc false
-  defp with_path(%document_type{} = document) do
-    case apply(document_type, :build_path, [document]) do
-      {:ok, path} -> {:ok, %{document | path: path, name: name_from_path(path)}}
-      {:error, _} = error -> error
-      undefined -> raise "Undefined result: #{inspect(undefined)}"
-    end
   end
 
   def name_from_path(path) do
@@ -139,17 +90,27 @@ defmodule Magma.Document do
     |> init_tags()
   end
 
-  defp init_created_at(%_{created_at: nil} = document) do
+  def init_created_at(%_{created_at: nil} = document) do
     %{document | created_at: DateTime.utc_now()}
   end
 
-  defp init_created_at(document), do: document
+  def init_created_at(document), do: document
 
   defp init_tags(%_{tags: nil} = document) do
     %{document | tags: :magma |> Application.get_env(:default_tags) |> List.wrap()}
   end
 
   defp init_tags(document), do: document
+
+  @doc false
+  def init_path(%document_type{} = document) do
+    case apply(document_type, :build_path, [document]) do
+      # TODO: check consistency with existing path and name values?
+      {:ok, path} -> {:ok, %{document | path: path, name: name_from_path(path)}}
+      {:error, _} = error -> error
+      undefined -> raise "Undefined result: #{inspect(undefined)}"
+    end
+  end
 
   defp create_file_from_template(%document_type{} = document, opts) do
     Magma.MixHelper.create_file(

@@ -9,8 +9,17 @@ defmodule Magma.Artefact.Prompt do
 
   require Logger
 
-  @impl true
-  def dependency, do: :artefact
+  def new(artefact, attrs \\ []) do
+    struct(__MODULE__, [{:artefact, artefact} | attrs])
+    |> Document.init_path()
+  end
+
+  def new!(artefact, attrs \\ []) do
+    case new(artefact, attrs) do
+      {:ok, document} -> document
+      {:error, error} -> raise error
+    end
+  end
 
   @impl true
   def build_path(%__MODULE__{artefact: %artefact_type{} = artefact}) do

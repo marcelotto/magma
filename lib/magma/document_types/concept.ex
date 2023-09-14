@@ -21,8 +21,17 @@ defmodule Magma.Concept do
   @system_prompt_section_title "Artefact system prompts"
   def system_prompt_section_title, do: @system_prompt_section_title
 
-  @impl true
-  def dependency, do: :subject
+  def new(subject, attrs \\ []) do
+    struct(__MODULE__, [{:subject, subject} | attrs])
+    |> Document.init_path()
+  end
+
+  def new!(subject, attrs \\ []) do
+    case new(subject, attrs) do
+      {:ok, document} -> document
+      {:error, error} -> raise error
+    end
+  end
 
   @impl true
   def build_path(%__MODULE__{subject: %matter_type{} = matter}) do
