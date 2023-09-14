@@ -45,21 +45,17 @@ defmodule Magma.Artefact.PromptResultTest do
         |> Vault.path()
         |> Artefact.Prompt.load!()
 
-      prompt_result = Artefact.PromptResult.new!(prompt)
-
       assert {:ok,
               %Artefact.PromptResult{
                 prompt: ^prompt,
                 generation: %Generation.Mock{},
                 name: "Generated ModuleDoc of Nested.Example (" <> _,
-                content: content,
                 tags: ["magma-vault"],
                 aliases: [],
-                created_at: created_at,
                 custom_metadata: %{}
-              }} = Artefact.PromptResult.create(prompt_result)
+              } = prompt_result} = Artefact.PromptResult.create(prompt)
 
-      assert content ==
+      assert prompt_result.content ==
                """
                #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{Magma.Obsidian.View.Helper.delete_current_file_button()}
@@ -70,7 +66,7 @@ defmodule Magma.Artefact.PromptResultTest do
 
                """
 
-      assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
 
       generation =
         Generation.Mock.new!(
@@ -78,8 +74,6 @@ defmodule Magma.Artefact.PromptResultTest do
           expected_prompt: "Generate a moduledoc for `Nested.Example`.\n",
           result: "bar"
         )
-
-      prompt_result = Artefact.PromptResult.new!(prompt, generation: generation)
 
       assert {:ok,
               %Artefact.PromptResult{
@@ -89,7 +83,7 @@ defmodule Magma.Artefact.PromptResultTest do
                 tags: ["magma-vault"],
                 aliases: [],
                 custom_metadata: %{}
-              }} = Artefact.PromptResult.create(prompt_result)
+              }} = Artefact.PromptResult.create(prompt, generation: generation)
     end
   end
 end

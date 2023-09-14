@@ -38,15 +38,13 @@ defmodule Magma.Artefact.VersionTest do
         |> Vault.path()
         |> Artefact.PromptResult.load!()
 
-      version = Artefact.Version.new!(prompt_result)
-
       assert {:ok,
               %Artefact.Version{
                 prompt_result: ^prompt_result,
                 tags: ["magma-vault"],
                 aliases: [],
                 custom_metadata: %{}
-              } = version} = Artefact.Version.create(version)
+              } = version} = Artefact.Version.create(prompt_result)
 
       assert version.name == "ModuleDoc of Nested.Example"
 

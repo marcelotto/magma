@@ -9,6 +9,11 @@ defmodule Magma.Artefact.Prompt do
 
   require Logger
 
+  @impl true
+  def build_path(%__MODULE__{artefact: %artefact_type{} = artefact}) do
+    {:ok, artefact |> artefact_type.build_prompt_path() |> Vault.artefact_generation_path()}
+  end
+
   def new(artefact, attrs \\ []) do
     struct(__MODULE__, [{:artefact, artefact} | attrs])
     |> Document.init_path()
@@ -21,9 +26,28 @@ defmodule Magma.Artefact.Prompt do
     end
   end
 
-  @impl true
-  def build_path(%__MODULE__{artefact: %artefact_type{} = artefact}) do
-    {:ok, artefact |> artefact_type.build_prompt_path() |> Vault.artefact_generation_path()}
+  def create(artefact, attrs \\ [], opts \\ [])
+
+  def create(%__MODULE__{} = document, opts, []) do
+    with {:ok, document} <-
+           document
+           |> Document.init()
+           |> Document.create_file_from_template(opts) do
+      Document.Loader.load(document)
+    end
+  end
+
+  def create(%__MODULE__{}, _, _),
+    do:
+      raise(
+        ArgumentError,
+        "Magma.Artefact.Prompt.create/3 is available only with new/2 arguments"
+      )
+
+  def create(artefact, attrs, opts) do
+    with {:ok, document} <- new(artefact, attrs) do
+      create(document, opts)
+    end
   end
 
   @impl true

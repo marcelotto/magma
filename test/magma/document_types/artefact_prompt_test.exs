@@ -14,19 +14,17 @@ defmodule Magma.Artefact.PromptTest do
       assert {:ok,
               %Artefact.Prompt{
                 artefact: ^artefact,
-                path: path,
-                name: name,
                 tags: nil,
                 aliases: nil,
                 created_at: nil,
                 custom_metadata: nil,
                 content: nil
-              }} = Artefact.Prompt.new(artefact)
+              } = prompt} = Artefact.Prompt.new(artefact)
 
-      assert name == "Prompt for ModuleDoc of Nested.Example"
+      assert prompt.name == "Prompt for ModuleDoc of Nested.Example"
 
-      assert path ==
-               Vault.path("artefacts/generated/modules/Nested/Example/#{name}.md")
+      assert prompt.path ==
+               Vault.path("artefacts/generated/modules/Nested/Example/#{prompt.name}.md")
     end
   end
 
@@ -38,7 +36,6 @@ defmodule Magma.Artefact.PromptTest do
     test "moduledoc" do
       module_concept = Nested.Example |> module_concept() |> Concept.load!()
       artefact = Artefacts.ModuleDoc.new!(module_concept)
-      prompt = Artefact.Prompt.new!(artefact)
 
       assert {:ok,
               %Artefact.Prompt{
@@ -46,7 +43,7 @@ defmodule Magma.Artefact.PromptTest do
                 tags: ["magma-vault"],
                 aliases: [],
                 custom_metadata: %{}
-              } = prompt} = Artefact.Prompt.create(prompt)
+              } = prompt} = Artefact.Prompt.create(artefact)
 
       assert prompt.name == "Prompt for #{artefact.name}"
       assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2

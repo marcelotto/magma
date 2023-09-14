@@ -1,9 +1,18 @@
 defmodule Magma.Document do
+  alias Magma.Vault
+  import Magma.Utils, only: [init_fields: 2]
+
   @type t ::
           Magma.Concept.t()
           | Magma.Artefact.Prompt.t()
           | Magma.Artefact.PromptResult.t()
           | Magma.Artefact.Version.t()
+
+  @callback template :: module
+
+  @callback load_document(t()) :: {:ok, t()} | {:error, any}
+
+  @callback build_path(t()) :: {:ok, Path.t()}
 
   @fields [
     # the path of this document
@@ -23,17 +32,6 @@ defmodule Magma.Document do
   @template_path :code.priv_dir(:magma) |> Path.join("templates")
   def template_path, do: @template_path
 
-  @callback template :: module
-
-  @callback load_document(t()) :: {:ok, t()} | {:error, any}
-
-  @callback create_document(t()) :: {:ok, t()} | {:error, any}
-
-  @callback build_path(t()) :: {:ok, Path.t()}
-
-  alias Magma.Vault
-  alias Magma.Document.Loader
-
   defmacro __using__(opts) do
     additional_fields = Keyword.get(opts, :fields, [])
 
@@ -46,11 +44,6 @@ defmodule Magma.Document do
       @impl true
       def template, do: Module.concat(__MODULE__, Template)
 
-      @impl true
-      def create_document(%__MODULE__{} = document), do: {:ok, document}
-
-      def create(%__MODULE__{} = document), do: Document.create(document)
-
       def load(%__MODULE__{} = document), do: Document.Loader.load(document)
       def load(path), do: Document.Loader.load(__MODULE__, path)
 
@@ -60,48 +53,20 @@ defmodule Magma.Document do
           {:error, error} -> raise error
         end
       end
-
-      defoverridable create_document: 1
     end
   end
 
-  def template(%document_type{} = document) do
-    Path.join(@template_path, document_type.document_template_path(document))
+  @doc false
+  def init(%_document_type{} = document, fields \\ []) do
+    init_fields(
+      document,
+      [
+        created_at: DateTime.utc_now(),
+        tags: :magma |> Application.get_env(:default_tags) |> List.wrap()
+      ]
+      |> Keyword.merge(fields)
+    )
   end
-
-  def name_from_path(path) do
-    Path.basename(path, Path.extname(path))
-  end
-
-  def create(%document_type{} = document, opts \\ []) do
-    with {:ok, typed_document} <-
-           document
-           |> init_document()
-           |> document_type.create_document(),
-         {:ok, created_document} <-
-           create_file_from_template(typed_document, opts) do
-      Vault.index(created_document)
-      Loader.load(created_document)
-    end
-  end
-
-  defp init_document(document) do
-    document
-    |> init_created_at()
-    |> init_tags()
-  end
-
-  def init_created_at(%_{created_at: nil} = document) do
-    %{document | created_at: DateTime.utc_now()}
-  end
-
-  def init_created_at(document), do: document
-
-  defp init_tags(%_{tags: nil} = document) do
-    %{document | tags: :magma |> Application.get_env(:default_tags) |> List.wrap()}
-  end
-
-  defp init_tags(document), do: document
 
   @doc false
   def init_path(%document_type{} = document) do
@@ -113,20 +78,27 @@ defmodule Magma.Document do
     end
   end
 
-  defp create_file_from_template(%document_type{} = document, opts) do
-    Magma.MixHelper.create_file(
-      document.path,
-      document_type.template().render(document),
-      opts
-    )
+  @doc false
+  def name_from_path(path) do
+    Path.basename(path, Path.extname(path))
+  end
+
+  def create_file_from_template(%document_type{} = document, opts) do
+    create_file(document, apply(document_type.template(), :render, [document]), opts)
+  end
+
+  defp create_file(%_document_type{} = document, content, opts) do
+    Magma.MixHelper.create_file(document.path, content, opts)
+
+    Vault.index(document)
 
     {:ok, document}
   end
 
-  def recreate(%_document_type{} = document) do
+  def recreate(%document_type{} = document) do
     document
     |> reset_document()
-    |> create(force: true)
+    |> document_type.create(force: true)
   end
 
   def recreate!(document) do
@@ -172,7 +144,7 @@ defmodule Magma.Document do
   def type(string) when is_binary(string) do
     module = Module.concat(Magma, string)
 
-    if Code.ensure_loaded?(module) and function_exported?(module, :create_document, 1) do
+    if Code.ensure_loaded?(module) and function_exported?(module, :build_path, 1) do
       module
     end
   end

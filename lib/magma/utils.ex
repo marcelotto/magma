@@ -1,5 +1,23 @@
 defmodule Magma.Utils do
   @doc """
+  Sets the field of a struct to a given value, unless it already has a value.
+  """
+  def init_field(struct, [{field, _}] = init) do
+    if Map.get(struct, field) do
+      struct
+    else
+      struct(struct, init)
+    end
+  end
+
+  @doc """
+  Sets the fields of a struct to  given values, unless they already have a value.
+  """
+  def init_fields(struct, fields) do
+    Enum.reduce(fields, struct, &init_field(&2, List.wrap(&1)))
+  end
+
+  @doc """
   Converts all (string) map keys to atoms recursively.
 
   ## Examples

@@ -21,7 +21,6 @@ defmodule Mix.Tasks.Magma.Artefact.SelectDraft do
         {:ok, _} =
           prompt_result_name
           |> Artefact.PromptResult.load!()
-          |> Artefact.Version.new!()
           |> Artefact.Version.create()
     end)
   end

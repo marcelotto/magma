@@ -21,7 +21,6 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
         {:ok, _} =
           prompt_name
           |> Artefact.Prompt.load!()
-          |> Artefact.PromptResult.new!()
           |> Artefact.PromptResult.create()
     end)
   end

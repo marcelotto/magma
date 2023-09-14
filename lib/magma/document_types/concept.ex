@@ -1,7 +1,4 @@
 defmodule Magma.Concept do
-  alias Magma.{Vault, Matter}
-  alias Magma.DocumentStruct
-
   use Magma.Document,
     fields: [
       # the thing the concept is about
@@ -14,12 +11,19 @@ defmodule Magma.Concept do
       :sections
     ]
 
+  alias Magma.{Vault, Matter, DocumentStruct}
+
   @type t :: %__MODULE__{}
 
   @description_section_title "Description"
   def description_section_title, do: @description_section_title
   @system_prompt_section_title "Artefact system prompts"
   def system_prompt_section_title, do: @system_prompt_section_title
+
+  @impl true
+  def build_path(%__MODULE__{subject: %matter_type{} = matter}) do
+    {:ok, matter |> matter_type.concept_path() |> Vault.concept_path()}
+  end
 
   def new(subject, attrs \\ []) do
     struct(__MODULE__, [{:subject, subject} | attrs])
@@ -33,17 +37,23 @@ defmodule Magma.Concept do
     end
   end
 
-  @impl true
-  def build_path(%__MODULE__{subject: %matter_type{} = matter}) do
-    {:ok, matter |> matter_type.concept_path() |> Vault.concept_path()}
+  def create(subject, attrs \\ [], opts \\ [])
+
+  def create(%__MODULE__{subject: %matter_type{} = matter} = document, opts, []) do
+    with {:ok, document} <-
+           document
+           |> Document.init(aliases: matter_type.default_concept_aliases(matter))
+           |> Document.create_file_from_template(opts) do
+      Document.Loader.load(document)
+    end
   end
 
-  @impl true
-  def create_document(%__MODULE__{subject: %matter_type{} = matter} = concept) do
-    if concept.aliases do
-      {:ok, concept}
-    else
-      {:ok, struct(concept, aliases: matter_type.default_concept_aliases(matter))}
+  def create(%__MODULE__{}, _, _),
+    do: raise(ArgumentError, "Magma.Concept.create/3 is available only with new/2 arguments")
+
+  def create(subject, attrs, opts) do
+    with {:ok, document} <- new(subject, attrs) do
+      create(document, opts)
     end
   end
 

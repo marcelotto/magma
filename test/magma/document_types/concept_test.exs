@@ -69,7 +69,6 @@ defmodule Magma.ConceptTest do
               } = concept} =
                Nested.Example
                |> Matter.Module.new!()
-               |> Concept.new!()
                |> Concept.create()
 
       assert concept.path == expected_path
@@ -99,7 +98,6 @@ defmodule Magma.ConceptTest do
               } = concept} =
                "Magma"
                |> Matter.Project.new!()
-               |> Concept.new!()
                |> Concept.create()
 
       assert concept.path == expected_path
