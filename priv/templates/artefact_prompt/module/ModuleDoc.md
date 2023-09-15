@@ -2,6 +2,8 @@
 magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "<%= link_to(concept) %>"
+magma_generation_type: <%= inspect(Magma.Generation.short_name(prompt.generation)) %>
+magma_generation_params: <%= yaml_nested_map(prompt.generation) %>
 created_at: <%= prompt.created_at %>
 tags: <%= yaml_list(prompt.tags) %>
 aliases: <%= yaml_list(prompt.aliases) %>

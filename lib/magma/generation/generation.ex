@@ -66,4 +66,28 @@ defmodule Magma.Generation do
       _ -> raise("invalid Magma.Generation: #{inspect(module)}")
     end
   end
+
+  def extract_from_metadata(metadata) do
+    {generation_type, custom_metadata} = Map.pop(metadata, :magma_generation_type)
+    {generation_params, custom_metadata} = Map.pop(custom_metadata, :magma_generation_params)
+
+    cond do
+      !generation_type || !generation_params ->
+        {:ok, nil, metadata}
+
+      !generation_type ->
+        {:error, "magma_generation_params without magma_generation_type"}
+
+      !generation_params ->
+        {:error, "magma_generation_type without magma_generation_params"}
+
+      generation_module = type(generation_type) ->
+        with {:ok, generation} <- generation_module.new(generation_params) do
+          {:ok, generation, custom_metadata}
+        end
+
+      true ->
+        {:error, "invalid magma_generation_type type: #{generation_type}"}
+    end
+  end
 end

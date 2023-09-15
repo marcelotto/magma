@@ -5,7 +5,7 @@ defmodule Magma.Artefact.PromptTest do
 
   import ExUnit.CaptureLog
 
-  alias Magma.{Artefacts, Artefact, Concept}
+  alias Magma.{Artefacts, Artefact, Concept, Generation}
 
   describe "new/1" do
     test "with ModuleDoc artefact" do
@@ -43,6 +43,7 @@ defmodule Magma.Artefact.PromptTest do
               %Artefact.Prompt{
                 artefact: Artefacts.ModuleDoc,
                 concept: ^module_concept,
+                generation: %Generation.Mock{},
                 tags: ["magma-vault"],
                 aliases: [],
                 custom_metadata: %{}

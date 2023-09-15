@@ -1,9 +1,9 @@
 defmodule Magma.Artefact.Prompt do
-  use Magma.Document, fields: [:artefact, :concept]
+  use Magma.Document, fields: [:artefact, :concept, :generation]
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Utils}
+  alias Magma.{Vault, Artefact, Concept, Generation, Utils}
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
   alias Magma.Artefact.Prompt.Template
@@ -30,7 +30,7 @@ defmodule Magma.Artefact.Prompt do
   def create(concept, artefact, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, [], []) do
-    document = Document.init(document)
+    document = Document.init(document, generation: Generation.default().new!())
     Document.create_file(document, Template.render(document), opts)
   end
 
@@ -50,8 +50,8 @@ defmodule Magma.Artefact.Prompt do
   @impl true
   @doc false
   def load_document(%__MODULE__{} = prompt) do
-    {artefact_type, custom_metadata} = Map.pop(prompt.custom_metadata, :magma_artefact)
-    {concept_link, custom_metadata} = Map.pop(custom_metadata, :magma_concept)
+    {artefact_type, metadata} = Map.pop(prompt.custom_metadata, :magma_artefact)
+    {concept_link, metadata} = Map.pop(metadata, :magma_concept)
 
     cond do
       !artefact_type ->
@@ -69,13 +69,15 @@ defmodule Magma.Artefact.Prompt do
             {:error, "invalid magma_concept link: #{concept_link}"}
 
           document_path ->
-            with {:ok, concept} <- Concept.load(document_path) do
+            with {:ok, concept} <- Concept.load(document_path),
+                 {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
               {:ok,
                %__MODULE__{
                  prompt
                  | artefact: artefact_module,
                    concept: concept,
-                   custom_metadata: custom_metadata
+                   generation: generation,
+                   custom_metadata: metadata
                }}
             end
         end

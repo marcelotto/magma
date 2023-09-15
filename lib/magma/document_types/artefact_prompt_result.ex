@@ -40,7 +40,10 @@ defmodule Magma.Artefact.PromptResult do
   def create(prompt, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, []) do
-    document = Document.init(document, generation: Generation.default().new!())
+    document =
+      Document.init(document,
+        generation: document.prompt.generation || Generation.default().new!()
+      )
 
     with {:ok, content} <- execute_prompt(document) do
       Document.create_file(document, content, opts)
@@ -92,40 +95,30 @@ defmodule Magma.Artefact.PromptResult do
   @impl true
   @doc false
   def load_document(%__MODULE__{} = prompt_result) do
-    {prompt_link, custom_metadata} = Map.pop(prompt_result.custom_metadata, :magma_prompt)
-    {generation_type, custom_metadata} = Map.pop(custom_metadata, :magma_generation_type)
-    {generation_params, custom_metadata} = Map.pop(custom_metadata, :magma_generation_params)
+    {prompt_link, metadata} = Map.pop(prompt_result.custom_metadata, :magma_prompt)
 
-    cond do
-      !prompt_link ->
-        {:error, "magma_concept missing"}
+    if prompt_link do
+      prompt_link
+      |> Utils.extract_link_text()
+      |> Vault.document_path()
+      |> case do
+        nil ->
+          {:error, "invalid magma_prompt link: #{prompt_link}"}
 
-      !generation_type || !generation_params ->
-        {:error, "magma_generation metadata missing"}
-
-      generation_module = Generation.type(generation_type) ->
-        prompt_link
-        |> Utils.extract_link_text()
-        |> Vault.document_path()
-        |> case do
-          nil ->
-            {:error, "invalid magma_prompt link: #{prompt_link}"}
-
-          document_path ->
-            with {:ok, prompt} <- Artefact.Prompt.load(document_path),
-                 {:ok, generation} <- generation_module.new(generation_params) do
-              {:ok,
-               %__MODULE__{
-                 prompt_result
-                 | prompt: prompt,
-                   generation: generation,
-                   custom_metadata: custom_metadata
-               }}
-            end
-        end
-
-      true ->
-        {:error, "invalid magma_generation_type type: #{generation_type}"}
+        document_path ->
+          with {:ok, prompt} <- Artefact.Prompt.load(document_path),
+               {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
+            {:ok,
+             %__MODULE__{
+               prompt_result
+               | prompt: prompt,
+                 generation: generation,
+                 custom_metadata: metadata
+             }}
+          end
+      end
+    else
+      {:error, "magma_prompt missing"}
     end
   end
 end

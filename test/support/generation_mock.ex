@@ -1,7 +1,7 @@
 defmodule Magma.Generation.Mock do
   @behaviour Magma.Generation
 
-  defstruct result: :foo, expected_prompt: nil, expected_system_prompt: nil
+  defstruct result: "foo", expected_prompt: nil, expected_system_prompt: nil
 
   def new(params \\ []) do
     {:ok, new!(params)}
