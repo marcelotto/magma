@@ -5,21 +5,21 @@ defmodule Magma.Artefact.Version do
 
   alias Magma.{Vault, Artefact, Utils}
 
-  def build_name(%artefact_type{concept: concept}) do
-    artefact_type.build_name(concept)
+  def build_name(concept, artefact) do
+    artefact.build_name(concept)
   end
 
   @impl true
   def build_path(%__MODULE__{
         prompt_result: %Artefact.PromptResult{
-          prompt: %Artefact.Prompt{artefact: artefact}
+          prompt: %Artefact.Prompt{artefact: artefact, concept: concept}
         }
       }) do
-    build_path(artefact)
+    build_path(concept, artefact)
   end
 
-  def build_path(%artefact_type{} = artefact) do
-    {:ok, artefact |> artefact_type.build_version_path() |> Vault.artefact_version_path()}
+  def build_path(concept, artefact) do
+    {:ok, concept |> artefact.build_version_path() |> Vault.artefact_version_path()}
   end
 
   def new(prompt_result, attrs \\ []) do

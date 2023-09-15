@@ -19,9 +19,8 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
 
       _opts, [concept_name, artefact_type] ->
         if artefact_module = Artefact.type(artefact_type) do
-          with {:ok, concept} <- Concept.load(concept_name),
-               {:ok, artefact} <- artefact_module.new(concept) do
-            Artefact.Prompt.create(artefact)
+          with {:ok, concept} <- Concept.load(concept_name) do
+            Artefact.Prompt.create(concept, artefact_module)
           else
             {:error, error} -> raise error
           end

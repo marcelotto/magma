@@ -1,5 +1,5 @@
 defmodule Magma.Artefact.Prompt do
-  use Magma.Document, fields: [:artefact]
+  use Magma.Document, fields: [:artefact, :concept]
 
   @type t :: %__MODULE__{}
 
@@ -11,38 +11,38 @@ defmodule Magma.Artefact.Prompt do
   require Logger
 
   @impl true
-  def build_path(%__MODULE__{artefact: %artefact_type{} = artefact}) do
-    {:ok, artefact |> artefact_type.build_prompt_path() |> Vault.artefact_generation_path()}
+  def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
+    {:ok, concept |> artefact.build_prompt_path() |> Vault.artefact_generation_path()}
   end
 
-  def new(artefact, attrs \\ []) do
-    struct(__MODULE__, [{:artefact, artefact} | attrs])
+  def new(concept, artefact, attrs \\ []) do
+    struct(__MODULE__, [{:artefact, artefact}, {:concept, concept} | attrs])
     |> Document.init_path()
   end
 
-  def new!(artefact, attrs \\ []) do
-    case new(artefact, attrs) do
+  def new!(concept, artefact, attrs \\ []) do
+    case new(concept, artefact, attrs) do
       {:ok, document} -> document
       {:error, error} -> raise error
     end
   end
 
-  def create(artefact, attrs \\ [], opts \\ [])
+  def create(concept, artefact, attrs \\ [], opts \\ [])
 
-  def create(%__MODULE__{} = document, opts, []) do
+  def create(%__MODULE__{} = document, opts, [], []) do
     document = Document.init(document)
     Document.create_file(document, Template.render(document), opts)
   end
 
-  def create(%__MODULE__{}, _, _),
+  def create(%__MODULE__{}, _, _, []),
     do:
       raise(
         ArgumentError,
-        "Magma.Artefact.Prompt.create/3 is available only with new/2 arguments"
+        "Magma.Artefact.Prompt.create/4 is available only with new/2 arguments"
       )
 
-  def create(artefact, attrs, opts) do
-    with {:ok, document} <- new(artefact, attrs) do
+  def create(concept, artefact, attrs, opts) do
+    with {:ok, document} <- new(concept, artefact, attrs) do
       create(document, opts)
     end
   end
@@ -69,12 +69,12 @@ defmodule Magma.Artefact.Prompt do
             {:error, "invalid magma_concept link: #{concept_link}"}
 
           document_path ->
-            with {:ok, concept} <- Concept.load(document_path),
-                 {:ok, artefact} <- artefact_module.new(concept) do
+            with {:ok, concept} <- Concept.load(document_path) do
               {:ok,
                %__MODULE__{
                  prompt
-                 | artefact: artefact,
+                 | artefact: artefact_module,
+                   concept: concept,
                    custom_metadata: custom_metadata
                }}
             end

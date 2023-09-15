@@ -27,8 +27,7 @@ defmodule Magma.Vault.CodeSyncTest do
 
         assert {:ok, %Artefact.Prompt{}} =
                  concept
-                 |> Artefacts.ModuleDoc.new!()
-                 |> Artefact.Prompt.new!()
+                 |> Artefacts.ModuleDoc.prompt!()
                  |> Artefact.Prompt.load()
       end)
     end

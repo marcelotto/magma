@@ -5,34 +5,27 @@ defmodule Magma.Artefacts.ModuleDoc do
 
   import Magma.Utils.Guards
 
-  @type t :: %__MODULE__{}
-
   @impl true
   def build_name(concept), do: "ModuleDoc of #{concept.name}"
 
   def prompt_name(concept), do: "Prompt for #{build_name(concept)}"
 
   @impl true
-  def build_prompt_path(%__MODULE__{concept: concept} = moduledoc) do
-    moduledoc
+  def build_prompt_path(concept) do
+    concept
     |> base_path()
     |> Path.join("#{prompt_name(concept)}.md")
   end
 
   @impl true
-  def build_version_path(%__MODULE__{concept: concept} = moduledoc) do
-    moduledoc
+  def build_version_path(concept) do
+    concept
     |> base_path()
     |> Path.join("#{build_name(concept)}.md")
   end
 
-  defp base_path(%__MODULE__{concept: %Concept{subject: %Matter.Module{name: module}}}) do
+  defp base_path(%Concept{subject: %Matter.Module{name: module}}) do
     Path.join(["modules" | Module.split(module)])
-  end
-
-  @impl true
-  def init(%__MODULE__{} = moduledoc) do
-    {:ok, moduledoc}
   end
 
   # We can not use the Magma.Vault.Index here because this function will be used also at compile-time.
@@ -40,8 +33,7 @@ defmodule Magma.Artefacts.ModuleDoc do
     mod
     |> Matter.Module.new!()
     |> Concept.new!()
-    |> new!()
-    |> Artefact.Version.build_path()
+    |> Artefact.Version.build_path(__MODULE__)
     |> case do
       {:ok, path} -> path
       _ -> nil

@@ -1,7 +1,7 @@
 defmodule Magma.Concept.Template do
   use Magma.Document.Template
 
-  alias Magma.{Vault, Concept, Artefact}
+  alias Magma.{Vault, Concept}
 
   require Concept
 
@@ -37,8 +37,7 @@ defmodule Magma.Concept.Template do
 
   def link_to_prompt(concept, artefact) do
     concept
-    |> artefact.new!()
-    |> Artefact.Prompt.new!()
+    |> artefact.prompt!()
     |> link_to()
   end
 end

@@ -3,23 +3,23 @@ defmodule Magma.Artefact.PromptResult do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Generation, Utils}
+  alias Magma.{Vault, Artefact, Concept, Generation, Utils}
 
   import Magma.Utils, only: [init_field: 2]
 
-  def build_name(%artefact_type{concept: concept}) do
-    "Generated #{artefact_type.build_name(concept)}"
+  def build_name(%Concept{} = concept, artefact) do
+    "Generated #{artefact.build_name(concept)}"
   end
 
   @impl true
   def build_path(
-        %__MODULE__{prompt: %Artefact.Prompt{artefact: %artefact_type{} = artefact}} = result
+        %__MODULE__{prompt: %Artefact.Prompt{artefact: artefact, concept: concept}} = result
       ) do
     {:ok,
      [
-       artefact |> artefact_type.build_prompt_path() |> Path.dirname(),
+       concept |> artefact.build_prompt_path() |> Path.dirname(),
        "__prompt_results__",
-       "#{build_name(artefact)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()}).md"
+       "#{build_name(concept, artefact)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()}).md"
      ]
      |> Vault.artefact_generation_path()}
   end
@@ -83,7 +83,7 @@ defmodule Magma.Artefact.PromptResult do
     #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
     #{delete_current_file_button()}
 
-    # #{build_name(document.prompt.artefact)}
+    # #{build_name(document.prompt.concept, document.prompt.artefact)}
 
     #{result}
     """

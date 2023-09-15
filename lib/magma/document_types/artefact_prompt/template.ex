@@ -32,10 +32,10 @@ defmodule Magma.Artefact.Prompt.Template do
       {:ok, Artefact.Prompt, artefact_type} ->
         @external_resource file
         def render(
-              %Artefact.Prompt{artefact: %unquote(artefact_type){} = artefact} = prompt,
+              %Artefact.Prompt{artefact: unquote(artefact_type) = artefact, concept: concept} =
+                prompt,
               assigns
             ) do
-          concept = artefact.concept
           subject = concept.subject
           project = Project.concept()
 

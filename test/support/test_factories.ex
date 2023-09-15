@@ -35,16 +35,10 @@ defmodule Magma.TestFactories do
     |> Concept.new!()
   end
 
-  def module_doc_artefact(mod \\ Nested.Example) do
-    mod
-    |> module_concept()
-    |> Artefacts.ModuleDoc.new!()
-  end
-
   def module_doc_artefact_prompt(mod \\ Nested.Example) do
     mod
-    |> module_doc_artefact()
-    |> Artefact.Prompt.new!()
+    |> module_concept()
+    |> Artefacts.ModuleDoc.prompt!()
   end
 
   def module_doc_artefact_prompt_result(mod \\ Nested.Example) do

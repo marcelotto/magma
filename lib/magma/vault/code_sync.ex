@@ -1,6 +1,6 @@
 defmodule Magma.Vault.CodeSync do
   alias Magma.Matter.Project
-  alias Magma.{Vault, Concept, Artefact, Artefacts}
+  alias Magma.{Vault, Concept, Artefacts}
 
   def sync(_opts \\ []) do
     if File.exists?(Vault.path()) do
@@ -17,8 +17,6 @@ defmodule Magma.Vault.CodeSync do
   end
 
   defp create_artefact_prompts(concept) do
-    with {:ok, artefact} <- Artefacts.ModuleDoc.new(concept) do
-      Artefact.Prompt.create(artefact)
-    end
+    Artefacts.ModuleDoc.create_prompt(concept)
   end
 end
