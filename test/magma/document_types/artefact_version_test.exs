@@ -53,6 +53,7 @@ defmodule Magma.Artefact.VersionTest do
                # #{version.name}
 
                The final documentation of `Nested.Example`.
+
                """
 
       assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2

@@ -6,6 +6,7 @@ defmodule Magma.Artefact.Prompt do
   alias Magma.{Vault, Artefact, Concept, Utils}
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
+  alias Magma.Artefact.Prompt.Template
 
   require Logger
 
@@ -29,12 +30,8 @@ defmodule Magma.Artefact.Prompt do
   def create(artefact, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, []) do
-    with {:ok, document} <-
-           document
-           |> Document.init()
-           |> Document.create_file_from_template(opts) do
-      Document.Loader.load(document)
-    end
+    document = Document.init(document)
+    Document.create_file(document, Template.render(document), opts)
   end
 
   def create(%__MODULE__{}, _, _),

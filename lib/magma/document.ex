@@ -1,5 +1,7 @@
 defmodule Magma.Document do
   alias Magma.Vault
+  alias Magma.Document.Loader
+
   import Magma.Utils, only: [init_fields: 2]
 
   @type t ::
@@ -7,8 +9,6 @@ defmodule Magma.Document do
           | Magma.Artefact.Prompt.t()
           | Magma.Artefact.PromptResult.t()
           | Magma.Artefact.Version.t()
-
-  @callback template :: module
 
   @callback load_document(t()) :: {:ok, t()} | {:error, any}
 
@@ -40,9 +40,6 @@ defmodule Magma.Document do
       alias Magma.Document
 
       defstruct Magma.Document.fields() ++ unquote(additional_fields)
-
-      @impl true
-      def template, do: Module.concat(__MODULE__, Template)
 
       def load(%__MODULE__{} = document), do: Document.Loader.load(document)
       def load(path), do: Document.Loader.load(__MODULE__, path)
@@ -83,16 +80,13 @@ defmodule Magma.Document do
     Path.basename(path, Path.extname(path))
   end
 
-  def create_file_from_template(%document_type{} = document, opts) do
-    create_file(document, apply(document_type.template(), :render, [document]), opts)
-  end
-
-  defp create_file(%_document_type{} = document, content, opts) do
+  def create_file(%_document_type{} = document, content, opts) do
     Magma.MixHelper.create_file(document.path, content, opts)
 
-    Vault.index(document)
-
-    {:ok, document}
+    with {:ok, document} <- Loader.load(document) do
+      Vault.index(document)
+      {:ok, document}
+    end
   end
 
   def recreate(%document_type{} = document) do

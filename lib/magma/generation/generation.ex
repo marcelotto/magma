@@ -14,6 +14,10 @@ defmodule Magma.Generation do
     Application.get_env(:magma, :default_generation, Magma.Generation.OpenAI)
   end
 
+  def execute(%generation_type{} = generation, prompt, system_prompt) do
+    generation_type.execute(generation, prompt, system_prompt)
+  end
+
   @doc """
   Returns the generation module for the given string.
 

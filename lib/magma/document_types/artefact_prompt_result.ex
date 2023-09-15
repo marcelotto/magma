@@ -40,12 +40,10 @@ defmodule Magma.Artefact.PromptResult do
   def create(prompt, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, []) do
-    with {:ok, document} <-
-           document
-           |> Document.init()
-           |> execute_prompt(),
-         {:ok, document} <- Document.create_file_from_template(document, opts) do
-      Document.Loader.load(document)
+    document = Document.init(document, generation: Generation.default().new!())
+
+    with {:ok, content} <- execute_prompt(document) do
+      Document.create_file(document, content, opts)
     end
   end
 
@@ -63,24 +61,32 @@ defmodule Magma.Artefact.PromptResult do
   end
 
   defp execute_prompt(%__MODULE__{} = document) do
-    %generation_type{} = generation = document.generation || Generation.default().new!()
-
     with {:ok, system_prompt, prompt} <- Artefact.Prompt.messages(document.prompt),
-         {:ok, result} <- generation_type.execute(generation, prompt, system_prompt) do
-      {:ok,
-       %__MODULE__{
-         document
-         | generation: generation,
-           content: """
-           #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
-           #{Magma.Obsidian.View.Helper.delete_current_file_button()}
-
-           # #{build_name(document.prompt.artefact)}
-
-           #{result}
-           """
-       }}
+         {:ok, result} <- Generation.execute(document.generation, prompt, system_prompt) do
+      {:ok, render(document, result)}
     end
+  end
+
+  defp render(document, result) do
+    import Magma.Obsidian.View.Helper
+
+    """
+    ---
+    magma_type: Artefact.PromptResult
+    magma_prompt: "#{link_to(document.prompt)}"
+    magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
+    magma_generation_params: #{yaml_nested_map(document.generation)}
+    created_at: #{document.created_at}
+    tags: #{yaml_list(document.tags)}
+    aliases: #{yaml_list(document.aliases)}
+    ---
+    #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+    #{delete_current_file_button()}
+
+    # #{build_name(document.prompt.artefact)}
+
+    #{result}
+    """
   end
 
   @impl true

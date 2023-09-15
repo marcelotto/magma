@@ -12,6 +12,7 @@ defmodule Magma.Concept do
     ]
 
   alias Magma.{Vault, Matter, DocumentStruct}
+  alias Magma.Concept.Template
 
   @type t :: %__MODULE__{}
 
@@ -40,12 +41,8 @@ defmodule Magma.Concept do
   def create(subject, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{subject: %matter_type{} = matter} = document, opts, []) do
-    with {:ok, document} <-
-           document
-           |> Document.init(aliases: matter_type.default_concept_aliases(matter))
-           |> Document.create_file_from_template(opts) do
-      Document.Loader.load(document)
-    end
+    document = Document.init(document, aliases: matter_type.default_concept_aliases(matter))
+    Document.create_file(document, Template.render(document), opts)
   end
 
   def create(%__MODULE__{}, _, _),

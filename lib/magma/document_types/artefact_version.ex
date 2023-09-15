@@ -37,12 +37,8 @@ defmodule Magma.Artefact.Version do
   def create(prompt, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, []) do
-    with {:ok, document} <-
-           document
-           |> Document.init()
-           |> Document.create_file_from_template(opts) do
-      Document.Loader.load(document)
-    end
+    document = Document.init(document)
+    Document.create_file(document, render(document), opts)
   end
 
   def create(%__MODULE__{}, _, _),
@@ -56,6 +52,21 @@ defmodule Magma.Artefact.Version do
     with {:ok, document} <- new(prompt_result, attrs) do
       create(document, opts)
     end
+  end
+
+  defp render(document) do
+    import Magma.Obsidian.View.Helper
+
+    """
+    ---
+    magma_type: Artefact.Version
+    magma_prompt_result: "#{link_to(document.prompt_result)}"
+    created_at: #{document.created_at}
+    tags: #{yaml_list(document.tags)}
+    aliases: #{yaml_list(document.aliases)}
+    ---
+    #{Document.content_without_prologue(document.prompt_result)}
+    """
   end
 
   @impl true

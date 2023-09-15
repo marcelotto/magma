@@ -63,7 +63,6 @@ defmodule Magma.Artefact.PromptResultTest do
                # Generated ModuleDoc of Nested.Example
 
                foo
-
                """
 
       assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
