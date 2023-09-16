@@ -10,10 +10,10 @@ defmodule Magma do
   defmacro defmoduledoc do
     quote do
       magma_moduledoc_path = Magma.Artefacts.ModuleDoc.version_path(__MODULE__)
+      @external_resource magma_moduledoc_path
 
       if moduledoc = Magma.Artefacts.ModuleDoc.get(__MODULE__) do
         @moduledoc moduledoc
-        @external_resource magma_moduledoc_path
       else
         Magma.__moduledoc_artefact_not_found__(__MODULE__, magma_moduledoc_path)
       end
