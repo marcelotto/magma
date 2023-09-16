@@ -12,7 +12,7 @@ defmodule Magma.Artefact.Prompt do
 
   @impl true
   def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
-    {:ok, concept |> artefact.build_prompt_path() |> Vault.artefact_generation_path()}
+    {:ok, concept |> artefact.relative_prompt_path() |> Vault.artefact_generation_path()}
   end
 
   def new(concept, artefact, attrs \\ []) do

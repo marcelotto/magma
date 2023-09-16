@@ -6,26 +6,11 @@ defmodule Magma.Artefacts.ModuleDoc do
   import Magma.Utils.Guards
 
   @impl true
-  def build_name(concept), do: "ModuleDoc of #{concept.name}"
-
-  def prompt_name(concept), do: "Prompt for #{build_name(concept)}"
+  def name(concept), do: "ModuleDoc of #{concept.name}"
 
   @impl true
-  def build_prompt_path(concept) do
-    concept
-    |> base_path()
-    |> Path.join("#{prompt_name(concept)}.md")
-  end
-
-  @impl true
-  def build_version_path(concept) do
-    concept
-    |> base_path()
-    |> Path.join("#{build_name(concept)}.md")
-  end
-
-  defp base_path(%Concept{subject: %Matter.Module{name: module}}) do
-    Path.join(["modules" | Module.split(module)])
+  def relative_base_path(%Concept{subject: %Matter.Module{name: module}}) do
+    Path.join([Matter.Module.relative_base_path() | Module.split(module)])
   end
 
   # We can not use the Magma.Vault.Index here because this function will be used also at compile-time.

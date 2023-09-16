@@ -8,7 +8,7 @@ defmodule Magma.Artefact.PromptResult do
   import Magma.Utils, only: [init_field: 2]
 
   def build_name(%Concept{} = concept, artefact) do
-    "Generated #{artefact.build_name(concept)}"
+    "Generated #{artefact.name(concept)}"
   end
 
   @impl true
@@ -17,7 +17,7 @@ defmodule Magma.Artefact.PromptResult do
       ) do
     {:ok,
      [
-       concept |> artefact.build_prompt_path() |> Path.dirname(),
+       concept |> artefact.relative_prompt_path() |> Path.dirname(),
        "__prompt_results__",
        "#{build_name(concept, artefact)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()}).md"
      ]

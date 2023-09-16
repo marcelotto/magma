@@ -6,7 +6,11 @@ defmodule Magma.Matter do
   @fields [:name]
   def fields, do: @fields
 
-  @callback concept_path(t()) :: Path.t()
+  @callback relative_base_path :: Path.t()
+
+  @callback relative_concept_path(t()) :: Path.t()
+
+  @callback concept_name(t()) :: binary
 
   @callback default_concept_aliases(t()) :: list
 
@@ -77,7 +81,7 @@ defmodule Magma.Matter do
   def type(string) when is_binary(string) do
     module = Module.concat(__MODULE__, string)
 
-    if Code.ensure_loaded?(module) and function_exported?(module, :concept_path, 1) do
+    if Code.ensure_loaded?(module) and function_exported?(module, :relative_concept_path, 1) do
       module
     end
   end

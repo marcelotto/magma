@@ -7,7 +7,7 @@ defmodule Magma.Matter.Module do
 
   @type t :: %__MODULE__{}
 
-  @path_prefix "modules"
+  @relative_base_path "modules"
 
   @impl true
   def new(name: name), do: new(name)
@@ -28,10 +28,16 @@ defmodule Magma.Matter.Module do
   end
 
   @impl true
-  def concept_path(%__MODULE__{name: module}) do
-    [@path_prefix | context_segments(module)]
+  def concept_name(%__MODULE__{name: module}), do: inspect(module)
+
+  @impl true
+  def relative_base_path, do: @relative_base_path
+
+  @impl true
+  def relative_concept_path(%__MODULE__{name: module} = matter) do
+    [@relative_base_path | context_segments(module)]
     |> Path.join()
-    |> Path.join("#{inspect(module)}.md")
+    |> Path.join("#{concept_name(matter)}.md")
   end
 
   defp context_segments(module) do
