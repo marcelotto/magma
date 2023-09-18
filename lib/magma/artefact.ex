@@ -61,6 +61,28 @@ defmodule Magma.Artefact do
   end
 
   @doc """
+  Returns the artefact type name for the given artefact module.
+
+  ## Example
+
+      iex> Magma.Artefact.type_name(Magma.Artefacts.ModuleDoc)
+      "ModuleDoc"
+
+      iex> Magma.Artefact.type_name(Magma.Vault)
+      ** (RuntimeError) Invalid Magma.Artefacts type: Magma.Vault
+
+      iex> Magma.Artefact.type_name(NonExisting)
+      ** (RuntimeError) Invalid Magma.Artefacts type: NonExisting
+
+  """
+  def type_name(type) do
+    case Module.split(type) do
+      ["Magma", "Artefacts" | name_parts] -> Enum.join(name_parts, ".")
+      _ -> raise "Invalid Magma.Artefacts type: #{inspect(type)}"
+    end
+  end
+
+  @doc """
   Returns the artefact module for the given string.
 
   ## Example

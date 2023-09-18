@@ -4,14 +4,18 @@ defmodule Magma.Artefact.VersionTest do
   doctest Magma.Artefact.Version
 
   alias Magma.Artefact
+  alias Magma.Artefacts.ModuleDoc
 
   describe "new/1" do
     test "with ModuleDoc artefact" do
       prompt_result = module_doc_artefact_prompt_result()
+      concept = prompt_result.prompt.concept
 
       assert {:ok,
               %Artefact.Version{
                 prompt_result: ^prompt_result,
+                concept: ^concept,
+                artefact: ModuleDoc,
                 tags: nil,
                 aliases: nil,
                 created_at: nil,
@@ -23,6 +27,51 @@ defmodule Magma.Artefact.VersionTest do
 
       assert version.path ==
                Vault.path("artefacts/final/modules/Nested/Example/#{version.name}.md")
+    end
+
+    test "with missing prompt result" do
+      concept = module_concept()
+
+      missing_prompt_result =
+        %Magma.DocumentNotFound{
+          name: "Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)",
+          document_type: Artefact.PromptResult
+        }
+
+      assert {:ok,
+              %Artefact.Version{
+                prompt_result: ^missing_prompt_result,
+                concept: ^concept,
+                artefact: ModuleDoc,
+                tags: nil,
+                aliases: nil,
+                created_at: nil,
+                custom_metadata: nil,
+                content: nil
+              } = version} =
+               Artefact.Version.new(missing_prompt_result, concept: concept, artefact: ModuleDoc)
+
+      assert version.name == "ModuleDoc of Nested.Example"
+
+      assert version.path ==
+               Vault.path("artefacts/final/modules/Nested/Example/#{version.name}.md")
+    end
+  end
+
+  describe "load/1" do
+    @tag vault_files: [
+           "artefacts/final/modules/Nested/Example/ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
+         ]
+    test "without prompt result" do
+      assert {:ok,
+              %Artefact.Version{
+                artefact: ModuleDoc,
+                prompt_result: %Magma.DocumentNotFound{
+                  name: "Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)",
+                  document_type: Artefact.PromptResult
+                }
+              }} = Artefact.Version.load("ModuleDoc of Nested.Example")
     end
   end
 

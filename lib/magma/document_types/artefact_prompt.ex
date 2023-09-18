@@ -3,7 +3,7 @@ defmodule Magma.Artefact.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Generation, Utils}
+  alias Magma.{Vault, Artefact, Concept, Generation}
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
   alias Magma.Artefact.Prompt.Template
@@ -61,25 +61,16 @@ defmodule Magma.Artefact.Prompt do
         {:error, "magma_concept missing"}
 
       artefact_module = Artefact.type(artefact_type) ->
-        concept_link
-        |> Utils.extract_link_text()
-        |> Vault.document_path()
-        |> case do
-          nil ->
-            {:error, "invalid magma_concept link: #{concept_link}"}
-
-          document_path ->
-            with {:ok, concept} <- Concept.load(document_path),
-                 {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
-              {:ok,
-               %__MODULE__{
-                 prompt
-                 | artefact: artefact_module,
-                   concept: concept,
-                   generation: generation,
-                   custom_metadata: metadata
-               }}
-            end
+        with {:ok, concept} <- Concept.load_linked(concept_link),
+             {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
+          {:ok,
+           %__MODULE__{
+             prompt
+             | artefact: artefact_module,
+               concept: concept,
+               generation: generation,
+               custom_metadata: metadata
+           }}
         end
 
       true ->

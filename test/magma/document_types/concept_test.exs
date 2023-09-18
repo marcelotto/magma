@@ -3,7 +3,7 @@ defmodule Magma.ConceptTest do
 
   doctest Magma.Concept
 
-  alias Magma.{Concept, Matter}
+  alias Magma.{Concept, Matter, Artefact}
   alias Magma.DocumentStruct.Section
 
   describe "new/1" do
@@ -209,7 +209,12 @@ defmodule Magma.ConceptTest do
       assert prompt
              |> Vault.path()
              |> Concept.load() ==
-               {:error, "expected Magma.Concept, but got Magma.Artefact.Prompt"}
+               {:error,
+                Magma.InvalidDocumentType.exception(
+                  document: Vault.path(prompt),
+                  expected: Concept,
+                  actual: Artefact.Prompt
+                )}
     end
   end
 

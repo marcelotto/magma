@@ -38,10 +38,23 @@ defmodule Magma.Document.Loader do
 
       {:ok, %unexpected_document_type{}} ->
         {:error,
-         "expected #{inspect(document_type)}, but got #{inspect(unexpected_document_type)}"}
+         Magma.InvalidDocumentType.exception(
+           document: path,
+           expected: document_type,
+           actual: unexpected_document_type
+         )}
 
       {:error, _} = error ->
         error
+    end
+  end
+
+  def load_linked(type, link) do
+    name = Utils.extract_link_text(link)
+
+    case Vault.document_path(name) do
+      nil -> {:error, Magma.DocumentNotFound.exception(document_type: type, name: name)}
+      path -> type.load(path)
     end
   end
 

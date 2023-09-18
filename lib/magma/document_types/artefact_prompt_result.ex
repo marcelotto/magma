@@ -3,7 +3,7 @@ defmodule Magma.Artefact.PromptResult do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Generation, Utils}
+  alias Magma.{Vault, Artefact, Concept, Generation}
 
   import Magma.Utils, only: [init_field: 2]
 
@@ -98,24 +98,15 @@ defmodule Magma.Artefact.PromptResult do
     {prompt_link, metadata} = Map.pop(prompt_result.custom_metadata, :magma_prompt)
 
     if prompt_link do
-      prompt_link
-      |> Utils.extract_link_text()
-      |> Vault.document_path()
-      |> case do
-        nil ->
-          {:error, "invalid magma_prompt link: #{prompt_link}"}
-
-        document_path ->
-          with {:ok, prompt} <- Artefact.Prompt.load(document_path),
-               {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
-            {:ok,
-             %__MODULE__{
-               prompt_result
-               | prompt: prompt,
-                 generation: generation,
-                 custom_metadata: metadata
-             }}
-          end
+      with {:ok, prompt} <- Artefact.Prompt.load_linked(prompt_link),
+           {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
+        {:ok,
+         %__MODULE__{
+           prompt_result
+           | prompt: prompt,
+             generation: generation,
+             custom_metadata: metadata
+         }}
       end
     else
       {:error, "magma_prompt missing"}
