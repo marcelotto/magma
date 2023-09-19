@@ -19,7 +19,6 @@ defmodule Magma.Artefact.PromptResultTest do
                 tags: nil,
                 aliases: nil,
                 created_at: ^created_at,
-                custom_metadata: nil,
                 content: nil
               }} =
                Artefact.PromptResult.new(prompt, created_at: created_at)
@@ -34,7 +33,7 @@ defmodule Magma.Artefact.PromptResultTest do
     end
   end
 
-  describe "create/1" do
+  describe "create/1 (and re-load/1)" do
     @tag vault_files: [
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
            "concepts/modules/Nested/Nested.Example.md"
@@ -55,6 +54,8 @@ defmodule Magma.Artefact.PromptResultTest do
                 custom_metadata: %{}
               } = prompt_result} = Artefact.PromptResult.create(prompt)
 
+      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+
       assert prompt_result.content ==
                """
                #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
@@ -65,7 +66,7 @@ defmodule Magma.Artefact.PromptResultTest do
                foo
                """
 
-      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+      assert Artefact.PromptResult.load(prompt_result.path) == {:ok, prompt_result}
 
       generation =
         Generation.Mock.new!(

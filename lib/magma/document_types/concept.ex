@@ -41,8 +41,12 @@ defmodule Magma.Concept do
   def create(subject, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{subject: %matter_type{} = matter} = document, opts, []) do
-    document = Document.init(document, aliases: matter_type.default_concept_aliases(matter))
-    Document.create_file(document, Template.render(document), opts)
+    with {:ok, document} <-
+           document
+           |> Document.init(aliases: matter_type.default_concept_aliases(matter))
+           |> render() do
+      Document.save(document, opts)
+    end
   end
 
   def create(%__MODULE__{}, _, _),
@@ -54,22 +58,42 @@ defmodule Magma.Concept do
     end
   end
 
-  @impl true
-  @doc false
-  def load_document(%__MODULE__{} = concept) do
-    with {:ok, document_struct} <- DocumentStruct.parse(concept.content),
-         title = DocumentStruct.title(document_struct),
-         {:ok, matter, custom_metadata} <-
-           Matter.extract_from_metadata(concept.name, title, concept.custom_metadata) do
+  def create!(subject, attrs \\ [], opts \\ []) do
+    case create(subject, attrs, opts) do
+      {:ok, document} -> document
+      {:error, error} -> raise error
+    end
+  end
+
+  def render(%__MODULE__{} = concept) do
+    %__MODULE__{concept | content: Template.render(concept)}
+    |> parse()
+  end
+
+  defp parse(concept) do
+    with {:ok, document_struct} <- DocumentStruct.parse(concept.content) do
       {:ok,
        %__MODULE__{
          concept
-         | subject: matter,
-           title: title,
+         | title: DocumentStruct.title(document_struct),
            prologue: document_struct.prologue,
-           sections: document_struct.sections,
-           custom_metadata: custom_metadata
+           sections: document_struct.sections
        }}
+    end
+  end
+
+  @impl true
+  def render_front_matter(%__MODULE__{subject: %matter_type{} = matter}) do
+    matter_type.render_front_matter(matter)
+  end
+
+  @impl true
+  @doc false
+  def load_document(%__MODULE__{} = concept) do
+    with {:ok, concept} <- parse(concept),
+         {:ok, matter, custom_metadata} <-
+           Matter.extract_from_metadata(concept.name, concept.title, concept.custom_metadata) do
+      {:ok, %__MODULE__{concept | subject: matter, custom_metadata: custom_metadata}}
     end
   end
 

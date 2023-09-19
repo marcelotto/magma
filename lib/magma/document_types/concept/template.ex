@@ -1,7 +1,7 @@
 defmodule Magma.Concept.Template do
   use Magma.Document.Template
 
-  alias Magma.{Vault, Concept}
+  alias Magma.{Concept, Matter}
 
   require Concept
 
@@ -15,23 +15,21 @@ defmodule Magma.Concept.Template do
   |> Enum.reject(&match?("." <> _, &1))
   |> Enum.map(&Path.join(@path, &1))
   |> Enum.each(fn file ->
-    case Vault.document_type(file) do
-      {:ok, Concept, matter_type} ->
-        @external_resource file
-        def render(%Concept{subject: %unquote(matter_type){} = subject} = concept, assigns) do
-          if false do
-            # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
-            concept || subject || assigns
-          else
-            unquote(EEx.compile_file(file))
-          end
+    if matter_type =
+         file
+         |> Path.basename(Path.extname(file))
+         |> Matter.type() do
+      @external_resource file
+      def render(%Concept{subject: %unquote(matter_type){} = subject} = concept, assigns) do
+        if false do
+          # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
+          concept || subject || assigns
+        else
+          unquote(EEx.compile_file(file))
         end
-
-      {:ok, document_type, _} ->
-        raise "invalid magma_type in Artefact.Prompt template at #{file}: #{document_type}"
-
-      {:error, error} ->
-        raise error
+      end
+    else
+      raise "unable to detect matter type of #{file}"
     end
   end)
 

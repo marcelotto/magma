@@ -19,7 +19,6 @@ defmodule Magma.Artefact.VersionTest do
                 tags: nil,
                 aliases: nil,
                 created_at: nil,
-                custom_metadata: nil,
                 content: nil
               } = version} = Artefact.Version.new(prompt_result)
 
@@ -46,7 +45,6 @@ defmodule Magma.Artefact.VersionTest do
                 tags: nil,
                 aliases: nil,
                 created_at: nil,
-                custom_metadata: nil,
                 content: nil
               } = version} =
                Artefact.Version.new(missing_prompt_result, concept: concept, artefact: ModuleDoc)
@@ -75,7 +73,7 @@ defmodule Magma.Artefact.VersionTest do
     end
   end
 
-  describe "create/1" do
+  describe "create/1 (and re-load/1)" do
     @tag vault_files: [
            "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00).md",
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
@@ -95,6 +93,8 @@ defmodule Magma.Artefact.VersionTest do
                 custom_metadata: %{}
               } = version} = Artefact.Version.create(prompt_result)
 
+      assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2
+
       assert version.name == "ModuleDoc of Nested.Example"
 
       assert version.content ==
@@ -102,10 +102,9 @@ defmodule Magma.Artefact.VersionTest do
                # #{version.name}
 
                The final documentation of `Nested.Example`.
-
                """
 
-      assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2
+      assert Artefact.Version.load(version.path) == {:ok, version}
     end
   end
 end

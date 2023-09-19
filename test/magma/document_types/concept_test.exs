@@ -14,7 +14,6 @@ defmodule Magma.ConceptTest do
               %Concept{
                 subject: %Matter.Project{name: ^title},
                 name: "Project",
-                custom_metadata: nil,
                 content: nil,
                 title: nil,
                 prologue: nil,
@@ -32,7 +31,6 @@ defmodule Magma.ConceptTest do
               %Concept{
                 subject: %Matter.Module{name: TopLevelExample},
                 name: "TopLevelExample",
-                custom_metadata: nil,
                 content: nil,
                 title: nil,
                 prologue: nil,
@@ -51,7 +49,7 @@ defmodule Magma.ConceptTest do
              Concept.new(module_matter())
   end
 
-  describe "create/2" do
+  describe "create/2 (and re-load/1)" do
     test "with module matter" do
       expected_path = Vault.path("concepts/modules/Nested/Nested.Example.md")
 
@@ -72,10 +70,9 @@ defmodule Magma.ConceptTest do
                |> Concept.create()
 
       assert concept.path == expected_path
-      assert File.exists?(concept.path)
-      assert Concept.load(concept.path) == {:ok, concept}
-
       assert DateTime.diff(DateTime.utc_now(), concept.created_at, :second) <= 2
+
+      assert Concept.load(concept.path) == {:ok, concept}
 
       assert Vault.document_path(concept.name) == concept.path
     end
@@ -91,7 +88,6 @@ defmodule Magma.ConceptTest do
                 name: "Project",
                 tags: ["magma-vault"],
                 aliases: ["Magma project", "Magma-project"],
-                created_at: created_at,
                 custom_metadata: %{},
                 title: "Magma project",
                 prologue: []
@@ -101,10 +97,9 @@ defmodule Magma.ConceptTest do
                |> Concept.create()
 
       assert concept.path == expected_path
-      assert File.exists?(concept.path)
-      assert Concept.load(concept.path) == {:ok, concept}
+      assert DateTime.diff(DateTime.utc_now(), concept.created_at, :second) <= 2
 
-      assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+      assert Concept.load(concept.path) == {:ok, concept}
 
       assert Vault.document_path(concept.name) == concept.path
     end
@@ -117,7 +112,7 @@ defmodule Magma.ConceptTest do
 
       send(self(), {:mix_shell_input, :yes?, false})
 
-      assert Concept.create(existing_document) == {:ok, existing_document}
+      assert {:skipped, _} = Concept.create(existing_document)
 
       assert_receive {:mix_shell, :yes?, [_]}
     end

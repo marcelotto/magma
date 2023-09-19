@@ -40,13 +40,11 @@ defmodule Magma.Artefact.PromptResult do
   def create(prompt, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, []) do
-    document =
-      Document.init(document,
-        generation: document.prompt.generation || Generation.default().new!()
-      )
-
-    with {:ok, content} <- execute_prompt(document) do
-      Document.create_file(document, content, opts)
+    with {:ok, document} <-
+           document
+           |> Document.init(generation: document.prompt.generation || Generation.default().new!())
+           |> execute_prompt() do
+      Document.save(document, opts)
     end
   end
 
@@ -66,7 +64,7 @@ defmodule Magma.Artefact.PromptResult do
   defp execute_prompt(%__MODULE__{} = document) do
     with {:ok, system_prompt, prompt} <- Artefact.Prompt.messages(document.prompt),
          {:ok, result} <- Generation.execute(document.generation, prompt, system_prompt) do
-      {:ok, render(document, result)}
+      {:ok, %__MODULE__{document | content: render(document, result)}}
     end
   end
 
@@ -74,15 +72,6 @@ defmodule Magma.Artefact.PromptResult do
     import Magma.Obsidian.View.Helper
 
     """
-    ---
-    magma_type: Artefact.PromptResult
-    magma_prompt: "#{link_to(document.prompt)}"
-    magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
-    magma_generation_params: #{yaml_nested_map(document.generation)}
-    created_at: #{document.created_at}
-    tags: #{yaml_list(document.tags)}
-    aliases: #{yaml_list(document.aliases)}
-    ---
     #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
     #{delete_current_file_button()}
 
@@ -90,6 +79,18 @@ defmodule Magma.Artefact.PromptResult do
 
     #{result}
     """
+  end
+
+  @impl true
+  def render_front_matter(%__MODULE__{} = document) do
+    import Magma.Obsidian.View.Helper
+
+    """
+    magma_prompt: "#{link_to(document.prompt)}"
+    magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
+    magma_generation_params: #{yaml_nested_map(document.generation)}
+    """
+    |> String.trim_trailing()
   end
 
   @impl true

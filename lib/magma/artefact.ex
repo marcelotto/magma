@@ -76,9 +76,13 @@ defmodule Magma.Artefact do
 
   """
   def type_name(type) do
-    case Module.split(type) do
-      ["Magma", "Artefacts" | name_parts] -> Enum.join(name_parts, ".")
-      _ -> raise "Invalid Magma.Artefacts type: #{inspect(type)}"
+    if type?(type) do
+      case Module.split(type) do
+        ["Magma", "Artefacts" | name_parts] -> Enum.join(name_parts, ".")
+        _ -> raise "Invalid Magma.Artefacts type name scheme: #{inspect(type)}"
+      end
+    else
+      raise "Invalid Magma.Artefacts type: #{inspect(type)}"
     end
   end
 
@@ -100,8 +104,12 @@ defmodule Magma.Artefact do
   def type(string) when is_binary(string) do
     module = Module.concat(Magma.Artefacts, string)
 
-    if Code.ensure_loaded?(module) and function_exported?(module, :relative_prompt_path, 1) do
+    if type?(module) do
       module
     end
+  end
+
+  def type?(module) do
+    Code.ensure_loaded?(module) and function_exported?(module, :relative_prompt_path, 1)
   end
 end

@@ -1,6 +1,5 @@
 defmodule Magma.Document do
   alias Magma.Vault
-  alias Magma.Document.Loader
 
   import Magma.Utils, only: [init_fields: 2]
 
@@ -14,6 +13,8 @@ defmodule Magma.Document do
 
   @callback build_path(t()) :: {:ok, Path.t()}
 
+  @callback render_front_matter(t()) :: binary
+
   @fields [
     # the path of this document
     path: nil,
@@ -25,7 +26,7 @@ defmodule Magma.Document do
     aliases: nil,
     created_at: nil,
     # additional YAML front matter
-    custom_metadata: nil
+    custom_metadata: %{}
   ]
   def fields, do: @fields
 
@@ -43,6 +44,7 @@ defmodule Magma.Document do
 
       def load(%__MODULE__{} = document), do: Document.Loader.load(document)
       def load(path), do: Document.Loader.load(__MODULE__, path)
+      def load_linked(name), do: Document.Loader.load_linked(__MODULE__, name)
 
       def load!(document_or_path) do
         case load(document_or_path) do
@@ -59,7 +61,8 @@ defmodule Magma.Document do
       document,
       [
         created_at: DateTime.utc_now(),
-        tags: :magma |> Application.get_env(:default_tags) |> List.wrap()
+        tags: :magma |> Application.get_env(:default_tags) |> List.wrap(),
+        aliases: []
       ]
       |> Keyword.merge(fields)
     )
@@ -68,7 +71,6 @@ defmodule Magma.Document do
   @doc false
   def init_path(%document_type{} = document) do
     case apply(document_type, :build_path, [document]) do
-      # TODO: check consistency with existing path and name values?
       {:ok, path} -> {:ok, %{document | path: path, name: name_from_path(path)}}
       {:error, _} = error -> error
       undefined -> raise "Undefined result: #{inspect(undefined)}"
@@ -80,13 +82,32 @@ defmodule Magma.Document do
     Path.basename(path, Path.extname(path))
   end
 
-  def create_file(%_document_type{} = document, content, opts) do
-    Magma.MixHelper.create_file(document.path, content, opts)
-
-    with {:ok, document} <- Loader.load(document) do
+  def save(%_document_type{} = document, opts) do
+    if Magma.MixHelper.create_file(
+         document.path,
+         render_front_matter(document) <> document.content,
+         opts
+       ) do
       Vault.index(document)
+
       {:ok, document}
+    else
+      {:skipped, document}
     end
+  end
+
+  def render_front_matter(%document_type{} = document) do
+    import Magma.Obsidian.View.Helper
+
+    """
+    ---
+    magma_type: #{type_name(document_type)}
+    #{document_type.render_front_matter(document)}
+    created_at: #{document.created_at}
+    tags: #{yaml_list(document.tags)}
+    aliases: #{yaml_list(document.aliases)}
+    ---
+    """
   end
 
   def recreate(%document_type{} = document) do
@@ -118,6 +139,41 @@ defmodule Magma.Document do
   end
 
   @doc """
+  Returns the document type name for the given document.
+
+  ## Example
+
+      iex> Magma.Document.type_name(Magma.Concept)
+      "Concept"
+
+      iex> Magma.Document.type_name(Magma.Artefact.Prompt)
+      "Artefact.Prompt"
+
+      iex> Magma.Document.type_name(Magma.Artefact.PromptResult)
+      "Artefact.PromptResult"
+
+      iex> Magma.Document.type_name(Magma.Artefact.Version)
+      "Artefact.Version"
+
+      iex> Magma.Document.type_name(Magma.Vault)
+      ** (RuntimeError) Invalid Magma.Document type: Magma.Vault
+
+      iex> Magma.Document.type_name(NonExisting)
+      ** (RuntimeError) Invalid Magma.Document type: NonExisting
+
+  """
+  def type_name(type) do
+    if type?(type) do
+      case Module.split(type) do
+        ["Magma" | name_parts] -> Enum.join(name_parts, ".")
+        _ -> raise "Invalid Magma.Document type name scheme: #{inspect(type)}"
+      end
+    else
+      raise "Invalid Magma.Document type: #{inspect(type)}"
+    end
+  end
+
+  @doc """
   Returns the document module for the given string.
 
   ## Example
@@ -138,8 +194,12 @@ defmodule Magma.Document do
   def type(string) when is_binary(string) do
     module = Module.concat(Magma, string)
 
-    if Code.ensure_loaded?(module) and function_exported?(module, :build_path, 1) do
+    if type?(module) do
       module
     end
+  end
+
+  def type?(module) do
+    Code.ensure_loaded?(module) and function_exported?(module, :build_path, 1)
   end
 end

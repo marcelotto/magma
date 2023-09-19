@@ -1,11 +1,3 @@
----
-magma_type: Concept
-magma_matter_type: Project
-magma_matter_name: <%= subject.name %> 
-created_at: <%= concept.created_at %>
-tags: <%= yaml_list(concept.tags) %>
-aliases: <%= yaml_list(concept.aliases) %>
----
 # <%= subject.name %> project
 
 ## <%= Magma.Concept.description_section_title() %>

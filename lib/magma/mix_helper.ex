@@ -27,6 +27,5 @@ defmodule Magma.MixHelper do
 
   def create_file(target, content, opts \\ []) do
     Mix.Generator.create_file(target, content, opts)
-    :ok
   end
 end

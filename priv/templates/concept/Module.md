@@ -1,10 +1,3 @@
----
-magma_type: Concept
-magma_matter_type: Module
-created_at: <%= concept.created_at %> 
-tags: <%= yaml_list(concept.tags) %>
-aliases: <%= yaml_list(concept.aliases) %>
----
 # `<%= concept.name %>`
 
 ## <%= Magma.Concept.description_section_title() %>

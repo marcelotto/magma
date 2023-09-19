@@ -1,7 +1,7 @@
 defmodule Magma.Artefact.Prompt.Template do
   use Magma.Document.Template
 
-  alias Magma.{Vault, Artefact}
+  alias Magma.Artefact
   alias Magma.DocumentStruct.Section
   alias Magma.Matter.Project
 
@@ -28,30 +28,28 @@ defmodule Magma.Artefact.Prompt.Template do
     |> Enum.map(&Path.join(directory, &1))
   end)
   |> Enum.each(fn file ->
-    case Vault.document_type(file) do
-      {:ok, Artefact.Prompt, artefact_type} ->
-        @external_resource file
-        def render(
-              %Artefact.Prompt{artefact: unquote(artefact_type) = artefact, concept: concept} =
-                prompt,
-              assigns
-            ) do
-          subject = concept.subject
-          project = Project.concept()
+    if artefact_type =
+         file
+         |> Path.basename(Path.extname(file))
+         |> Artefact.type() do
+      @external_resource file
+      def render(
+            %Artefact.Prompt{artefact: unquote(artefact_type) = artefact, concept: concept} =
+              prompt,
+            assigns
+          ) do
+        subject = concept.subject
+        project = Project.concept()
 
-          if false do
-            # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
-            prompt || artefact || concept || subject || project || assigns
-          else
-            unquote(EEx.compile_file(file))
-          end
+        if false do
+          # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
+          prompt || artefact || concept || subject || project || assigns
+        else
+          unquote(EEx.compile_file(file))
         end
-
-      {:ok, document_type, _} ->
-        raise "invalid magma_type in Artefact.Prompt template at #{file}: #{document_type}"
-
-      {:error, error} ->
-        raise error
+      end
+    else
+      raise "unable to detect artefact type of #{file}"
     end
   end)
 

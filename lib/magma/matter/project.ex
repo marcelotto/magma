@@ -32,6 +32,15 @@ defmodule Magma.Matter.Project do
     end
   end
 
+  def render_front_matter(%__MODULE__{} = matter) do
+    """
+    #{super(matter)}
+    magma_matter_name: #{matter.name}
+
+    """
+    |> String.trim_trailing()
+  end
+
   @impl true
   def relative_base_path, do: ""
 

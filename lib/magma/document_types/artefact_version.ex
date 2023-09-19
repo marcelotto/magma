@@ -56,8 +56,10 @@ defmodule Magma.Artefact.Version do
   def create(prompt, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, []) do
-    document = Document.init(document)
-    Document.create_file(document, render(document), opts)
+    document
+    |> Document.init()
+    |> copy_prompt_result()
+    |> Document.save(opts)
   end
 
   def create(%__MODULE__{}, _, _),
@@ -73,21 +75,20 @@ defmodule Magma.Artefact.Version do
     end
   end
 
-  defp render(document) do
+  @impl true
+  def render_front_matter(%__MODULE__{} = document) do
     import Magma.Obsidian.View.Helper
 
     """
-    ---
-    magma_type: Artefact.Version
     magma_artefact: #{Magma.Artefact.type_name(document.artefact)}
     magma_concept: "#{link_to(document.concept)}"
     magma_prompt_result: "#{link_to(document.prompt_result)}"
-    created_at: #{document.created_at}
-    tags: #{yaml_list(document.tags)}
-    aliases: #{yaml_list(document.aliases)}
-    ---
-    #{Document.content_without_prologue(document.prompt_result)}
     """
+    |> String.trim_trailing()
+  end
+
+  defp copy_prompt_result(document) do
+    %__MODULE__{document | content: Document.content_without_prologue(document.prompt_result)}
   end
 
   @impl true

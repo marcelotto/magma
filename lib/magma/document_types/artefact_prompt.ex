@@ -30,8 +30,10 @@ defmodule Magma.Artefact.Prompt do
   def create(concept, artefact, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, [], []) do
-    document = Document.init(document, generation: Generation.default().new!())
-    Document.create_file(document, Template.render(document), opts)
+    document
+    |> Document.init(generation: Generation.default().new!())
+    |> render()
+    |> Document.save(opts)
   end
 
   def create(%__MODULE__{}, _, _, []),
@@ -45,6 +47,23 @@ defmodule Magma.Artefact.Prompt do
     with {:ok, document} <- new(concept, artefact, attrs) do
       create(document, opts)
     end
+  end
+
+  def render(%__MODULE__{} = document) do
+    %__MODULE__{document | content: Template.render(document)}
+  end
+
+  @impl true
+  def render_front_matter(%__MODULE__{} = document) do
+    import Magma.Obsidian.View.Helper
+
+    """
+    magma_artefact: #{Magma.Artefact.type_name(document.artefact)}
+    magma_concept: "#{link_to(document.concept)}"
+    magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
+    magma_generation_params: #{yaml_nested_map(document.generation)}
+    """
+    |> String.trim_trailing()
   end
 
   @impl true

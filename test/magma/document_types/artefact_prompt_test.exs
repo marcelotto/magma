@@ -18,7 +18,6 @@ defmodule Magma.Artefact.PromptTest do
                 tags: nil,
                 aliases: nil,
                 created_at: nil,
-                custom_metadata: nil,
                 content: nil
               } = prompt} = Artefact.Prompt.new(concept, Artefacts.ModuleDoc)
 
@@ -31,7 +30,7 @@ defmodule Magma.Artefact.PromptTest do
     end
   end
 
-  describe "create/1" do
+  describe "create/1 (and re-load/1)" do
     @tag vault_files: [
            "concepts/modules/Nested/Nested.Example.md",
            "concepts/Project.md"
@@ -119,6 +118,8 @@ defmodule Magma.Artefact.PromptTest do
 
                ```
                """
+
+      assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}
     end
   end
 
