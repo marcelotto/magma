@@ -41,10 +41,12 @@ defmodule Magma.Concept do
   def create(subject, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{subject: %matter_type{} = matter} = document, opts, []) do
+    {assigns, opts} = Keyword.pop(opts, :assigns, [])
+
     with {:ok, document} <-
            document
            |> Document.init(aliases: matter_type.default_concept_aliases(matter))
-           |> render() do
+           |> render(assigns) do
       Document.save(document, opts)
     end
   end
@@ -65,8 +67,8 @@ defmodule Magma.Concept do
     end
   end
 
-  def render(%__MODULE__{} = concept) do
-    %__MODULE__{concept | content: Template.render(concept)}
+  def render(%__MODULE__{} = concept, opts) do
+    %__MODULE__{concept | content: Template.render(concept, opts)}
     |> parse()
   end
 
