@@ -2,6 +2,7 @@ defmodule Magma.DocumentStruct.Section do
   defstruct [:title, :header, :level, :content, :sections]
 
   alias Magma.{DocumentStruct, Document, Concept, Vault}
+  alias Magma.TopLevelEmptyHeaderTransclusionError
   alias Panpipe.AST.Header
 
   require Logger
@@ -97,30 +98,67 @@ defmodule Magma.DocumentStruct.Section do
   end
 
   def resolve_transclusions(%__MODULE__{} = section) do
-    do_resolve_transclusions(section, [])
+    case do_resolve_transclusions(section, []) do
+      {:transclusion_expansion, _, _} -> raise TopLevelEmptyHeaderTransclusionError
+      %__MODULE__{} = resolved -> resolved
+    end
   end
 
   defp do_resolve_transclusions(section, visited) do
     {resolved_content, new_sections} =
       resolve_content_transclusions(section.content, section.level, visited)
 
-    resolved_sections =
-      new_sections ++
-        Enum.flat_map(section.sections, &(&1 |> do_resolve_transclusions(visited) |> List.wrap()))
+    {resolved_sections, resolved_content} =
+      Enum.reduce(section.sections, {[], resolved_content}, fn
+        section, {resolved_sections, resolved_content} ->
+          case do_resolve_transclusions(section, visited) do
+            {:transclusion_expansion, [], expanded_sections} ->
+              {Enum.reverse(expanded_sections) ++ resolved_sections, resolved_content}
 
-    if resolved_section = resolve_transclusion_header(section, visited) do
-      resolved_section =
-        resolved_section
-        |> append(resolved_content)
-        |> Map.update!(:sections, &(&1 ++ resolved_sections))
+            {:transclusion_expansion, expanded_content, expanded_sections} ->
+              case resolved_sections do
+                [] ->
+                  {
+                    Enum.reverse(expanded_sections) ++ resolved_sections,
+                    resolved_content ++ expanded_content
+                  }
 
-      unless(empty_content?(resolved_section), do: resolved_section)
-    else
-      %__MODULE__{
-        section
-        | content: resolved_content,
-          sections: resolved_sections
-      }
+                [last | rest] ->
+                  {
+                    Enum.reverse(expanded_sections) ++ [append(last, expanded_content) | rest],
+                    resolved_content
+                  }
+              end
+
+            resolved_section ->
+              {List.wrap(resolved_section) ++ resolved_sections, resolved_content}
+          end
+      end)
+
+    resolved_sections = new_sections ++ Enum.reverse(resolved_sections)
+
+    case resolve_transclusion_header(section, visited) do
+      {:transclusion_expansion, expanded_content, []} ->
+        {:transclusion_expansion, expanded_content ++ resolved_content, resolved_sections}
+
+      {:transclusion_expansion, expanded_content, expanded_sections} ->
+        {
+          :transclusion_expansion,
+          expanded_content,
+          List.update_at(expanded_sections, -1, &append(&1, resolved_content, resolved_sections))
+        }
+
+      nil ->
+        %__MODULE__{
+          section
+          | content: resolved_content,
+            sections: resolved_sections
+        }
+
+      resolved_section ->
+        resolved_section = append(resolved_section, resolved_content, resolved_sections)
+
+        unless(empty_content?(resolved_section), do: resolved_section)
     end
   end
 
@@ -160,12 +198,21 @@ defmodule Magma.DocumentStruct.Section do
   defp acc_append(content, {new_content, [current | rest]}),
     do: {new_content, [append(current, content) | rest]}
 
-  defp append(%__MODULE__{sections: []} = section, ast) do
+  defp append(section, new_content, new_sections \\ [])
+
+  defp append(%__MODULE__{} = section, [], []), do: section
+
+  defp append(%__MODULE__{sections: []} = section, ast, []) do
     %__MODULE__{section | content: section.content ++ List.wrap(ast)}
   end
 
-  defp append(%__MODULE__{} = section, ast) do
+  defp append(%__MODULE__{} = section, ast, []) do
     %__MODULE__{section | sections: List.update_at(section.sections, -1, &append(&1, ast))}
+  end
+
+  defp append(%__MODULE__{} = section, ast, new_sections) do
+    with_new_content = append(section, ast)
+    %__MODULE__{with_new_content | sections: with_new_content.sections ++ new_sections}
   end
 
   defp resolve_transclusion_header(%__MODULE__{header: header} = section, visited) do
@@ -175,18 +222,32 @@ defmodule Magma.DocumentStruct.Section do
           raise "recursive cycle during transclusion resolution of #{target}"
         end
 
-        if resolved_transclusion = transcluded_content(target, section.level, visited) do
-          new_header = %Panpipe.AST.Header{
-            header
-            | children: rest |> trim_leading_ast() |> Enum.reverse(),
-              attr: nil
-          }
+        empty_header? = rest == []
 
-          %__MODULE__{
-            resolved_transclusion
-            | header: new_header,
-              title: header_title(new_header)
-          }
+        level =
+          cond do
+            not empty_header? -> section.level
+            section.level > 1 -> section.level - 1
+            true -> raise TopLevelEmptyHeaderTransclusionError
+          end
+
+        if resolved_transclusion = transcluded_content(target, level, visited) do
+          if empty_header? do
+            {:transclusion_expansion, resolved_transclusion.content,
+             resolved_transclusion.sections}
+          else
+            new_header = %Panpipe.AST.Header{
+              header
+              | children: rest |> trim_leading_ast() |> Enum.reverse(),
+                attr: nil
+            }
+
+            %__MODULE__{
+              resolved_transclusion
+              | header: new_header,
+                title: header_title(new_header)
+            }
+          end
         end
 
       _ ->
@@ -199,9 +260,13 @@ defmodule Magma.DocumentStruct.Section do
 
     with {:ok, document_struct} <- transcluded_document_struct(document_name),
          {:ok, section} <- fetch_transcluded_content(document_struct, section_title) do
-      section
-      |> do_resolve_transclusions([document_name | visited])
-      |> set_level(level)
+      case do_resolve_transclusions(section, [document_name | visited]) do
+        {:transclusion_expansion, _, _} ->
+          {:error, "transclusion of transclusion sections are not allowed"}
+
+        resolved_section ->
+          set_level(resolved_section, level)
+      end
     else
       {:error, error} ->
         Logger.warning("failed to load [[#{document_name}]] during resolution: #{inspect(error)}")

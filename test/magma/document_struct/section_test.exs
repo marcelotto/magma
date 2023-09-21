@@ -476,7 +476,7 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
-    test "transclusion with custom header" do
+    test "custom header transclusion" do
       assert """
              ## Example title
 
@@ -554,6 +554,131 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
+    test "empty header transclusion" do
+      assert """
+             ## Example title
+
+             Foo:
+
+             ### ![[Project]]
+
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               Foo:
+
+               ### Description
+
+               This is the project description.
+
+               ### Knowledge Base
+               """
+
+      assert """
+             ## Example title
+
+             Foo:
+
+             ### ![[Nested.Example#Description]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string(header: false) ==
+               """
+               Foo:
+
+               This is an example description of the module:
+
+               Module `Nested.Example` does:
+
+               -   x
+               -   y
+
+               ------------------------------------------------------------------------
+               """
+
+      assert """
+             ## Example title
+
+             ### Foo
+
+             bar
+
+             ### ![[Nested.Example#Description]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string(header: false) ==
+               """
+               ### Foo
+
+               bar
+
+               This is an example description of the module:
+
+               Module `Nested.Example` does:
+
+               -   x
+               -   y
+
+               ------------------------------------------------------------------------
+               """
+
+      assert """
+             ## Example title
+
+             Foo:
+
+             #### ![[Nested.Example#Notes]]
+
+             This text should appear at the end of the transcluded content.
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string(header: false) ==
+               """
+               Foo:
+
+               #### Example note
+
+               Here we have an example note with some text.
+
+               ------------------------------------------------------------------------
+
+               This text should appear at the end of the transcluded content.
+               """
+    end
+
+    test "empty header transclusion on the top-level" do
+      assert_raise Magma.TopLevelEmptyHeaderTransclusionError, fn ->
+        """
+        ## ![[Project]]
+        """
+        |> section()
+        |> Section.resolve_transclusions() == {:error}
+      end
+
+      assert_raise Magma.TopLevelEmptyHeaderTransclusionError, fn ->
+        """
+        # ![[Project]]
+        """
+        |> section()
+        |> Section.resolve_transclusions() == {:error}
+      end
+
+      assert_raise Magma.TopLevelEmptyHeaderTransclusionError, fn ->
+        """
+        ## ![[Nested.Example#Notes]]
+        """
+        |> section()
+        |> Section.resolve_transclusions()
+      end
+    end
+
     test "custom header transclusion with empty content" do
       assert """
              ## Example title
@@ -561,6 +686,25 @@ defmodule Magma.DocumentStruct.SectionTest do
              Foo:
 
              ### This should be removed ![[Project#Knowledge Base]]
+
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               Foo:
+               """
+    end
+
+    test "empty header transclusion with empty content" do
+      assert """
+             ## Example title
+
+             Foo:
+
+             ### ![[Project#Knowledge Base]]
 
              """
              |> section()
