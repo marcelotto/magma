@@ -1,62 +1,46 @@
 defmodule Magma.Artefact.Prompt.Template do
-  use Magma.Document.Template
+  alias Magma.Artefact.Prompt
+  alias Magma.Matter
 
-  alias Magma.Artefact
-  alias Magma.DocumentStruct.Section
-  alias Magma.Matter.Project
+  import Magma.Obsidian.View.Helper
 
-  import Magma.Matter.Module, only: [code: 1]
+  def render(%Prompt{artefact: artefact_type} = prompt, project) do
+    concept = prompt.concept
 
-  import Magma.Concept,
-    only: [description: 1, artefact_system_prompt: 2]
+    """
+    #{controls()}
 
-  require Artefact.Prompt
+    # #{prompt.name}
 
-  @path Magma.Document.template_path() |> Path.join("artefact_prompt")
+    ## #{Prompt.system_prompt_section_title()}
 
-  @impl true
-  def render(artefact_prompt, assigns \\ [])
+    #{persona(project)}
 
-  @path
-  |> File.ls!()
-  |> Enum.reject(&match?("." <> _, &1))
-  |> Enum.map(&Path.join(@path, &1))
-  |> Enum.flat_map(fn directory ->
-    directory
-    |> File.ls!()
-    |> Enum.reject(&match?("." <> _, &1))
-    |> Enum.map(&Path.join(directory, &1))
-  end)
-  |> Enum.each(fn file ->
-    if artefact_type =
-         file
-         |> Path.basename(Path.extname(file))
-         |> Artefact.type() do
-      @external_resource file
-      def render(
-            %Artefact.Prompt{artefact: unquote(artefact_type) = artefact, concept: concept} =
-              prompt,
-            assigns
-          ) do
-        subject = concept.subject
-        project = Project.concept()
+    #{artefact_type.system_prompt(concept)}
 
-        if false do
-          # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
-          prompt || artefact || concept || subject || project || assigns
-        else
-          unquote(EEx.compile_file(file))
-        end
-      end
-    else
-      raise "unable to detect artefact type of #{file}"
-    end
-  end)
+    ### Description of the #{project.subject.name} project ![[Project#Description]]
 
-  defp include(nil, _), do: nil
-  defp include(section, opts), do: Section.to_string(section, opts) |> String.trim()
 
-  defp controls do
+    ## #{Prompt.request_prompt_section_title()}
+
+    ### #{transclude(concept, artefact_type.concept_prompt_section_title())}
+
+    ### Description of the #{Matter.type_name(concept.subject.__struct__)} ![[#{concept.name}#Description]]
+
+    #{if matter_representation = concept.subject.__struct__.prompt_representation(concept.subject) do
+      "##" <> matter_representation
+    end}
+    """
+  end
+
+  def persona(project) do
+    """
+    You are MagmaGPT, a software developer on the "#{project.subject.name}" project with a lot of experience with Elixir and writing high-quality documentation.
+    """
+    |> String.trim_trailing()
+  end
+
+  def controls do
     """
     **Generated results**
 

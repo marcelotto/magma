@@ -53,14 +53,7 @@ defmodule Magma.Artefact.PromptTest do
 
       assert prompt.content ==
                """
-               **Generated results**
-
-               #{Magma.Obsidian.View.Helper.prompt_results_table()}
-
-               **Actions**
-
-               #{Magma.Obsidian.View.Helper.button("Execute", "magma.prompt.exec", color: "blue")}
-               #{Magma.Obsidian.View.Helper.button("Update", "magma.prompt.update")}
+               #{Artefact.Prompt.Template.controls()}
 
                # #{prompt.name}
 
@@ -78,32 +71,14 @@ defmodule Magma.Artefact.PromptTest do
                - The first line should be a very short one-sentence summary of the main purpose of the module.
                - Generate just the comment for the module, not for its individual functions.
 
-
-               ### Background knowledge of the Some project ![[Project#Description]]
+               ### Description of the Some project ![[Project#Description]]
 
 
                ## Request
 
-               Generate documentation for module `Nested.Example`.
+               ### ![[Nested.Example#ModuleDoc Prompt]]
 
-
-
-               <!--
-               A comment ...
-               -->
-
-
-               ### Description of the module
-
-               This is an example description of the module:
-
-               Module `Nested.Example` does:
-
-               -   x
-               -   y
-
-               ------------------------------------------------------------------------
-
+               ### Description of the Module ![[Nested.Example#Description]]
 
                ### Module code
 
@@ -117,6 +92,7 @@ defmodule Magma.Artefact.PromptTest do
                end
 
                ```
+
                """
 
       assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}

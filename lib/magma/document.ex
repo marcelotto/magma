@@ -30,9 +30,6 @@ defmodule Magma.Document do
   ]
   def fields, do: @fields
 
-  @template_path :code.priv_dir(:magma) |> Path.join("templates")
-  def template_path, do: @template_path
-
   defmacro __using__(opts) do
     additional_fields = Keyword.get(opts, :fields, [])
 

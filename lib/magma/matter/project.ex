@@ -6,6 +6,9 @@ defmodule Magma.Matter.Project do
   alias Magma.{Matter, Concept}
 
   @impl true
+  def artefacts, do: []
+
+  @impl true
   def new(name: name), do: new(name)
 
   def new(name) do
@@ -36,10 +39,12 @@ defmodule Magma.Matter.Project do
     """
     #{super(matter)}
     magma_matter_name: #{matter.name}
-
     """
     |> String.trim_trailing()
   end
+
+  @impl true
+  def default_concept_aliases(%__MODULE__{name: name}), do: ["#{name} project", "#{name}-project"]
 
   @impl true
   def relative_base_path, do: ""
@@ -50,7 +55,17 @@ defmodule Magma.Matter.Project do
   @impl true
   def concept_name(%__MODULE__{}), do: "Project"
 
-  def default_concept_aliases(%__MODULE__{name: name}), do: ["#{name} project", "#{name}-project"]
+  @impl true
+  def concept_title(%__MODULE__{name: name}), do: "#{name} project"
+
+  @impl true
+  def default_description(%__MODULE__{name: name}, _) do
+    """
+    What is the #{name} project about?
+    """
+    |> String.trim_trailing()
+    |> View.Helper.comment()
+  end
 
   def app_name, do: Mix.Project.config()[:app]
 

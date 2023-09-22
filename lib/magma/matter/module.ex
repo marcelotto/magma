@@ -10,6 +10,9 @@ defmodule Magma.Matter.Module do
   @relative_base_path "modules"
 
   @impl true
+  def artefacts, do: [Magma.Artefacts.ModuleDoc]
+
+  @impl true
   def new(name: name), do: new(name)
 
   def new(name) when is_binary(name) do
@@ -28,9 +31,6 @@ defmodule Magma.Matter.Module do
   end
 
   @impl true
-  def concept_name(%__MODULE__{name: module}), do: inspect(module)
-
-  @impl true
   def relative_base_path, do: @relative_base_path
 
   @impl true
@@ -42,6 +42,36 @@ defmodule Magma.Matter.Module do
 
   defp context_segments(module) do
     module |> Module.split() |> List.delete_at(-1)
+  end
+
+  @impl true
+  def concept_name(%__MODULE__{name: module}), do: inspect(module)
+
+  @impl true
+  def concept_title(%__MODULE__{name: module}), do: "`#{inspect(module)}`"
+
+  @impl true
+  def default_description(%__MODULE__{} = matter, _) do
+    """
+    What is a #{concept_title(matter)}?
+
+    Your knowledge about the module, i.e. facts, problems and properties etc.
+    """
+    |> String.trim_trailing()
+    |> View.Helper.comment()
+  end
+
+  @impl true
+  def prompt_representation(%__MODULE__{} = matter) do
+    """
+    # Module code
+
+    This is the code of the module to be documented. Ignore commented out code.
+
+    ```elixir
+    #{code(matter)}
+    ```
+    """
   end
 
   def source_path(%__MODULE__{name: module}), do: source_path(module)

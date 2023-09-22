@@ -18,8 +18,6 @@ defmodule Magma.Concept do
 
   @description_section_title "Description"
   def description_section_title, do: @description_section_title
-  @system_prompt_section_title "Artefact system prompts"
-  def system_prompt_section_title, do: @system_prompt_section_title
 
   @impl true
   def build_path(%__MODULE__{subject: %matter_type{} = matter}) do
@@ -67,8 +65,13 @@ defmodule Magma.Concept do
     end
   end
 
-  def render(%__MODULE__{} = concept, opts) do
-    %__MODULE__{concept | content: Template.render(concept, opts)}
+  @impl true
+  def render_front_matter(%__MODULE__{subject: %matter_type{} = matter}) do
+    matter_type.render_front_matter(matter)
+  end
+
+  def render(%__MODULE__{} = concept, assigns) do
+    %__MODULE__{concept | content: Template.render(concept, assigns)}
     |> parse()
   end
 
@@ -85,11 +88,6 @@ defmodule Magma.Concept do
   end
 
   @impl true
-  def render_front_matter(%__MODULE__{subject: %matter_type{} = matter}) do
-    matter_type.render_front_matter(matter)
-  end
-
-  @impl true
   @doc false
   def load_document(%__MODULE__{} = concept) do
     with {:ok, concept} <- parse(concept),
@@ -97,21 +95,5 @@ defmodule Magma.Concept do
            Matter.extract_from_metadata(concept.name, concept.title, concept.custom_metadata) do
       {:ok, %__MODULE__{concept | subject: matter, custom_metadata: custom_metadata}}
     end
-  end
-
-  defdelegate fetch(concept, key), to: DocumentStruct
-
-  def description(%__MODULE__{} = concept) do
-    get_in(concept, [concept.title, description_section_title()])
-  end
-
-  def artefact_system_prompts(%__MODULE__{} = concept) do
-    concept[system_prompt_section_title()]
-  end
-
-  def artefact_system_prompt(%__MODULE__{} = concept, path) do
-    concept
-    |> artefact_system_prompts()
-    |> get_in(List.wrap(path))
   end
 end

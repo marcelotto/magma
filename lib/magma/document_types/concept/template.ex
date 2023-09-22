@@ -1,41 +1,47 @@
 defmodule Magma.Concept.Template do
-  use Magma.Document.Template
+  alias Magma.Concept
 
-  alias Magma.{Concept, Matter}
+  import Magma.Obsidian.View.Helper
 
-  require Concept
+  def render(%Concept{subject: %matter_type{} = matter} = concept, assigns) do
+    """
+    # #{matter_type.concept_title(matter)}
 
-  @path Magma.Document.template_path() |> Path.join("concept")
+    ## #{Concept.description_section_title()}
 
-  @impl true
-  def render(concept, assigns \\ [])
+    #{matter_type.default_description(matter, assigns)}
 
-  @path
-  |> File.ls!()
-  |> Enum.reject(&match?("." <> _, &1))
-  |> Enum.map(&Path.join(@path, &1))
-  |> Enum.each(fn file ->
-    if matter_type =
-         file
-         |> Path.basename(Path.extname(file))
-         |> Matter.type() do
-      @external_resource file
-      def render(%Concept{subject: %unquote(matter_type){} = subject} = concept, assigns) do
-        if false do
-          # this never-taken branch is a hack to circumvent falsely claimed unused variable warnings
-          concept || subject || assigns
-        else
-          unquote(EEx.compile_file(file))
-        end
-      end
-    else
-      raise "unable to detect matter type of #{file}"
-    end
-  end)
+    #{matter_type.custom_sections(matter)}
 
-  def link_to_prompt(concept, artefact) do
-    concept
-    |> artefact.prompt!()
-    |> link_to()
+    # Knowledge Base
+
+
+    # Notes
+
+
+    # Artefact Prompts
+
+    #{artefact_prompt_sections(concept)}
+
+
+    # Reference
+    """
+  end
+
+  defp artefact_prompt_sections(%Concept{subject: %matter_type{}} = concept) do
+    Enum.map_join(matter_type.artefacts(), "\n", &artefact_prompt_section(concept, &1))
+  end
+
+  defp artefact_prompt_section(concept, artefact_type) do
+    """
+    ## #{artefact_type.concept_section_title()}
+
+    #{concept |> artefact_type.prompt!() |> link_to()}
+
+    ### #{artefact_type.concept_prompt_section_title()}
+
+    #{artefact_type.task_prompt(concept)}
+    """
+    |> String.trim_trailing()
   end
 end

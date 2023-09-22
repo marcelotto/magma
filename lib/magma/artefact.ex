@@ -7,6 +7,14 @@ defmodule Magma.Artefact do
 
   @callback prompt_name(Concept.t()) :: binary
 
+  @callback system_prompt(Concept.t()) :: binary
+
+  @callback task_prompt(Concept.t()) :: binary
+
+  @callback concept_section_title :: binary
+
+  @callback concept_prompt_section_title :: binary
+
   @callback relative_base_path(Concept.t()) :: Path.t()
 
   @callback relative_prompt_path(Concept.t()) :: Path.t()
@@ -23,8 +31,13 @@ defmodule Magma.Artefact do
       def matter_type, do: unquote(matter_type)
 
       @impl true
-      def prompt_name(%Concept{} = concept),
-        do: "Prompt for #{name(concept)}"
+      def concept_section_title, do: Artefact.type_name(__MODULE__)
+
+      @impl true
+      def concept_prompt_section_title, do: "#{concept_section_title()} Prompt"
+
+      @impl true
+      def prompt_name(%Concept{} = concept), do: "Prompt for #{name(concept)}"
 
       @impl true
       def relative_prompt_path(%Concept{} = concept) do

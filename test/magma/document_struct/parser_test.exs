@@ -209,7 +209,7 @@ defmodule Magma.DocumentStruct.ParserTest do
                      title: "`Nested.Example`"
                    },
                    %Section{
-                     title: Magma.Concept.system_prompt_section_title(),
+                     title: "Artefact system prompts",
                      header: %Panpipe.AST.Header{
                        children: [
                          %Panpipe.AST.Str{parent: nil, string: "Artefact"},

@@ -8,6 +8,15 @@ defmodule Magma.Obsidian.View.Helper do
   def transclude(%_{name: name}, :all), do: "![[#{name}]]"
   def transclude(%_{name: name}, section), do: "![[#{name}##{section}]]"
 
+  def comment(text) do
+    """
+    <!--
+    #{text}
+    -->
+    """
+    |> String.trim_trailing()
+  end
+
   def button(label, command, opts \\ []) do
     """
     ```button

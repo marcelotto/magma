@@ -3,12 +3,17 @@ defmodule Magma.Artefact.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Generation}
+  alias Magma.{Vault, Artefact, Concept, Matter, Generation}
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
   alias Magma.Artefact.Prompt.Template
 
   require Logger
+
+  @system_prompt_section_title "System prompt"
+  def system_prompt_section_title, do: @system_prompt_section_title
+  @request_prompt_section_title "Request"
+  def request_prompt_section_title, do: @request_prompt_section_title
 
   @impl true
   def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
@@ -49,10 +54,6 @@ defmodule Magma.Artefact.Prompt do
     end
   end
 
-  def render(%__MODULE__{} = document) do
-    %__MODULE__{document | content: Template.render(document)}
-  end
-
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
     import Magma.Obsidian.View.Helper
@@ -64,6 +65,10 @@ defmodule Magma.Artefact.Prompt do
     magma_generation_params: #{yaml_nested_map(document.generation)}
     """
     |> String.trim_trailing()
+  end
+
+  def render(%__MODULE__{} = prompt) do
+    %__MODULE__{prompt | content: Template.render(prompt, Matter.Project.concept())}
   end
 
   @impl true
@@ -103,8 +108,8 @@ defmodule Magma.Artefact.Prompt do
         [
           %{
             sections: [
-              %Section{title: "System prompt"} = system_prompt_section,
-              %Section{title: "Request"} = request_section
+              %Section{title: @system_prompt_section_title} = system_prompt_section,
+              %Section{title: @request_prompt_section_title} = request_section
               | more_subsections
             ]
           }

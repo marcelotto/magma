@@ -6,11 +6,21 @@ defmodule Magma.Matter do
   @fields [:name]
   def fields, do: @fields
 
+  @callback artefacts :: list(Magma.Artefact.t())
+
   @callback relative_base_path :: Path.t()
 
   @callback relative_concept_path(t()) :: Path.t()
 
   @callback concept_name(t()) :: binary
+
+  @callback concept_title(t()) :: binary
+
+  @callback default_description(t(), keyword) :: binary
+
+  @callback custom_sections(t()) :: binary
+
+  @callback prompt_representation(t()) :: binary | nil
 
   @callback default_concept_aliases(t()) :: list
 
@@ -30,10 +40,18 @@ defmodule Magma.Matter do
     quote do
       @behaviour Magma.Matter
 
+      alias Magma.Obsidian.View
+
       defstruct Magma.Matter.fields() ++ unquote(additional_fields)
 
       @impl true
       def default_concept_aliases(%__MODULE__{}), do: []
+
+      @impl true
+      def custom_sections(%__MODULE__{}), do: ""
+
+      @impl true
+      def prompt_representation(%__MODULE__{}), do: nil
 
       @impl true
       def render_front_matter(%__MODULE__{}) do
@@ -47,7 +65,11 @@ defmodule Magma.Matter do
         end
       end
 
-      defoverridable default_concept_aliases: 1, extract_from_metadata: 3, render_front_matter: 1
+      defoverridable default_concept_aliases: 1,
+                     custom_sections: 1,
+                     prompt_representation: 1,
+                     render_front_matter: 1,
+                     extract_from_metadata: 3
     end
   end
 
