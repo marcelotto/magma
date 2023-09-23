@@ -66,6 +66,8 @@ defmodule Magma.Artefact.PromptResultTest do
                foo
                """
 
+      assert File.stat!(prompt_result.path).access == :read
+
       assert Artefact.PromptResult.load(prompt_result.path) == {:ok, prompt_result}
 
       generation =

@@ -43,8 +43,9 @@ defmodule Magma.Artefact.PromptResult do
     with {:ok, document} <-
            document
            |> Document.init(generation: document.prompt.generation || Generation.default().new!())
-           |> execute_prompt() do
-      Document.save(document, opts)
+           |> execute_prompt(),
+         {:ok, document} <- Document.save(document, opts) do
+      set_read_only(document)
     end
   end
 
@@ -91,6 +92,22 @@ defmodule Magma.Artefact.PromptResult do
     magma_generation_params: #{yaml_nested_map(document.generation)}
     """
     |> String.trim_trailing()
+  end
+
+  defp set_read_only(%__MODULE__{path: path} = document) do
+    case File.stat(path) do
+      {:ok, %File.Stat{access: :read}} ->
+        {:ok, document}
+
+      {:ok, %File.Stat{} = stat} ->
+        with :ok <- File.write_stat(path, %File.Stat{stat | access: :read}),
+             :ok <- File.chmod(path, 0o444) do
+          {:ok, document}
+        end
+
+      {:error, _} = error ->
+        error
+    end
   end
 
   @impl true
