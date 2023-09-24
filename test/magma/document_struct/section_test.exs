@@ -404,8 +404,10 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false) ==
+             |> Section.to_string() ==
                """
+               ## Example title
+
                Foo:
 
                ### `Nested.Example`
@@ -462,8 +464,10 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false) ==
+             |> Section.to_string() ==
                """
+               ## Example title
+
                Foo:
 
                ### Notes
@@ -511,8 +515,10 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false) ==
+             |> Section.to_string() ==
                """
+               ## Example title
+
                Foo:
 
                ### Example section
@@ -538,8 +544,10 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false) ==
+             |> Section.to_string() ==
                """
+               ## Example title
+
                Foo:
 
                #### Example notes
@@ -587,8 +595,10 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false) ==
+             |> Section.to_string() ==
                """
+               ## Example title
+
                Foo:
 
                This is an example description of the module:
@@ -612,8 +622,10 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false) ==
+             |> Section.to_string() ==
                """
+               ## Example title
+
                ### Foo
 
                bar
@@ -639,8 +651,10 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_transclusions()
-             |> Section.to_string(header: false) ==
+             |> Section.to_string() ==
                """
+               ## Example title
+
                Foo:
 
                #### Example note
