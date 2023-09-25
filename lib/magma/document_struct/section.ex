@@ -17,13 +17,9 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
-  defp header_title(%Header{children: [child]}) do
-    Panpipe.to_markdown(child)
-  end
-
   defp header_title(%Header{children: children}) do
-    %Panpipe.AST.Para{children: children}
-    |> Panpipe.to_markdown()
+    %Panpipe.Document{children: [%Panpipe.AST.Para{children: children}]}
+    |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension())
     |> String.trim()
   end
 

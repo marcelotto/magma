@@ -6,6 +6,11 @@ defmodule Magma.DocumentStruct.ParserTest do
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.{Parser, Section}
 
+  test "smart extension issue with header title parsing" do
+    assert {:ok, %DocumentStruct{sections: [%Magma.DocumentStruct.Section{title: "'Foo'"}]}} =
+             Parser.parse("# 'Foo'")
+  end
+
   test "with no content" do
     assert Parser.parse("") ==
              {:ok,
