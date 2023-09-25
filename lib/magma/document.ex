@@ -9,9 +9,11 @@ defmodule Magma.Document do
           | Magma.Artefact.PromptResult.t()
           | Magma.Artefact.Version.t()
 
-  @callback load_document(t()) :: {:ok, t()} | {:error, any}
-
   @callback build_path(t()) :: {:ok, Path.t()}
+
+  @callback title(t()) :: binary
+
+  @callback load_document(t()) :: {:ok, t()} | {:error, any}
 
   @callback render_front_matter(t()) :: binary
 
@@ -79,7 +81,7 @@ defmodule Magma.Document do
     Path.basename(path, Path.extname(path))
   end
 
-  def save(%_document_type{} = document, opts) do
+  def save(%_document_type{} = document, opts \\ []) do
     if Magma.MixHelper.create_file(
          document.path,
          render_front_matter(document) <> document.content,
@@ -128,10 +130,9 @@ defmodule Magma.Document do
   def content_without_prologue(document) do
     content = document.content
 
-    case String.split(content, ~r{^\# }m, parts: 2) do
-      # no header found
-      [_] -> content
-      [_, stripped_content] -> "# " <> stripped_content
+    case String.split(content, ~r{^\#.*\n}m, parts: 2) do
+      [_, stripped_content] -> String.trim(stripped_content)
+      _ -> raise "invalid document #{document.path}: no title header found"
     end
   end
 

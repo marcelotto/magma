@@ -20,6 +20,11 @@ defmodule Magma.Concept do
   def description_section_title, do: @description_section_title
 
   @impl true
+  def title(%__MODULE__{subject: %matter_type{} = matter}) do
+    matter_type.concept_title(matter)
+  end
+
+  @impl true
   def build_path(%__MODULE__{subject: %matter_type{} = matter}) do
     {:ok, matter |> matter_type.relative_concept_path() |> Vault.concept_path()}
   end

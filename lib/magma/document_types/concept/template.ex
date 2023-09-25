@@ -5,7 +5,7 @@ defmodule Magma.Concept.Template do
 
   def render(%Concept{subject: %matter_type{} = matter} = concept, assigns) do
     """
-    # #{matter_type.concept_title(matter)}
+    # #{Concept.title(concept)}
 
     ## #{Concept.description_section_title()}
 

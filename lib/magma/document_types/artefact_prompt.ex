@@ -16,6 +16,9 @@ defmodule Magma.Artefact.Prompt do
   def request_prompt_section_title, do: @request_prompt_section_title
 
   @impl true
+  def title(%__MODULE__{name: name}), do: name
+
+  @impl true
   def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
     {:ok, concept |> artefact.relative_prompt_path() |> Vault.artefact_generation_path()}
   end
@@ -59,9 +62,9 @@ defmodule Magma.Artefact.Prompt do
     import Magma.Obsidian.View.Helper
 
     """
-    magma_artefact: #{Magma.Artefact.type_name(document.artefact)}
+    magma_artefact: #{Artefact.type_name(document.artefact)}
     magma_concept: "#{link_to(document.concept)}"
-    magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
+    magma_generation_type: #{inspect(Generation.short_name(document.generation))}
     magma_generation_params: #{yaml_nested_map(document.generation)}
     """
     |> String.trim_trailing()

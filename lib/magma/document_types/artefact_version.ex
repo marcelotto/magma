@@ -5,9 +5,8 @@ defmodule Magma.Artefact.Version do
 
   alias Magma.{Vault, Artefact, Concept}
 
-  def build_name(concept, artefact) do
-    artefact.name(concept)
-  end
+  @impl true
+  def title(%__MODULE__{name: name}), do: name
 
   @impl true
   def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
@@ -88,7 +87,14 @@ defmodule Magma.Artefact.Version do
   end
 
   defp copy_prompt_result(document) do
-    %__MODULE__{document | content: Document.content_without_prologue(document.prompt_result)}
+    %__MODULE__{
+      document
+      | content: """
+        # #{title(document)}
+
+        #{Document.content_without_prologue(document.prompt_result)}
+        """
+    }
   end
 
   @impl true

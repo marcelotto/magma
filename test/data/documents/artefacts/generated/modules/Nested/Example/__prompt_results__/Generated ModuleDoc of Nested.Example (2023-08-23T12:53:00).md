@@ -14,6 +14,6 @@ action Shell commands: Execute: magma.artefact.select_draft
 color blue
 ```
 
-# ModuleDoc of Nested.Example
+# Generated ModuleDoc of Nested.Example
 
 The final documentation of `Nested.Example`.

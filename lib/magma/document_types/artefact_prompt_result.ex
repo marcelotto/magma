@@ -3,12 +3,17 @@ defmodule Magma.Artefact.PromptResult do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Generation}
+  alias Magma.{Vault, Artefact, Generation}
 
   import Magma.Utils, only: [init_field: 2]
 
-  def build_name(%Concept{} = concept, artefact) do
+  @impl true
+  def title(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact, concept: concept}}) do
     "Generated #{artefact.name(concept)}"
+  end
+
+  def build_name(%__MODULE__{} = result) do
+    "#{title(result)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()})"
   end
 
   @impl true
@@ -19,7 +24,7 @@ defmodule Magma.Artefact.PromptResult do
      [
        concept |> artefact.relative_prompt_path() |> Path.dirname(),
        "__prompt_results__",
-       "#{build_name(concept, artefact)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()}).md"
+       "#{build_name(result)}.md"
      ]
      |> Vault.artefact_generation_path()}
   end
@@ -76,7 +81,7 @@ defmodule Magma.Artefact.PromptResult do
     #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
     #{delete_current_file_button()}
 
-    # #{build_name(document.prompt.concept, document.prompt.artefact)}
+    # #{title(document)}
 
     #{result}
     """

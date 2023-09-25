@@ -10,7 +10,7 @@ defmodule Magma.Artefact.Prompt.Template do
     """
     #{controls()}
 
-    # #{prompt.name}
+    # #{Prompt.title(prompt)}
 
     ## #{Prompt.system_prompt_section_title()}
 
