@@ -8,7 +8,7 @@ defmodule Magma.Artefact.PromptTest do
   alias Magma.{Artefacts, Artefact, Concept, Generation}
 
   describe "new/1" do
-    test "with ModuleDoc artefact" do
+    test "ModuleDoc artefact" do
       concept = module_concept()
 
       assert {:ok,
@@ -28,6 +28,28 @@ defmodule Magma.Artefact.PromptTest do
 
       assert Artefacts.ModuleDoc.prompt!(concept) == prompt
     end
+
+    test "TableOfContents artefact" do
+      concept = user_guide_concept()
+
+      assert {:ok,
+              %Artefact.Prompt{
+                artefact: Artefacts.TableOfContents,
+                concept: ^concept,
+                generation: nil,
+                tags: nil,
+                aliases: nil,
+                created_at: nil,
+                content: nil
+              } = prompt} = Artefact.Prompt.new(concept, Artefacts.TableOfContents)
+
+      assert prompt.name == "Prompt for Some User Guide ToC"
+
+      assert prompt.path ==
+               Vault.path("artefacts/generated/texts/Some User Guide/#{prompt.name}.md")
+
+      assert Artefacts.TableOfContents.prompt!(concept) == prompt
+    end
   end
 
   describe "create/1 (and re-load/1)" do
@@ -35,7 +57,7 @@ defmodule Magma.Artefact.PromptTest do
            "concepts/modules/Nested/Nested.Example.md",
            "concepts/Project.md"
          ]
-    test "moduledoc" do
+    test "ModuleDoc artefact" do
       module_concept = Nested.Example |> module_concept() |> Concept.load!()
 
       assert {:ok,
@@ -92,6 +114,109 @@ defmodule Magma.Artefact.PromptTest do
                end
 
                ```
+
+               """
+
+      assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}
+    end
+
+    @tag vault_files: [
+           "concepts/texts/Some User Guide/Some User Guide.md",
+           "concepts/Project.md"
+         ]
+    test "TableOfContents artefact" do
+      text_concept = "Some User Guide" |> user_guide_concept() |> Concept.load!()
+
+      assert {:ok,
+              %Artefact.Prompt{
+                artefact: Artefacts.TableOfContents,
+                concept: ^text_concept,
+                generation: %Generation.Mock{},
+                tags: ["magma-vault"],
+                aliases: [],
+                custom_metadata: %{}
+              } = prompt} = Artefacts.TableOfContents.create_prompt(text_concept)
+
+      assert prompt.name == "Prompt for Some User Guide ToC"
+      assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2
+
+      assert prompt.content ==
+               """
+               #{Artefact.Prompt.Template.controls()}
+
+               # #{prompt.name}
+
+               ## System prompt
+
+               You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
+
+               Your task is to help write a user guide called `Some User Guide`.
+
+               The user guide should be written in English in the Markdown format.
+
+               ### Description of the Some project ![[Project#Description]]
+
+
+               ## Request
+
+               ### ![[Some User Guide#TableOfContents Prompt]]
+
+               ### Description of the Text ![[Some User Guide#Description]]
+
+
+               """
+
+      assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}
+    end
+
+    @tag vault_files: [
+           "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
+           "concepts/texts/Some User Guide/Some User Guide.md",
+           "concepts/Project.md"
+         ]
+    test "Section artefact" do
+      section_concept = "Introduction" |> user_guide_section_concept() |> Concept.load!()
+
+      assert {:ok,
+              %Artefact.Prompt{
+                artefact: Artefacts.Article,
+                concept: ^section_concept,
+                generation: %Generation.Mock{},
+                tags: ["magma-vault"],
+                aliases: [],
+                custom_metadata: %{}
+              } = prompt} = Artefacts.Article.create_prompt(section_concept)
+
+      assert prompt.name == "Prompt for 'Some User Guide - Introduction' article section"
+
+      assert prompt.path ==
+               Vault.path("artefacts/generated/texts/Some User Guide/article/#{prompt.name}.md")
+
+      assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2
+
+      assert prompt.content ==
+               """
+               #{Artefact.Prompt.Template.controls()}
+
+               # #{prompt.name}
+
+               ## System prompt
+
+               You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
+
+               Your task is to help write a user guide called `Some User Guide`.
+
+               The user guide should be written in English in the Markdown format.
+
+               ### Description of the Some project ![[Project#Description]]
+
+
+               ## Request
+
+               ### ![[Some User Guide - Introduction#Article Prompt]]
+
+               ### Description of the Text.Section ![[Some User Guide - Introduction#Description]]
+
 
                """
 

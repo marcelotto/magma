@@ -33,8 +33,8 @@ defmodule Magma.Artefacts.ModuleDoc do
   end
 
   @impl true
-  def relative_base_path(%Concept{subject: %Matter.Module{name: module}}) do
-    Path.join([Matter.Module.relative_base_path() | Module.split(module)])
+  def relative_base_path(%Concept{subject: %Matter.Module{name: module} = matter}) do
+    Path.join([Matter.Module.relative_base_path(matter) | Module.split(module)])
   end
 
   # We can not use the Magma.Vault.Index here because this function will be used also at compile-time.

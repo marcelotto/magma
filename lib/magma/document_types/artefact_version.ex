@@ -1,9 +1,12 @@
 defmodule Magma.Artefact.Version do
-  use Magma.Document, fields: [:artefact, :concept, :prompt_result]
+  use Magma.Document, fields: [:artefact, :concept, :draft]
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept}
+  alias Magma.{Vault, Artefact, Concept, DocumentStruct}
+  alias Magma.DocumentStruct.Section
+  alias Magma.Document.Loader
+  alias Magma.Text.Preview
 
   @impl true
   def title(%__MODULE__{name: name}), do: name
@@ -17,7 +20,7 @@ defmodule Magma.Artefact.Version do
     {:ok, concept |> artefact.relative_version_path() |> Vault.artefact_version_path()}
   end
 
-  def new(prompt_result, attrs \\ [])
+  def new(draft, attrs \\ [])
 
   def new(%Artefact.PromptResult{} = prompt_result, attrs) do
     attrs =
@@ -32,33 +35,48 @@ defmodule Magma.Artefact.Version do
     end
   end
 
-  def new(%Magma.DocumentNotFound{} = missing_prompt_result, attrs) do
+  def new(%Preview{} = preview, attrs) do
+    attrs =
+      attrs
+      |> Keyword.put_new(:concept, preview.concept)
+      |> Keyword.put_new(:artefact, preview.artefact)
+
     cond do
-      !attrs[:concept] -> {:error, "concept missing"}
-      !attrs[:artefact] -> {:error, "artefact missing"}
-      true -> do_new(missing_prompt_result, attrs)
+      attrs[:concept] != preview.concept -> {:error, "inconsistent concept"}
+      attrs[:artefact] != preview.artefact -> {:error, "inconsistent artefact"}
+      true -> do_new(preview, attrs)
     end
   end
 
-  defp do_new(prompt_result, attrs) do
-    struct(__MODULE__, [{:prompt_result, prompt_result} | attrs])
+  def new(%Magma.DocumentNotFound{} = missing_document, attrs) do
+    cond do
+      !attrs[:concept] -> {:error, "concept missing"}
+      !attrs[:artefact] -> {:error, "artefact missing"}
+      true -> do_new(missing_document, attrs)
+    end
+  end
+
+  defp do_new(draft, attrs) do
+    struct(__MODULE__, [{:draft, draft} | attrs])
     |> Document.init_path()
   end
 
-  def new!(prompt_result, attrs \\ []) do
-    case new(prompt_result, attrs) do
+  def new!(draft, attrs \\ []) do
+    case new(draft, attrs) do
       {:ok, document} -> document
       {:error, error} -> raise error
     end
   end
 
-  def create(prompt, attrs \\ [], opts \\ [])
+  def create(draft, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{} = document, opts, []) do
-    document
-    |> Document.init()
-    |> copy_prompt_result()
-    |> Document.save(opts)
+    with {:ok, document} <-
+           document
+           |> Document.init()
+           |> assemble() do
+      Document.save(document, opts)
+    end
   end
 
   def create(%__MODULE__{}, _, _),
@@ -68,9 +86,33 @@ defmodule Magma.Artefact.Version do
         "Magma.Artefact.Version.create/3 is available only with new/2 arguments"
       )
 
-  def create(prompt_result, attrs, opts) do
-    with {:ok, document} <- new(prompt_result, attrs) do
+  def create(draft, attrs, opts) do
+    with {:ok, document} <- new(draft, attrs) do
       create(document, opts)
+    end
+  end
+
+  defp assemble(%__MODULE__{draft: %Artefact.PromptResult{}} = document) do
+    content =
+      """
+      # #{title(document)}
+
+      #{Document.content_without_prologue(document.draft)}
+      """
+
+    {:ok, %__MODULE__{document | content: content}}
+  end
+
+  defp assemble(%__MODULE__{draft: %Preview{}} = document) do
+    with {:ok, document_struct} <- DocumentStruct.parse(document.draft.content) do
+      content =
+        document_struct
+        |> DocumentStruct.main_section()
+        |> Section.resolve_transclusions()
+        |> Section.remove_comments()
+        |> Section.to_string()
+
+      {:ok, %__MODULE__{document | content: content}}
     end
   end
 
@@ -81,32 +123,21 @@ defmodule Magma.Artefact.Version do
     """
     magma_artefact: #{Magma.Artefact.type_name(document.artefact)}
     magma_concept: "#{link_to(document.concept)}"
-    magma_prompt_result: "#{link_to(document.prompt_result)}"
+    magma_draft: "#{link_to(document.draft)}"
     """
     |> String.trim_trailing()
-  end
-
-  defp copy_prompt_result(document) do
-    %__MODULE__{
-      document
-      | content: """
-        # #{title(document)}
-
-        #{Document.content_without_prologue(document.prompt_result)}
-        """
-    }
   end
 
   @impl true
   @doc false
   def load_document(%__MODULE__{} = version) do
-    {prompt_result_link, metadata} = Map.pop(version.custom_metadata, :magma_prompt_result)
+    {draft_link, metadata} = Map.pop(version.custom_metadata, :magma_draft)
     {concept_link, metadata} = Map.pop(metadata, :magma_concept)
     {artefact_type, metadata} = Map.pop(metadata, :magma_artefact)
 
     cond do
-      !prompt_result_link ->
-        {:error, "magma_prompt_result missing"}
+      !draft_link ->
+        {:error, "magma_draft missing"}
 
       !concept_link ->
         {:error, "magma_concept missing"}
@@ -115,13 +146,10 @@ defmodule Magma.Artefact.Version do
         {:error, "magma_artefact missing"}
 
       artefact_module = Artefact.type(artefact_type) ->
-        with {:ok, prompt_result} <-
-               (case Artefact.PromptResult.load_linked(prompt_result_link) do
-                  {:ok, _} = ok ->
-                    ok
-
-                  {:error, %Magma.DocumentNotFound{} = missing_prompt_result} ->
-                    {:ok, missing_prompt_result}
+        with {:ok, draft} <-
+               (case Loader.load_linked([Artefact.PromptResult, Preview], draft_link) do
+                  {:ok, _} = ok -> ok
+                  {:error, %Magma.DocumentNotFound{} = e} -> {:ok, e}
                 end),
              {:ok, concept} <- Concept.load_linked(concept_link) do
           {:ok,
@@ -129,7 +157,7 @@ defmodule Magma.Artefact.Version do
              version
              | artefact: artefact_module,
                concept: concept,
-               prompt_result: prompt_result,
+               draft: draft,
                custom_metadata: metadata
            }}
         end

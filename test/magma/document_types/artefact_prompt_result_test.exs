@@ -5,8 +5,10 @@ defmodule Magma.Artefact.PromptResultTest do
 
   alias Magma.{Artefact, Generation}
 
+  import Magma.Obsidian.View.Helper
+
   describe "new/1" do
-    test "with ModuleDoc prompt" do
+    test "ModuleDoc prompt" do
       prompt = module_doc_artefact_prompt()
       created_at = datetime()
 
@@ -31,6 +33,12 @@ defmodule Magma.Artefact.PromptResultTest do
                  "artefacts/generated/modules/Nested/Example/__prompt_results__/#{name}.md"
                )
     end
+
+    #    test "without created_at" do
+    #      prompt = module_doc_artefact_prompt()
+    #
+    #      assert Artefact.PromptResult.new(prompt) == {:error, "missing attribute: :created_at"}
+    #    end
   end
 
   describe "create/1 (and re-load/1)" do
@@ -38,7 +46,7 @@ defmodule Magma.Artefact.PromptResultTest do
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
            "concepts/modules/Nested/Nested.Example.md"
          ]
-    test "moduledoc", %{vault_files: [prompt_file | _]} do
+    test "ModuleDoc prompt", %{vault_files: [prompt_file | _]} do
       prompt =
         prompt_file
         |> Vault.path()
@@ -58,8 +66,8 @@ defmodule Magma.Artefact.PromptResultTest do
 
       assert prompt_result.content ==
                """
-               #{Magma.Obsidian.View.Helper.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
-               #{Magma.Obsidian.View.Helper.delete_current_file_button()}
+               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+               #{delete_current_file_button()}
 
                # Generated ModuleDoc of Nested.Example
 
@@ -86,6 +94,99 @@ defmodule Magma.Artefact.PromptResultTest do
                 aliases: [],
                 custom_metadata: %{}
               }} = Artefact.PromptResult.create(prompt, generation: generation)
+    end
+
+    @tag vault_files: [
+           "artefacts/generated/texts/Some User Guide/Prompt for Some User Guide ToC.md",
+           "concepts/texts/Some User Guide/Some User Guide.md"
+         ]
+    test "TableOfContents prompt", %{vault_files: [prompt_file | _]} do
+      prompt =
+        prompt_file
+        |> Vault.path()
+        |> Artefact.Prompt.load!()
+
+      assert {:ok,
+              %Artefact.PromptResult{
+                prompt: ^prompt,
+                generation: %Generation.Mock{},
+                name: "Generated Some User Guide ToC (" <> _,
+                tags: ["magma-vault"],
+                aliases: [],
+                custom_metadata: %{}
+              } = prompt_result} = Artefact.PromptResult.create(prompt)
+
+      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+
+      assert prompt_result.content ==
+               """
+               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+               #{delete_current_file_button()}
+
+               # Generated Some User Guide ToC
+
+               foo
+               """
+
+      assert Artefact.PromptResult.load(prompt_result.path) == {:ok, prompt_result}
+
+      generation =
+        Generation.Mock.new!(
+          expected_system_prompt: Artefact.Prompt.Template.persona(project_concept()) <> "\n",
+          expected_prompt: "Generate the table of content of Some User Guide ...\n",
+          result: "bar"
+        )
+
+      assert {:ok,
+              %Artefact.PromptResult{
+                prompt: ^prompt,
+                generation: ^generation,
+                name: "Generated Some User Guide ToC (" <> _,
+                tags: ["magma-vault"],
+                aliases: [],
+                custom_metadata: %{}
+              }} = Artefact.PromptResult.create(prompt, generation: generation)
+    end
+
+    @tag vault_files: [
+           "artefacts/generated/texts/Some User Guide/article/Prompt for 'Some User Guide - Introduction' article section.md",
+           "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
+           "concepts/texts/Some User Guide/Some User Guide.md"
+         ]
+    test "Section prompt", %{vault_files: [prompt_file | _]} do
+      prompt =
+        prompt_file
+        |> Vault.path()
+        |> Artefact.Prompt.load!()
+
+      assert {:ok,
+              %Artefact.PromptResult{
+                prompt: ^prompt,
+                generation: %Generation.Mock{},
+                name: "Generated 'Some User Guide - Introduction' article section (" <> _,
+                tags: ["magma-vault"],
+                aliases: [],
+                custom_metadata: %{}
+              } = prompt_result} = Artefact.PromptResult.create(prompt)
+
+      assert prompt_result.content ==
+               """
+               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+               #{delete_current_file_button()}
+
+               # Generated 'Some User Guide - Introduction' article section
+
+               foo
+               """
+
+      assert prompt_result.path ==
+               Vault.path(
+                 "artefacts/generated/texts/Some User Guide/article/__prompt_results__/#{prompt_result.name}.md"
+               )
+
+      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+
+      assert Artefact.PromptResult.load(prompt_result.path) == {:ok, prompt_result}
     end
   end
 end

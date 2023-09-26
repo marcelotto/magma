@@ -69,6 +69,19 @@ defmodule Magma.Artefact do
         Artefact.Prompt.create(concept, __MODULE__, attrs, opts)
       end
 
+      def load_version(%Concept{} = concept) do
+        concept
+        |> name()
+        |> Artefact.Version.load()
+      end
+
+      def load_version!(concept) do
+        case load_version(concept) do
+          {:ok, version} -> version
+          {:error, error} -> raise error
+        end
+      end
+
       defoverridable prompt_name: 1, relative_prompt_path: 1, relative_version_path: 1
     end
   end
@@ -80,6 +93,9 @@ defmodule Magma.Artefact do
 
       iex> Magma.Artefact.type_name(Magma.Artefacts.ModuleDoc)
       "ModuleDoc"
+
+      iex> Magma.Artefact.type_name(Magma.Artefacts.Article)
+      "Article"
 
       iex> Magma.Artefact.type_name(Magma.Vault)
       ** (RuntimeError) Invalid Magma.Artefacts type: Magma.Vault
@@ -106,6 +122,9 @@ defmodule Magma.Artefact do
 
       iex> Magma.Artefact.type("ModuleDoc")
       Magma.Artefacts.ModuleDoc
+
+      iex> Magma.Artefact.type("TableOfContents")
+      Magma.Artefacts.TableOfContents
 
       iex> Magma.Artefact.type("Vault")
       nil

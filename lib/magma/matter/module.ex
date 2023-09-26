@@ -31,7 +31,7 @@ defmodule Magma.Matter.Module do
   end
 
   @impl true
-  def relative_base_path, do: @relative_base_path
+  def relative_base_path(_), do: @relative_base_path
 
   @impl true
   def relative_concept_path(%__MODULE__{name: module} = matter) do

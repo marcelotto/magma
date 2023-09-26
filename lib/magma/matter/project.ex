@@ -47,7 +47,7 @@ defmodule Magma.Matter.Project do
   def default_concept_aliases(%__MODULE__{name: name}), do: ["#{name} project", "#{name}-project"]
 
   @impl true
-  def relative_base_path, do: ""
+  def relative_base_path(_), do: ""
 
   @impl true
   def relative_concept_path(%__MODULE__{} = project), do: "#{concept_name(project)}.md"

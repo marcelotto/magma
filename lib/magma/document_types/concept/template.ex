@@ -11,13 +11,11 @@ defmodule Magma.Concept.Template do
 
     #{matter_type.default_description(matter, assigns)}
 
-    #{matter_type.custom_sections(matter)}
-
     # Knowledge Base
-
 
     # Notes
 
+    #{matter_type.custom_sections(concept)}
 
     # Artefact Prompts
 

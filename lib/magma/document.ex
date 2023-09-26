@@ -8,6 +8,7 @@ defmodule Magma.Document do
           | Magma.Artefact.Prompt.t()
           | Magma.Artefact.PromptResult.t()
           | Magma.Artefact.Version.t()
+          | Magma.Preview.t()
 
   @callback build_path(t()) :: {:ok, Path.t()}
 
@@ -152,6 +153,9 @@ defmodule Magma.Document do
 
       iex> Magma.Document.type_name(Magma.Artefact.Version)
       "Artefact.Version"
+
+      iex> Magma.Document.type_name(Magma.Text.Preview)
+      "Text.Preview"
 
       iex> Magma.Document.type_name(Magma.Vault)
       ** (RuntimeError) Invalid Magma.Document type: Magma.Vault

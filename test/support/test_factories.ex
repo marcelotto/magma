@@ -16,16 +16,26 @@ defmodule Magma.TestFactories do
   def datetime(amount_to_add, unit \\ :second),
     do: datetime() |> DateTime.add(amount_to_add, unit)
 
-  def project_matter do
-    Matter.Project.new!("Magma")
+  def project_matter(name \\ "Some") do
+    Matter.Project.new!(name)
   end
 
   def module_matter(mod \\ Nested.Example) do
     Matter.Module.new!(mod)
   end
 
-  def project_concept do
-    project_matter()
+  def user_guide_matter(name \\ "Some User Guide") do
+    Matter.Text.new!(Matter.Texts.UserGuide, name)
+  end
+
+  def user_guide_section_matter(section_name \\ "Introduction", text_name \\ "Some User Guide") do
+    Matter.Text.new!(Matter.Texts.UserGuide, text_name)
+    |> Matter.Text.Section.new!(section_name)
+  end
+
+  def project_concept(name \\ "Some") do
+    name
+    |> project_matter()
     |> Concept.new!()
   end
 
@@ -35,10 +45,28 @@ defmodule Magma.TestFactories do
     |> Concept.new!()
   end
 
+  def user_guide_concept(name \\ "Some User Guide") do
+    name
+    |> user_guide_matter()
+    |> Concept.new!()
+  end
+
+  def user_guide_section_concept(section_name \\ "Introduction", text_name \\ "Some User Guide") do
+    section_name
+    |> user_guide_section_matter(text_name)
+    |> Concept.new!()
+  end
+
   def module_doc_artefact_prompt(mod \\ Nested.Example) do
     mod
     |> module_concept()
     |> Artefacts.ModuleDoc.prompt!()
+  end
+
+  def user_guide_toc_prompt(name \\ "Some User Guide") do
+    name
+    |> user_guide_concept()
+    |> Artefacts.TableOfContents.prompt!()
   end
 
   def module_doc_artefact_prompt_result(mod \\ Nested.Example) do

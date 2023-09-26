@@ -39,4 +39,9 @@ defmodule Magma.DocumentStruct do
   def ast(%{sections: sections}, opts \\ []) do
     Enum.flat_map(sections, &Section.ast(&1, opts))
   end
+
+  def to_string(%{prologue: prologue} = document) do
+    %Panpipe.Document{children: prologue ++ ast(document)}
+    |> Panpipe.Pandoc.Conversion.convert(to: @pandoc_extension, wrap: "none")
+  end
 end

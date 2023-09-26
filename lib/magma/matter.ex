@@ -3,12 +3,14 @@ defmodule Magma.Matter do
 
   @type name :: binary | atom
 
+  alias Magma.Concept
+
   @fields [:name]
   def fields, do: @fields
 
   @callback artefacts :: list(Magma.Artefact.t())
 
-  @callback relative_base_path :: Path.t()
+  @callback relative_base_path(t()) :: Path.t()
 
   @callback relative_concept_path(t()) :: Path.t()
 
@@ -18,7 +20,7 @@ defmodule Magma.Matter do
 
   @callback default_description(t(), keyword) :: binary
 
-  @callback custom_sections(t()) :: binary
+  @callback custom_sections(Concept.t()) :: binary
 
   @callback prompt_representation(t()) :: binary | nil
 
@@ -48,7 +50,7 @@ defmodule Magma.Matter do
       def default_concept_aliases(%__MODULE__{}), do: []
 
       @impl true
-      def custom_sections(%__MODULE__{}), do: ""
+      def custom_sections(%Concept{}), do: ""
 
       @impl true
       def prompt_representation(%__MODULE__{}), do: nil
@@ -96,6 +98,12 @@ defmodule Magma.Matter do
 
       iex> Magma.Matter.type_name(Magma.Matter.Module)
       "Module"
+
+      iex> Magma.Matter.type_name(Magma.Matter.Text)
+      "Text"
+
+      iex> Magma.Matter.type_name(Magma.Matter.Text.Section)
+      "Text.Section"
 
       iex> Magma.Matter.type_name(Magma.Vault)
       ** (RuntimeError) Invalid Magma.Matter type: Magma.Vault

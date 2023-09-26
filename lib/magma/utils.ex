@@ -17,6 +17,24 @@ defmodule Magma.Utils do
     Enum.reduce(fields, struct, &init_field(&2, List.wrap(&1)))
   end
 
+  def map_while_ok(enum, fun) do
+    with {:ok, mapped} <-
+           Enum.reduce_while(enum, {:ok, []}, fn e, {:ok, acc} ->
+             case fun.(e) do
+               {:ok, value} -> {:cont, {:ok, [value | acc]}}
+               error -> {:halt, error}
+             end
+           end) do
+      {:ok, Enum.reverse(mapped)}
+    end
+  end
+
+  def flat_map_while_ok(enum, fun) do
+    with {:ok, mapped} <- map_while_ok(enum, fun) do
+      {:ok, Enum.concat(mapped)}
+    end
+  end
+
   @doc """
   Converts all (string) map keys to atoms recursively.
 
@@ -52,4 +70,20 @@ defmodule Magma.Utils do
   end
 
   def extract_link_text(_), do: nil
+
+  def set_file_read_only(path) do
+    case File.stat(path) do
+      {:ok, %File.Stat{access: :read}} ->
+        :ok
+
+      {:ok, %File.Stat{} = stat} ->
+        with :ok <- File.write_stat(path, %File.Stat{stat | access: :read}),
+             :ok <- File.chmod(path, 0o444) do
+          :ok
+        end
+
+      {:error, _} = error ->
+        error
+    end
+  end
 end

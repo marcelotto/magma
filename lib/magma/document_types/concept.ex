@@ -92,6 +92,10 @@ defmodule Magma.Concept do
     end
   end
 
+  def update_content_from_ast(%__MODULE__{} = concept) do
+    %__MODULE__{concept | content: DocumentStruct.to_string(concept)}
+  end
+
   @impl true
   @doc false
   def load_document(%__MODULE__{} = concept) do
@@ -101,4 +105,6 @@ defmodule Magma.Concept do
       {:ok, %__MODULE__{concept | subject: matter, custom_metadata: custom_metadata}}
     end
   end
+
+  defdelegate fetch(concept, key), to: DocumentStruct
 end

@@ -49,6 +49,18 @@ defmodule Magma.Document.Loader do
     end
   end
 
+  def load_linked(types, link) when is_list(types) do
+    name = Utils.extract_link_text(link)
+
+    with {:ok, document_type} <- Vault.document_type(name) do
+      if document_type in types do
+        document_type.load(name)
+      else
+        {:error, "document #{name} has unexpected document type #{document_type}"}
+      end
+    end
+  end
+
   def load_linked(type, link) do
     name = Utils.extract_link_text(link)
 
