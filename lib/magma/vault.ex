@@ -1,5 +1,5 @@
 defmodule Magma.Vault do
-  alias Magma.{Document, Concept, Artefact, Matter}
+  alias Magma.Document
   alias Magma.Vault.Index
 
   @default_path "docs.magma"
@@ -36,31 +36,18 @@ defmodule Magma.Vault do
   end
 
   def document_type(name_or_path) do
-    path = document_path(name_or_path)
-    {:ok, metadata, _body} = YamlFrontMatter.parse_file(path)
-    magma_type = metadata["magma_type"]
+    if path = document_path(name_or_path) do
+      with {:ok, metadata, _body} <- YamlFrontMatter.parse_file(path) do
+        magma_type = metadata["magma_type"]
 
-    case Document.type(magma_type) do
-      nil ->
-        {:error, "invalid magma_type in #{path}: #{inspect(magma_type)}"}
-
-      Concept ->
-        magma_matter_type = metadata["magma_matter_type"]
-
-        if matter_module = Matter.type(magma_matter_type) do
-          {:ok, Concept, matter_module}
+        if document_type = Document.type(magma_type) do
+          {:ok, document_type}
         else
-          {:error, "invalid magma_matter_type in #{path}: #{inspect(magma_matter_type)}"}
+          {:error, "invalid magma_type in #{path}: #{inspect(magma_type)}"}
         end
-
-      Artefact.Prompt ->
-        magma_artefact = metadata["magma_artefact"]
-
-        if artefact_type = Artefact.type(magma_artefact) do
-          {:ok, Artefact.Prompt, artefact_type}
-        else
-          {:error, "invalid magma_artefact in #{path}: #{inspect(magma_artefact)}"}
-        end
+      end
+    else
+      {:error, Magma.DocumentNotFound.exception(name: name_or_path)}
     end
   end
 end
