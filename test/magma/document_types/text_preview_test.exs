@@ -39,6 +39,8 @@ defmodule Magma.Text.PreviewTest do
 
       assert preview.content ==
                """
+               #{Preview.prologue()}
+
                # 'Some User Guide' article preview
 
                ## Introduction ![['Some User Guide - Introduction' article section#'Some User Guide - Introduction' article section]]

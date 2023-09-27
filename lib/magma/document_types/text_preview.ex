@@ -93,6 +93,8 @@ defmodule Magma.Text.Preview do
         {
           :ok,
           """
+          #{prologue()}
+
           # #{title(preview)}
 
           #{Enum.join(toc, "\n\n")}
@@ -102,6 +104,10 @@ defmodule Magma.Text.Preview do
     else
       {:error, "No 'Sections' section found in #{preview.concept.path}"}
     end
+  end
+
+  def prologue do
+    View.Helper.button("Finalize", "magma.text.finalize", color: "blue")
   end
 
   defp extract_concept_toc(section) do

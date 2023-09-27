@@ -6,6 +6,13 @@ created_at: 2023-09-25 20:54:00.00Z
 tags: [magma-vault]
 aliases: []
 ---
+```button
+name Finalize
+type command
+action Shell commands: Execute: magma.text.finalize
+color blue
+```
+
 # 'Some User Guide' article preview
 
 ## Introduction ![['Some User Guide - Introduction' article section#'Some User Guide - Introduction' article section]]
