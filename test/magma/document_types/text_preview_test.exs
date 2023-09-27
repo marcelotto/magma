@@ -50,8 +50,6 @@ defmodule Magma.Text.PreviewTest do
 
       assert DateTime.diff(DateTime.utc_now(), preview.created_at, :second) <= 2
 
-      assert File.stat!(preview.path).access == :read
-
       assert Preview.load(preview.path) == {:ok, preview}
     end
   end

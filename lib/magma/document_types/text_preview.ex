@@ -6,7 +6,7 @@ defmodule Magma.Text.Preview do
   alias Magma.{Vault, Concept, Matter, Artefact}
   alias Magma.Obsidian.View
 
-  import Magma.Utils, only: [map_while_ok: 2, set_file_read_only: 1]
+  import Magma.Utils, only: [map_while_ok: 2]
 
   require Logger
 
@@ -51,8 +51,7 @@ defmodule Magma.Text.Preview do
            document
            |> Document.init()
            |> render(),
-         {:ok, document} <- Document.create(document, opts),
-         :ok <- set_file_read_only(document.path) do
+         {:ok, document} <- Document.create(document, opts) do
       {:ok, document}
     end
   end
