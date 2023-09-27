@@ -10,8 +10,8 @@ defmodule Magma.Text.PreviewTest do
     @tag vault_files: [
            "concepts/texts/Some User Guide/Some User Guide.md",
            "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
-           "artefacts/final/texts/Some User Guide/article/'Some User Guide - Introduction' article section.md",
-           "artefacts/final/texts/Some User Guide/article/'Some User Guide - Next section' article section.md",
+           "artefacts/final/texts/Some User Guide/article/Some User Guide - Introduction (article section).md",
+           "artefacts/final/texts/Some User Guide/article/Some User Guide - Next section (article section).md",
            "concepts/Project.md"
          ]
     test "Article artefact" do
@@ -30,7 +30,7 @@ defmodule Magma.Text.PreviewTest do
                 custom_metadata: %{}
               } = preview} = Preview.create(concept, Artefacts.Article)
 
-      assert preview.name == "'Some User Guide' article preview"
+      assert preview.name == "Some User Guide (article) Preview"
 
       assert preview.path ==
                Vault.path(
@@ -41,13 +41,13 @@ defmodule Magma.Text.PreviewTest do
                """
                #{Preview.prologue()}
 
-               # 'Some User Guide' article preview
+               # #{preview.name}
 
-               ## Introduction ![['Some User Guide - Introduction' article section#'Some User Guide - Introduction' article section]]
+               ## Introduction ![[Some User Guide - Introduction (article section)#Some User Guide - Introduction (article section)]]
 
-               ## Next section ![['Some User Guide - Next section' article section#'Some User Guide - Next section' article section]]
+               ## Next section ![[Some User Guide - Next section (article section)#Some User Guide - Next section (article section)]]
 
-               ## Another section ![['Some User Guide - Another section' article section#'Some User Guide - Another section' article section]]
+               ## Another section ![[Some User Guide - Another section (article section)#Some User Guide - Another section (article section)]]
                """
 
       assert DateTime.diff(DateTime.utc_now(), preview.created_at, :second) <= 2

@@ -149,7 +149,7 @@ defmodule Magma.Artefact.PromptResultTest do
     end
 
     @tag vault_files: [
-           "artefacts/generated/texts/Some User Guide/article/Prompt for 'Some User Guide - Introduction' article section.md",
+           "artefacts/generated/texts/Some User Guide/article/Prompt for Some User Guide - Introduction (article section).md",
            "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
            "concepts/texts/Some User Guide/Some User Guide.md"
          ]
@@ -163,7 +163,7 @@ defmodule Magma.Artefact.PromptResultTest do
               %Artefact.PromptResult{
                 prompt: ^prompt,
                 generation: %Generation.Mock{},
-                name: "Generated 'Some User Guide - Introduction' article section (" <> _,
+                name: "Generated Some User Guide - Introduction (article section) (" <> _,
                 tags: ["magma-vault"],
                 aliases: [],
                 custom_metadata: %{}
@@ -174,7 +174,7 @@ defmodule Magma.Artefact.PromptResultTest do
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
-               # Generated 'Some User Guide - Introduction' article section
+               # Generated Some User Guide - Introduction (article section)
 
                foo
                """

@@ -159,8 +159,8 @@ defmodule Magma.Artefact.VersionTest do
     end
 
     @tag vault_files: [
-           "artefacts/generated/texts/Some User Guide/article/__prompt_results__/Generated 'Some User Guide - Introduction' article section (2023-09-23T00:08:00).md",
-           "artefacts/generated/texts/Some User Guide/article/Prompt for 'Some User Guide - Introduction' article section.md",
+           "artefacts/generated/texts/Some User Guide/article/__prompt_results__/Generated Some User Guide - Introduction (article section) (2023-09-23T00:08:00).md",
+           "artefacts/generated/texts/Some User Guide/article/Prompt for Some User Guide - Introduction (article section).md",
            "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
            "concepts/texts/Some User Guide/Some User Guide.md"
          ]
@@ -178,7 +178,7 @@ defmodule Magma.Artefact.VersionTest do
                 custom_metadata: %{}
               } = version} = Artefact.Version.create(prompt_result)
 
-      assert version.name == "'Some User Guide - Introduction' article section"
+      assert version.name == "Some User Guide - Introduction (article section)"
 
       assert version.path ==
                Vault.path("artefacts/final/texts/Some User Guide/article/#{version.name}.md")
@@ -197,11 +197,11 @@ defmodule Magma.Artefact.VersionTest do
 
     @tag vault_files: [
            "concepts/texts/Some User Guide/Some User Guide.md",
-           "artefacts/generated/texts/Some User Guide/__previews__/'Some User Guide' article preview.md",
+           "artefacts/generated/texts/Some User Guide/__previews__/Some User Guide (article) Preview.md",
            "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
-           "artefacts/final/texts/Some User Guide/article/'Some User Guide - Introduction' article section.md",
-           "artefacts/final/texts/Some User Guide/article/'Some User Guide - Next section' article section.md",
-           "artefacts/final/texts/Some User Guide/article/'Some User Guide - Another section' article section.md",
+           "artefacts/final/texts/Some User Guide/article/Some User Guide - Introduction (article section).md",
+           "artefacts/final/texts/Some User Guide/article/Some User Guide - Next section (article section).md",
+           "artefacts/final/texts/Some User Guide/article/Some User Guide - Another section (article section).md",
            "concepts/Project.md"
          ]
     test "Article artefact (from Preview)" do
@@ -209,7 +209,7 @@ defmodule Magma.Artefact.VersionTest do
       |> Artefact.Version.load!()
       |> Magma.Text.Assembler.assemble(force: true, artefacts: false)
 
-      preview = Preview.load!("'Some User Guide' article preview")
+      preview = Preview.load!("Some User Guide (article) Preview")
       concept = Concept.load!("Some User Guide")
 
       assert {:ok,
@@ -222,14 +222,14 @@ defmodule Magma.Artefact.VersionTest do
                 custom_metadata: %{}
               } = version} = Artefact.Version.create(preview)
 
-      assert version.name == "'Some User Guide' article"
+      assert version.name == "Some User Guide (article)"
 
       assert version.path ==
                Vault.path("artefacts/final/texts/Some User Guide/#{version.name}.md")
 
       assert version.content ==
                """
-               # 'Some User Guide' article preview
+               # Some User Guide (article) Preview
 
                ## Introduction
 
@@ -251,10 +251,10 @@ defmodule Magma.Artefact.VersionTest do
 
     @tag vault_files: [
            "concepts/texts/Some User Guide/Some User Guide.md",
-           "artefacts/generated/texts/Some User Guide/__previews__/'Some User Guide' article preview.md",
+           "artefacts/generated/texts/Some User Guide/__previews__/Some User Guide (article) Preview.md",
            "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
-           "artefacts/final/texts/Some User Guide/article/'Some User Guide - Introduction' article section.md",
-           "artefacts/final/texts/Some User Guide/article/'Some User Guide - Another section' article section.md",
+           "artefacts/final/texts/Some User Guide/article/Some User Guide - Introduction (article section).md",
+           "artefacts/final/texts/Some User Guide/article/Some User Guide - Another section (article section).md",
            "concepts/Project.md"
          ]
     test "from preview when section artefact versions are missing" do
@@ -262,24 +262,24 @@ defmodule Magma.Artefact.VersionTest do
       |> Artefact.Version.load!()
       |> Magma.Text.Assembler.assemble(force: true, artefacts: false)
 
-      preview = Preview.load!("'Some User Guide' article preview")
+      preview = Preview.load!("Some User Guide (article) Preview")
 
       assert capture_log(fn ->
                assert {:ok, _} = Artefact.Version.create(preview)
              end) =~
-               "failed to load [['Some User Guide - Next section' article section]] during resolution"
+               "failed to load [[Some User Guide - Next section (article section)]] during resolution"
 
-      version = Artefact.Version.load!("'Some User Guide' article")
+      version = Artefact.Version.load!("Some User Guide (article)")
 
       assert version.content ==
                """
-               # 'Some User Guide' article preview
+               # Some User Guide (article) Preview
 
                ## Introduction
 
                The content of the final introduction section.
 
-               ## Next section ![['Some User Guide - Next section' article section#'Some User Guide - Next section' article section|]]
+               ## Next section ![[Some User Guide - Next section (article section)#Some User Guide - Next section (article section)|]]
 
                ## Another section
 

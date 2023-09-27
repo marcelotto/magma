@@ -18,7 +18,7 @@ defmodule Magma.Text.Preview do
   end
 
   def build_name(artefact, %Concept{} = concept) do
-    "#{artefact.name(concept)} preview"
+    "#{artefact.name(concept)} Preview"
   end
 
   @impl true
@@ -102,7 +102,8 @@ defmodule Magma.Text.Preview do
         }
       end
     else
-      {:error, "No 'Sections' section found in #{preview.concept.path}"}
+      {:error,
+       "No '#{Matter.Text.sections_section_title()}' section found in #{preview.concept.path}"}
     end
   end
 

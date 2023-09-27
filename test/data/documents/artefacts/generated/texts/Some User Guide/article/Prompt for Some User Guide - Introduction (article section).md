@@ -19,7 +19,7 @@ action Shell commands: Execute: magma.prompt.update
 color default
 ```
 
-# Prompt for 'Some User Guide - Introduction' article section 
+# Prompt for Some User Guide - Introduction (article section)
 
 ## System prompt
 

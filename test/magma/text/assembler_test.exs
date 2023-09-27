@@ -29,7 +29,7 @@ defmodule Magma.Text.AssemblerTest do
         Enum.map(
           sections,
           &TestVault.path(
-            "artefacts/generated/texts/Some User Guide/article/Prompt for '#{&1}' article section.md"
+            "artefacts/generated/texts/Some User Guide/article/Prompt for #{&1} (article section).md"
           )
         )
 
@@ -93,7 +93,7 @@ defmodule Magma.Text.AssemblerTest do
       assert {:ok, %Artefact.Prompt{}} = Artefact.Prompt.load(section3_prompt_path)
 
       # check that artefact previews were created
-      assert Vault.document_path("'Some User Guide' article preview")
+      assert Vault.document_path("Some User Guide (article) Preview")
     end
 
     @tag vault_files: [
@@ -126,8 +126,8 @@ defmodule Magma.Text.AssemblerTest do
 
     @tag vault_files: [
            "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
-           "artefacts/generated/texts/Some User Guide/__previews__/'Some User Guide' article preview.md",
-           "artefacts/generated/texts/Some User Guide/article/Prompt for 'Some User Guide - Introduction' article section.md",
+           "artefacts/generated/texts/Some User Guide/__previews__/Some User Guide (article) Preview.md",
+           "artefacts/generated/texts/Some User Guide/article/Prompt for Some User Guide - Introduction (article section).md",
            "concepts/texts/Some User Guide/Some User Guide.md",
            "concepts/Project.md"
          ]

@@ -172,7 +172,7 @@ defmodule Magma.ConceptTest do
 
                # Artefact previews
 
-               - [['Some User Guide' article preview]]
+               - [[Some User Guide (article) Preview]]
 
                # Artefact Prompts
 
@@ -259,7 +259,7 @@ defmodule Magma.ConceptTest do
 
                ## Article
 
-               [[Prompt for 'Some User Guide - Introduction' article section]]
+               [[Prompt for Some User Guide - Introduction (article section)]]
 
                ### Article Prompt
 

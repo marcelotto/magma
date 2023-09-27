@@ -22,10 +22,11 @@ defmodule Magma.Artefacts.Article do
   def relative_version_path(concept), do: super(concept)
 
   @impl true
-  def name(%Concept{subject: %Matter.Text{}} = concept), do: "'#{concept.name}' article"
+  def name(%Concept{subject: %Matter.Text{}} = concept),
+    do: "#{concept.name} (article)"
 
   def name(%Concept{subject: %Matter.Text.Section{}} = concept),
-    do: "'#{concept.name}' article section"
+    do: "#{concept.name} (article section)"
 
   @impl true
   def system_prompt(%Concept{subject: %Matter.Text{type: text_type}} = concept) do

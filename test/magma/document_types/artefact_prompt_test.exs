@@ -187,7 +187,7 @@ defmodule Magma.Artefact.PromptTest do
                 custom_metadata: %{}
               } = prompt} = Artefacts.Article.create_prompt(section_concept)
 
-      assert prompt.name == "Prompt for 'Some User Guide - Introduction' article section"
+      assert prompt.name == "Prompt for Some User Guide - Introduction (article section)"
 
       assert prompt.path ==
                Vault.path("artefacts/generated/texts/Some User Guide/article/#{prompt.name}.md")
