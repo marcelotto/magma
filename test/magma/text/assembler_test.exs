@@ -76,6 +76,12 @@ defmodule Magma.Text.AssemblerTest do
                "![[#{Path.basename(section3_path, ".md")}"
              )
 
+      # check that proper section title links are added
+      assert String.contains?(
+               updated_text_concept.content,
+               "# [[Some User Guide - Introduction|Introduction]] ![["
+             )
+
       # check that all section concepts were created
       assert {:ok, %Concept{}} = Concept.load(section1_path)
       assert {:ok, %Concept{}} = Concept.load(section2_path)

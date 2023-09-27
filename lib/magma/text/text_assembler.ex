@@ -64,8 +64,10 @@ defmodule Magma.Text.Assembler do
 
              """ <>
                Enum.map_join(sections_with_abstracts, "\n", fn {section_matter, _} ->
+                 section_concept_name = Matter.Text.Section.concept_name(section_matter)
+
                  """
-                 ![[#{Matter.Text.Section.concept_name(section_matter)}##{Concept.description_section_title()}|]]
+                 ## [[#{section_concept_name}|#{section_matter.name}]] ![[#{section_concept_name}##{Concept.description_section_title()}|]]
                  """
                end)
            ) do

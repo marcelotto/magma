@@ -105,13 +105,15 @@ defmodule Magma.Text.Preview do
   end
 
   defp extract_concept_toc(section) do
-    Enum.flat_map(section.content, fn
-      %Panpipe.AST.Figure{
-        children: [
-          %Panpipe.AST.Plain{
-            children: [%Panpipe.AST.Image{target: target, title: "wikilink"}]
-          }
-        ]
+    Enum.flat_map(section.sections, fn
+      %Magma.DocumentStruct.Section{
+        header: %Panpipe.AST.Header{
+          children: [
+            %Panpipe.AST.Link{},
+            %Panpipe.AST.Space{},
+            %Panpipe.AST.Image{target: target, title: "wikilink"}
+          ]
+        }
       } ->
         case String.split(target, "#", parts: 2) do
           [concept_name, _] -> [concept_name]
