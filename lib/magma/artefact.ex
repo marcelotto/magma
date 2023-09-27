@@ -1,5 +1,6 @@
 defmodule Magma.Artefact do
   alias Magma.Concept
+  alias __MODULE__
 
   @type t :: module
 
@@ -14,6 +15,8 @@ defmodule Magma.Artefact do
   @callback concept_section_title :: binary
 
   @callback concept_prompt_section_title :: binary
+
+  @callback version_prologue(Artefact.Version.t()) :: binary | nil
 
   @callback relative_base_path(Concept.t()) :: Path.t()
 
@@ -53,6 +56,9 @@ defmodule Magma.Artefact do
         |> Path.join("#{name(concept)}.md")
       end
 
+      @impl true
+      def version_prologue(%Artefact.Version{artefact: __MODULE__}), do: nil
+
       def prompt(%Concept{subject: %unquote(matter_type){}} = concept, attrs \\ []) do
         Artefact.Prompt.new(concept, __MODULE__, attrs)
       end
@@ -82,7 +88,10 @@ defmodule Magma.Artefact do
         end
       end
 
-      defoverridable prompt_name: 1, relative_prompt_path: 1, relative_version_path: 1
+      defoverridable prompt_name: 1,
+                     version_prologue: 1,
+                     relative_prompt_path: 1,
+                     relative_version_path: 1
     end
   end
 

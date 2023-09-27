@@ -7,6 +7,13 @@ created_at: 2023-09-18 12:58:00Z
 tags: [magma-vault]
 aliases: []
 ---
+```button
+name Assemble sections
+type command
+action Shell commands: Execute: magma.text.assemble
+color blue
+```
+
 # Some User Guide ToC
 
 ## Introduction

@@ -100,7 +100,7 @@ defmodule Magma.Artefact.Version do
       #{Document.content_without_prologue(document.draft)}
       """
 
-    {:ok, %__MODULE__{document | content: content}}
+    {:ok, %__MODULE__{document | content: prologue(document) <> content}}
   end
 
   defp assemble(%__MODULE__{draft: %Preview{}} = document) do
@@ -112,7 +112,15 @@ defmodule Magma.Artefact.Version do
         |> Section.remove_comments()
         |> Section.to_string()
 
-      {:ok, %__MODULE__{document | content: content}}
+      {:ok, %__MODULE__{document | content: prologue(document) <> content}}
+    end
+  end
+
+  defp prologue(%__MODULE__{artefact: artefact} = version) do
+    if prologue = artefact.version_prologue(version) do
+      prologue <> "\n\n"
+    else
+      ""
     end
   end
 

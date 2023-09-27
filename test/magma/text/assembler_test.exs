@@ -5,6 +5,7 @@ defmodule Magma.Text.AssemblerTest do
 
   alias Magma.Text.Assembler
   alias Magma.{Artefact, Concept}
+  alias Magma.Artefacts.TableOfContents
 
   describe "assemble/1" do
     @tag vault_files: [
@@ -13,7 +14,7 @@ defmodule Magma.Text.AssemblerTest do
            "concepts/Project.md"
          ]
     test "UserGuide" do
-      version = Artefact.Version.load!("Some User Guide ToC")
+      toc_version = Artefact.Version.load!("Some User Guide ToC")
 
       sections = [
         "Some User Guide - Introduction",
@@ -43,7 +44,7 @@ defmodule Magma.Text.AssemblerTest do
       refute Vault.document_path(section3_prompt_path)
 
       assert {:ok, %Concept{} = updated_text_concept} =
-               Assembler.assemble(version)
+               Assembler.assemble(toc_version)
 
       # check that the updated concept was saved
       assert Concept.load(updated_text_concept.path) == {:ok, updated_text_concept}
@@ -51,6 +52,13 @@ defmodule Magma.Text.AssemblerTest do
       # check that only the content was changed
       assert %Concept{updated_text_concept | content: nil, sections: nil} ==
                %Concept{Concept.load!("Some User Guide") | content: nil, sections: nil}
+
+      # check that the 'Assemble' button in the preview was replaced with callout
+      updated_toc_version = Artefact.Version.load!("Some User Guide ToC")
+      refute updated_toc_version.content |> String.contains?(TableOfContents.assemble_button())
+
+      assert updated_toc_version.content
+             |> String.contains?(TableOfContents.assemble_callout(updated_toc_version))
 
       # check that all section transclusions were added
       assert String.contains?(
@@ -80,6 +88,47 @@ defmodule Magma.Text.AssemblerTest do
 
       # check that artefact previews were created
       assert Vault.document_path("'Some User Guide' article preview")
+    end
+
+    @tag vault_files: [
+           "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
+           "concepts/texts/Some User Guide/Some User Guide.md",
+           "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
+           "concepts/Project.md"
+         ]
+    test "when concepts are already present and force: true is set" do
+      version = Artefact.Version.load!("Some User Guide ToC")
+
+      assert {:ok, %Concept{}} = Assembler.assemble(version, force: true)
+    end
+
+    @tag vault_files: [
+           "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
+           "concepts/texts/Some User Guide/Some User Guide.md",
+           "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
+           "concepts/Project.md"
+         ]
+    test "when concepts are already present and not overwritten" do
+      version = Artefact.Version.load!("Some User Guide ToC")
+
+      send(self(), {:mix_shell_input, :yes?, false})
+
+      assert {:ok, %Concept{}} = Assembler.assemble(version)
+
+      assert_receive {:mix_shell, :yes?, [_]}
+    end
+
+    @tag vault_files: [
+           "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
+           "artefacts/generated/texts/Some User Guide/__previews__/'Some User Guide' article preview.md",
+           "artefacts/generated/texts/Some User Guide/article/Prompt for 'Some User Guide - Introduction' article section.md",
+           "concepts/texts/Some User Guide/Some User Guide.md",
+           "concepts/Project.md"
+         ]
+    test "when prompts or preview are already present" do
+      version = Artefact.Version.load!("Some User Guide ToC")
+
+      assert {:ok, %Concept{}} = Assembler.assemble(version)
     end
   end
 end

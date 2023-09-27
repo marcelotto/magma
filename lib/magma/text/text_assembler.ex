@@ -15,6 +15,8 @@ defmodule Magma.Text.Assembler do
            create_section_concepts(sections_with_abstracts, opts),
          {:ok, concept} <-
            update_concept(version.concept, sections_with_abstracts),
+         {:ok, _updated_version} <-
+           replace_assemble_button(version),
          {:ok, _prompts} <-
            create_section_artefact_prompts(section_concepts, artefacts_to_assemble, opts),
          {:ok, _previews} <-
@@ -35,6 +37,7 @@ defmodule Magma.Text.Assembler do
   end
 
   defp create_section_concepts(sections_with_abstracts, opts) do
+    opts = Keyword.put_new(opts, :ok_skipped, true)
     map_while_ok(sections_with_abstracts, &create_section_concept(&1, opts))
   end
 
@@ -70,6 +73,19 @@ defmodule Magma.Text.Assembler do
     end
   end
 
+  defp replace_assemble_button(%Artefact.Version{} = version) do
+    %Artefact.Version{
+      version
+      | content:
+          String.replace(
+            version.content,
+            TableOfContents.assemble_button(),
+            TableOfContents.assemble_callout(version)
+          )
+    }
+    |> Document.save()
+  end
+
   defp extract_assemble_artefacts(opts) do
     case Keyword.pop(opts, :artefacts, :all) do
       {false, opts} -> {[], opts}
@@ -79,10 +95,13 @@ defmodule Magma.Text.Assembler do
   end
 
   defp create_artefact_previews(concept, artefacts_to_assemble, opts) do
+    opts = Keyword.put_new(opts, :force, true)
     map_while_ok(artefacts_to_assemble, &Preview.create(concept, &1, [], opts))
   end
 
   defp create_section_artefact_prompts(section_concepts, artefacts_to_assemble, opts) do
+    opts = Keyword.put_new(opts, :force, true)
+
     flat_map_while_ok(section_concepts, fn section_concept ->
       map_while_ok(artefacts_to_assemble, &Artefact.Prompt.create(section_concept, &1, [], opts))
     end)

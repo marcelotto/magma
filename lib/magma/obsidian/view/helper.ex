@@ -17,6 +17,14 @@ defmodule Magma.Obsidian.View.Helper do
     |> String.trim_trailing()
   end
 
+  def callout(text, type \\ "info") do
+    """
+    > [!#{type}]
+    > #{String.replace(text, "\n", "\n> ")}
+    """
+    |> String.trim_trailing()
+  end
+
   def button(label, command, opts \\ []) do
     """
     ```button

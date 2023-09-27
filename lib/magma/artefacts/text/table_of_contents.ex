@@ -9,6 +9,29 @@ defmodule Magma.Artefacts.TableOfContents do
   def name(concept), do: "#{concept.name} ToC"
 
   @impl true
+  def version_prologue(%Artefact.Version{artefact: __MODULE__}) do
+    assemble_button()
+  end
+
+  def assemble_button do
+    button("Assemble sections", "magma.text.assemble", color: "blue")
+  end
+
+  def assemble_callout(version) do
+    """
+    The sections were already assembled. If you want to reassemble, please use the following Mix task:
+
+    ```sh
+    mix magma.text.assemble "#{version.name}"
+    ```
+
+    It will ask you to confirm any overwrites of files with user-provided content.
+    """
+    |> String.trim_trailing()
+    |> callout()
+  end
+
+  @impl true
   def system_prompt(%Concept{subject: %Matter.Text{type: text_type}} = concept) do
     text_type.system_prompt(concept)
   end

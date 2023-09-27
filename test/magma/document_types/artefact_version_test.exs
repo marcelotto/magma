@@ -7,6 +7,7 @@ defmodule Magma.Artefact.VersionTest do
   alias Magma.Artefacts.{ModuleDoc, Article}
   alias Magma.Text.Preview
 
+  import Magma.Obsidian.View.Helper
   import ExUnit.CaptureLog
 
   describe "new/1" do
@@ -137,6 +138,8 @@ defmodule Magma.Artefact.VersionTest do
 
       assert version.content ==
                """
+               #{button("Assemble sections", "magma.text.assemble", color: "blue")}
+
                # #{version.name}
 
                ## Introduction
