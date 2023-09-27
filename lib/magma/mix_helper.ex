@@ -31,6 +31,7 @@ defmodule Magma.MixHelper do
 
   def save_file(target, content, opts \\ []) do
     Mix.shell().info([:green, "* saving ", :reset, Path.relative_to_cwd(target)])
+    File.mkdir_p!(Path.dirname(target))
     File.write(target, content, opts)
   end
 end
