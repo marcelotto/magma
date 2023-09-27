@@ -188,5 +188,57 @@ defmodule Magma.Artefact.PromptResultTest do
 
       assert Artefact.PromptResult.load(prompt_result.path) == {:ok, prompt_result}
     end
+
+    @tag vault_files: [
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
+         ]
+    test "initial header is trimmed (unless trim_header: false)", %{
+      vault_files: [prompt_file | _]
+    } do
+      prompt =
+        prompt_file
+        |> Vault.path()
+        |> Artefact.Prompt.load!()
+
+      generation =
+        Generation.Mock.new!(
+          expected_system_prompt: "You are an assistent for writing Elixir moduledocs.\n",
+          expected_prompt: "Generate a moduledoc for `Nested.Example`.\n",
+          result: """
+          # Initial header
+
+          42
+          """
+        )
+
+      assert {:ok, %Artefact.PromptResult{} = prompt_result} =
+               Artefact.PromptResult.create(prompt, generation: generation)
+
+      assert prompt_result.content ==
+               """
+               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+               #{delete_current_file_button()}
+
+               # Generated ModuleDoc of Nested.Example
+
+               42
+               """
+
+      assert {:ok, %Artefact.PromptResult{} = prompt_result} =
+               Artefact.PromptResult.create(prompt, [generation: generation], trim_header: false)
+
+      assert prompt_result.content ==
+               """
+               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+               #{delete_current_file_button()}
+
+               # Generated ModuleDoc of Nested.Example
+
+               # Initial header
+
+               42
+               """
+    end
   end
 end

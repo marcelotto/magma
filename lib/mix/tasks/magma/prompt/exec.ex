@@ -8,7 +8,9 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
 
   alias Magma.Artefact
 
-  @options []
+  @options [
+    trim_header: :boolean
+  ]
 
   def run(args) do
     Mix.Task.run("app.start")
@@ -17,11 +19,11 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
       _opts, [] ->
         Mix.shell().error("prompt name or path missing")
 
-      _opts, [prompt_name] ->
+      opts, [prompt_name] ->
         {:ok, _} =
           prompt_name
           |> Artefact.Prompt.load!()
-          |> Artefact.PromptResult.create()
+          |> Artefact.PromptResult.create([], opts)
     end)
   end
 end

@@ -48,7 +48,7 @@ defmodule Magma.Artefact.PromptResult do
     with {:ok, document} <-
            document
            |> Document.init(generation: document.prompt.generation || Generation.default().new!())
-           |> execute_prompt(),
+           |> execute_prompt(opts),
          {:ok, document} <- Document.create(document, opts),
          :ok <- set_file_read_only(document.path) do
       {:ok, document}
@@ -68,12 +68,29 @@ defmodule Magma.Artefact.PromptResult do
     end
   end
 
-  defp execute_prompt(%__MODULE__{} = document) do
+  defp execute_prompt(%__MODULE__{} = document, opts) do
     with {:ok, system_prompt, prompt} <- Artefact.Prompt.messages(document.prompt),
          {:ok, result} <- Generation.execute(document.generation, prompt, system_prompt) do
-      {:ok, %__MODULE__{document | content: render(document, result)}}
+      {:ok, %__MODULE__{document | content: render(document, post_process_result(result, opts))}}
     end
   end
+
+  defp post_process_result(result, opts) do
+    result
+    |> String.trim_leading()
+    |> trim_header(Keyword.get(opts, :trim_header, true))
+    |> String.trim_trailing()
+  end
+
+  defp trim_header("#" <> result, true) do
+    case String.split(result, "\n", parts: 2) do
+      [_, rest] -> String.trim_leading(rest)
+      # It seems we're only getting a single header as a result, so we at least indent it.
+      [only_header_result] -> "##" <> only_header_result
+    end
+  end
+
+  defp trim_header(result, _), do: result
 
   defp render(document, result) do
     import Magma.Obsidian.View.Helper
