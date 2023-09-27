@@ -41,7 +41,7 @@ defmodule Magma.Artefact.Prompt do
     document
     |> Document.init(generation: Generation.default().new!())
     |> render()
-    |> Document.save(opts)
+    |> Document.create(opts)
   end
 
   def create(%__MODULE__{}, _, _, []),

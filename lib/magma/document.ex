@@ -82,18 +82,29 @@ defmodule Magma.Document do
     Path.basename(path, Path.extname(path))
   end
 
-  def save(%_document_type{} = document, opts \\ []) do
-    if Magma.MixHelper.create_file(
-         document.path,
-         render_front_matter(document) <> document.content,
-         opts
-       ) do
-      Vault.index(document)
+  def create(%_document_type{} = document, opts \\ []) do
+    cond do
+      Magma.MixHelper.create_file(document.path, full_content(document), opts) ->
+        Vault.index(document)
 
-      {:ok, document}
-    else
-      {:skipped, document}
+        {:ok, document}
+
+      Keyword.get(opts, :ok_skipped, false) ->
+        {:ok, document}
+
+      true ->
+        {:skipped, document}
     end
+  end
+
+  def save(%_document_type{} = document, opts \\ []) do
+    with :ok <- Magma.MixHelper.save_file(document.path, full_content(document), opts) do
+      {:ok, document}
+    end
+  end
+
+  defp full_content(document) do
+    render_front_matter(document) <> document.content
   end
 
   def render_front_matter(%document_type{} = document) do

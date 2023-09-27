@@ -75,7 +75,7 @@ defmodule Magma.Artefact.Version do
            document
            |> Document.init()
            |> assemble() do
-      Document.save(document, opts)
+      Document.create(document, opts)
     end
   end
 

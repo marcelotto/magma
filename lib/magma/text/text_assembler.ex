@@ -14,7 +14,7 @@ defmodule Magma.Text.Assembler do
          {:ok, section_concepts} <-
            create_section_concepts(sections_with_abstracts, opts),
          {:ok, concept} <-
-           update_concept(version.concept, sections_with_abstracts, opts),
+           update_concept(version.concept, sections_with_abstracts),
          {:ok, _prompts} <-
            create_section_artefact_prompts(section_concepts, artefacts_to_assemble, opts),
          {:ok, _previews} <-
@@ -42,14 +42,14 @@ defmodule Magma.Text.Assembler do
     Concept.create(section_matter, [], Keyword.put(opts, :assigns, abstract: abstract))
   end
 
-  defp update_concept(%Concept{sections: sections} = concept, sections_with_abstracts, opts) do
+  defp update_concept(%Concept{sections: sections} = concept, sections_with_abstracts) do
     with {:ok, section} <- text_concept_sections_section(sections_with_abstracts) do
       sections_title = Matter.Text.sections_section_title()
       destination_index = Enum.find_index(sections, &match?(%{title: ^sections_title}, &1))
 
       %Concept{concept | sections: List.replace_at(sections, destination_index, section)}
       |> Concept.update_content_from_ast()
-      |> Document.save(Keyword.put_new(opts, :force, true))
+      |> Document.save()
     end
   end
 

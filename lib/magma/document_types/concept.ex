@@ -50,7 +50,7 @@ defmodule Magma.Concept do
            document
            |> Document.init(aliases: matter_type.default_concept_aliases(matter))
            |> render(assigns) do
-      Document.save(document, opts)
+      Document.create(document, opts)
     end
   end
 

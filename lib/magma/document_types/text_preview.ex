@@ -51,7 +51,7 @@ defmodule Magma.Text.Preview do
            document
            |> Document.init()
            |> render(),
-         {:ok, document} <- Document.save(document, opts),
+         {:ok, document} <- Document.create(document, opts),
          :ok <- set_file_read_only(document.path) do
       {:ok, document}
     end

@@ -49,7 +49,7 @@ defmodule Magma.Artefact.PromptResult do
            document
            |> Document.init(generation: document.prompt.generation || Generation.default().new!())
            |> execute_prompt(),
-         {:ok, document} <- Document.save(document, opts),
+         {:ok, document} <- Document.create(document, opts),
          :ok <- set_file_read_only(document.path) do
       {:ok, document}
     end
