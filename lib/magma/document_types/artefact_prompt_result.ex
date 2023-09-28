@@ -96,17 +96,26 @@ defmodule Magma.Artefact.PromptResult do
 
   defp trim_header(result, _), do: result
 
-  defp render(document, result) do
+  defp render(prompt_result, execution_result) do
+    """
+    #{controls(prompt_result)}
+
+    # #{title(prompt_result)}
+
+    #{execution_result}
+    """
+  end
+
+  def controls(prompt_result) do
     import Magma.Obsidian.View.Helper
 
     """
     #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
     #{delete_current_file_button()}
 
-    # #{title(document)}
-
-    #{result}
+    Final version: #{link_to_version(prompt_result)}
     """
+    |> String.trim_trailing()
   end
 
   @impl true

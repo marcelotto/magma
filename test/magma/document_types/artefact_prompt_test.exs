@@ -75,7 +75,7 @@ defmodule Magma.Artefact.PromptTest do
 
       assert prompt.content ==
                """
-               #{Artefact.Prompt.Template.controls()}
+               #{Artefact.Prompt.Template.controls(prompt)}
 
                # #{prompt.name}
 
@@ -142,7 +142,7 @@ defmodule Magma.Artefact.PromptTest do
 
       assert prompt.content ==
                """
-               #{Artefact.Prompt.Template.controls()}
+               #{Artefact.Prompt.Template.controls(prompt)}
 
                # #{prompt.name}
 
@@ -196,7 +196,7 @@ defmodule Magma.Artefact.PromptTest do
 
       assert prompt.content ==
                """
-               #{Artefact.Prompt.Template.controls()}
+               #{Artefact.Prompt.Template.controls(prompt)}
 
                # #{prompt.name}
 

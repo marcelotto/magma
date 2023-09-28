@@ -69,6 +69,8 @@ defmodule Magma.Artefact.PromptResultTest do
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
+               Final version: [[ModuleDoc of Nested.Example]]
+
                # Generated ModuleDoc of Nested.Example
 
                foo
@@ -123,6 +125,8 @@ defmodule Magma.Artefact.PromptResultTest do
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
+               Final version: [[Some User Guide ToC]]
+
                # Generated Some User Guide ToC
 
                foo
@@ -174,6 +178,8 @@ defmodule Magma.Artefact.PromptResultTest do
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
+               Final version: [[Some User Guide - Introduction (article section)]]
+
                # Generated Some User Guide - Introduction (article section)
 
                foo
@@ -217,8 +223,7 @@ defmodule Magma.Artefact.PromptResultTest do
 
       assert prompt_result.content ==
                """
-               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
-               #{delete_current_file_button()}
+               #{Artefact.PromptResult.controls(prompt_result)}
 
                # Generated ModuleDoc of Nested.Example
 
@@ -230,8 +235,7 @@ defmodule Magma.Artefact.PromptResultTest do
 
       assert prompt_result.content ==
                """
-               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
-               #{delete_current_file_button()}
+               #{Artefact.PromptResult.controls(prompt_result)}
 
                # Generated ModuleDoc of Nested.Example
 

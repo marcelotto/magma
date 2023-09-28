@@ -34,7 +34,8 @@ defmodule Magma.Concept.Template do
     """
     ## #{artefact_type.concept_section_title()}
 
-    #{concept |> artefact_type.prompt!() |> link_to()}
+    - Prompt: #{link_to_prompt({concept, artefact_type})}
+    - Final version: #{link_to_version({concept, artefact_type})}
 
     ### #{artefact_type.concept_prompt_section_title()}
 

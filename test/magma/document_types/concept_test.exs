@@ -178,7 +178,8 @@ defmodule Magma.ConceptTest do
 
                ## TableOfContents
 
-               [[Prompt for Some User Guide ToC]]
+               - Prompt: [[Prompt for Some User Guide ToC]]
+               - Final version: [[Some User Guide ToC]]
 
                ### TableOfContents Prompt
 
@@ -259,7 +260,8 @@ defmodule Magma.ConceptTest do
 
                ## Article
 
-               [[Prompt for Some User Guide - Introduction (article section)]]
+               - Prompt: [[Prompt for Some User Guide - Introduction (article section)]]
+               - Final version: [[Some User Guide - Introduction (article section)]]
 
                ### Article Prompt
 

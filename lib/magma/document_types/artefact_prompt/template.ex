@@ -8,7 +8,7 @@ defmodule Magma.Artefact.Prompt.Template do
     concept = prompt.concept
 
     """
-    #{controls()}
+    #{controls(prompt)}
 
     # #{Prompt.title(prompt)}
 
@@ -40,11 +40,13 @@ defmodule Magma.Artefact.Prompt.Template do
     |> String.trim_trailing()
   end
 
-  def controls do
+  def controls(prompt) do
     """
     **Generated results**
 
     #{prompt_results_table()}
+
+    Final version: #{link_to_version(prompt)}
 
     **Actions**
 
