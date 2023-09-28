@@ -2,7 +2,6 @@ defmodule Magma.Matter.Text do
   use Magma.Matter, fields: [:type]
 
   alias Magma.{Matter, Concept}
-  alias Magma.Text.Preview
 
   @type t :: %__MODULE__{}
 
@@ -54,9 +53,11 @@ defmodule Magma.Matter.Text do
       # Artefact previews
 
       """ <>
-      Enum.map_join(Matter.Text.Section.artefacts(), "\n", fn text_artefact ->
-        "- [[#{Preview.build_name(text_artefact, concept)}]]"
-      end)
+      Enum.map_join(
+        Matter.Text.Section.artefacts(),
+        "\n",
+        &"- #{View.Helper.link_to_preview({concept, &1})}"
+      )
   end
 
   @impl true

@@ -400,7 +400,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             ![[Nested.Example]]
+             ![[Nested.Example|]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -439,7 +439,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             ![[Project#Description]]
+             ![[Project#Description|]]
 
              """
              |> section()

@@ -23,6 +23,12 @@ defmodule Magma.Artefact.Prompt do
     {:ok, concept |> artefact.relative_prompt_path() |> Vault.artefact_generation_path()}
   end
 
+  @impl true
+  def from(%__MODULE__{} = prompt), do: prompt
+  def from({%Concept{} = concept, artefact}), do: artefact.prompt!(concept).name
+  def from(%Artefact.PromptResult{} = result), do: result.prompt
+  def from(%Artefact.Version{} = version), do: version.draft.prompt
+
   def new(concept, artefact, attrs \\ []) do
     struct(__MODULE__, [{:artefact, artefact}, {:concept, concept} | attrs])
     |> Document.init_path()

@@ -1,12 +1,50 @@
 defmodule Magma.Obsidian.View.Helper do
-  def link_to(document, title \\ nil)
-  def link_to(%_{name: name}, nil), do: "[[#{name}]]"
-  def link_to(%_{name: name}, title), do: "[[#{name}|#{title}]]"
+  alias Magma.{Concept, Artefact, Text}
 
-  def transclude(document, section \\ nil)
-  def transclude(%_{name: name} = document, nil), do: transclude(document, name)
-  def transclude(%_{name: name}, :all), do: "![[#{name}]]"
-  def transclude(%_{name: name}, section), do: "![[#{name}##{section}]]"
+  def link_to(document_or_target, section \\ nil)
+  def link_to(%_{name: name}, title), do: link_to(name, title)
+  def link_to(:title, :title), do: raise("invalid title")
+  def link_to(target, :title), do: link_to(target, target)
+  def link_to(target, nil) when is_binary(target), do: "[[#{target}]]"
+  def link_to(target, section) when is_binary(target), do: "[[#{target}|#{section}]]"
+
+  def link_to_concept(document, section \\ nil),
+    do: document |> Concept.from() |> link_to(section)
+
+  def link_to_prompt(document, section \\ nil),
+    do: document |> Artefact.Prompt.from() |> link_to(section)
+
+  def link_to_prompt_result(document, section \\ nil),
+    do: document |> Artefact.PromptResult.from() |> link_to(section)
+
+  def link_to_version(document, section \\ nil),
+    do: document |> Artefact.Version.from() |> link_to(section)
+
+  def link_to_preview(document, section \\ nil),
+    do: document |> Text.Preview.from() |> link_to(section)
+
+  def transclude(document_or_target, section \\ nil)
+  def transclude(%_{name: name}, title), do: transclude(name, title)
+  def transclude(:title, :title), do: raise("invalid title")
+  def transclude(target, :title), do: transclude(target, target)
+  # We're adding the final '|' since Pandoc normalizes to this anyway
+  def transclude(target, nil), do: "![[#{target}|]]"
+  def transclude(target, section), do: "![[#{target}##{section}|]]"
+
+  def transclude_concept(document, section \\ nil),
+    do: document |> Concept.from() |> transclude(section)
+
+  def transclude_prompt(document, section \\ nil),
+    do: document |> Artefact.Prompt.from() |> transclude(section)
+
+  def transclude_prompt_result(document, section \\ nil),
+    do: document |> Artefact.PromptResult.from() |> transclude(section)
+
+  def transclude_version(document, section \\ nil),
+    do: document |> Artefact.Version.from() |> transclude(section)
+
+  def transclude_preview(document, section \\ nil),
+    do: document |> Text.Preview.from() |> transclude(section)
 
   def comment(text) do
     """

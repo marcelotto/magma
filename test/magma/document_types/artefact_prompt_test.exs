@@ -93,14 +93,14 @@ defmodule Magma.Artefact.PromptTest do
                - The first line should be a very short one-sentence summary of the main purpose of the module.
                - Generate just the comment for the module, not for its individual functions.
 
-               ### Description of the Some project ![[Project#Description]]
+               ### Description of the Some project ![[Project#Description|]]
 
 
                ## Request
 
-               ### ![[Nested.Example#ModuleDoc Prompt]]
+               ### ![[Nested.Example#ModuleDoc Prompt|]]
 
-               ### Description of the Module ![[Nested.Example#Description]]
+               ### Description of the Module ![[Nested.Example#Description|]]
 
                ### Module code
 
@@ -154,14 +154,14 @@ defmodule Magma.Artefact.PromptTest do
 
                The user guide should be written in English in the Markdown format.
 
-               ### Description of the Some project ![[Project#Description]]
+               ### Description of the Some project ![[Project#Description|]]
 
 
                ## Request
 
-               ### ![[Some User Guide#TableOfContents Prompt]]
+               ### ![[Some User Guide#TableOfContents Prompt|]]
 
-               ### Description of the Text ![[Some User Guide#Description]]
+               ### Description of the Text ![[Some User Guide#Description|]]
 
 
                """
@@ -208,14 +208,14 @@ defmodule Magma.Artefact.PromptTest do
 
                The user guide should be written in English in the Markdown format.
 
-               ### Description of the Some project ![[Project#Description]]
+               ### Description of the Some project ![[Project#Description|]]
 
 
                ## Request
 
-               ### ![[Some User Guide - Introduction#Article Prompt]]
+               ### ![[Some User Guide - Introduction#Article Prompt|]]
 
-               ### Description of the Text.Section ![[Some User Guide - Introduction#Description]]
+               ### Description of the Text.Section ![[Some User Guide - Introduction#Description|]]
 
 
                """

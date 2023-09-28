@@ -18,14 +18,14 @@ defmodule Magma.Artefact.Prompt.Template do
 
     #{artefact_type.system_prompt(concept)}
 
-    ### Description of the #{project.subject.name} project ![[Project#Description]]
+    ### Description of the #{project.subject.name} project #{transclude("Project", "Description")}
 
 
     ## #{Prompt.request_prompt_section_title()}
 
     ### #{transclude(concept, artefact_type.concept_prompt_section_title())}
 
-    ### Description of the #{Matter.type_name(concept.subject.__struct__)} ![[#{concept.name}#Description]]
+    ### Description of the #{Matter.type_name(concept.subject.__struct__)} #{transclude(concept, "Description")}
 
     #{if matter_representation = concept.subject.__struct__.prompt_representation(concept.subject) do
       "##" <> matter_representation

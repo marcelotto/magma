@@ -22,6 +22,10 @@ defmodule Magma.Text.Preview do
   end
 
   @impl true
+  def from({%Concept{} = concept, artefact}), do: build_name(artefact, concept)
+  def from(%__MODULE__{} = preview), do: preview
+
+  @impl true
   def build_path(%__MODULE__{concept: text_concept} = preview) do
     {:ok,
      [
@@ -134,8 +138,8 @@ defmodule Magma.Text.Preview do
 
   defp version_section_transclusion(preview, concept_name) do
     with {:ok, concept} <- Concept.load(concept_name) do
-      version_name = preview.artefact.name(concept)
-      {:ok, "## #{Concept.title(concept)} ![[#{version_name}##{version_name}]]"}
+      {:ok,
+       "## #{Concept.title(concept)} #{View.Helper.transclude_version({concept, preview.artefact}, :title)}"}
     end
   end
 

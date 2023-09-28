@@ -43,11 +43,11 @@ defmodule Magma.Text.PreviewTest do
 
                # #{preview.name}
 
-               ## Introduction ![[Some User Guide - Introduction (article section)#Some User Guide - Introduction (article section)]]
+               ## Introduction ![[Some User Guide - Introduction (article section)#Some User Guide - Introduction (article section)|]]
 
-               ## Next section ![[Some User Guide - Next section (article section)#Some User Guide - Next section (article section)]]
+               ## Next section ![[Some User Guide - Next section (article section)#Some User Guide - Next section (article section)|]]
 
-               ## Another section ![[Some User Guide - Another section (article section)#Some User Guide - Another section (article section)]]
+               ## Another section ![[Some User Guide - Another section (article section)#Some User Guide - Another section (article section)|]]
                """
 
       assert DateTime.diff(DateTime.utc_now(), preview.created_at, :second) <= 2

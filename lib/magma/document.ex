@@ -8,7 +8,11 @@ defmodule Magma.Document do
           | Magma.Artefact.Prompt.t()
           | Magma.Artefact.PromptResult.t()
           | Magma.Artefact.Version.t()
-          | Magma.Preview.t()
+          | Magma.Text.Preview.t()
+
+  @callback from(t() | {Concept.t(), Artefact.t()}) :: t() | binary
+
+  @callback from!(t() | {Concept.t(), Artefact.t()}) :: t()
 
   @callback build_path(t()) :: {:ok, Path.t()}
 
@@ -41,6 +45,15 @@ defmodule Magma.Document do
       alias Magma.Document
 
       defstruct Magma.Document.fields() ++ unquote(additional_fields)
+
+      @impl true
+      def from!(document) do
+        case from(document) do
+          %_{} = result -> result
+          name when is_binary(name) -> load!(name)
+          other -> other
+        end
+      end
 
       def load(%__MODULE__{} = document), do: Document.Loader.load(document)
       def load(path), do: Document.Loader.load(__MODULE__, path)

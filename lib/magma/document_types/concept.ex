@@ -11,7 +11,7 @@ defmodule Magma.Concept do
       :sections
     ]
 
-  alias Magma.{Vault, Matter, DocumentStruct}
+  alias Magma.{Vault, Matter, DocumentStruct, Artefact}
   alias Magma.Concept.Template
 
   @type t :: %__MODULE__{}
@@ -28,6 +28,12 @@ defmodule Magma.Concept do
   def build_path(%__MODULE__{subject: %matter_type{} = matter}) do
     {:ok, matter |> matter_type.relative_concept_path() |> Vault.concept_path()}
   end
+
+  @impl true
+  def from(%__MODULE__{} = concept), do: concept
+  def from(%Artefact.Prompt{} = prompt), do: prompt.concept
+  def from(%Artefact.PromptResult{} = result), do: result.prompt.concept
+  def from(%Artefact.Version{} = version), do: version.concept
 
   def new(subject, attrs \\ []) do
     struct(__MODULE__, [{:subject, subject} | attrs])

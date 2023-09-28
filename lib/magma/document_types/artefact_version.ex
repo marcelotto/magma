@@ -20,6 +20,16 @@ defmodule Magma.Artefact.Version do
     {:ok, concept |> artefact.relative_version_path() |> Vault.artefact_version_path()}
   end
 
+  @impl true
+  def from(%__MODULE__{} = version), do: version
+  def from({%Concept{} = concept, artefact}), do: artefact.name(concept)
+
+  def from(%Artefact.Prompt{} = prompt),
+    do: from({Concept.from(prompt), prompt.artefact})
+
+  def from(%Artefact.PromptResult{} = result),
+    do: from({Concept.from(result), result.prompt.artefact})
+
   def new(draft, attrs \\ [])
 
   def new(%Artefact.PromptResult{} = prompt_result, attrs) do

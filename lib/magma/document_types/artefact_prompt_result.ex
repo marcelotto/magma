@@ -29,6 +29,10 @@ defmodule Magma.Artefact.PromptResult do
      |> Vault.artefact_generation_path()}
   end
 
+  @impl true
+  def from(%__MODULE__{} = result), do: result
+  def from(%Artefact.Version{} = version), do: version.draft
+
   def new(prompt, attrs \\ []) do
     struct(__MODULE__, [{:prompt, prompt} | attrs])
     |> init_field(created_at: DateTime.utc_now())
