@@ -47,6 +47,12 @@ defmodule Magma.DocumentStruct.Section do
   def ast(%__MODULE__{} = section, opts \\ []) do
     {with_header, opts} = Keyword.pop(opts, :header, true)
 
+    {section, opts} =
+      case Keyword.pop(opts, :remove_comments, false) do
+        {true, opts} -> {remove_comments(section), opts}
+        {_, opts} -> {section, opts}
+      end
+
     section
     |> set_level(Keyword.get(opts, :level))
     |> do_ast(with_header, opts)

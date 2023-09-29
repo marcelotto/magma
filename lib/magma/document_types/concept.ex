@@ -113,4 +113,7 @@ defmodule Magma.Concept do
   end
 
   defdelegate fetch(concept, key), to: DocumentStruct
+
+  def description_section(%__MODULE__{} = concept),
+    do: get_in(concept, [concept.title, @description_section_title])
 end

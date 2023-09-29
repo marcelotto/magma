@@ -1,5 +1,6 @@
 defmodule Magma.Obsidian.View.Helper do
-  alias Magma.{Concept, Artefact, Text}
+  alias Magma.{Concept, Artefact, Text, DocumentStruct}
+  alias Magma.DocumentStruct.Section
 
   def link_to(document_or_target, section \\ nil)
   def link_to(%_{name: name}, title), do: link_to(name, title)
@@ -45,6 +46,66 @@ defmodule Magma.Obsidian.View.Helper do
 
   def transclude_preview(document, section \\ nil),
     do: document |> Text.Preview.from() |> transclude(section)
+
+  def include(document_or_section, subsection \\ nil, opts \\ [])
+  def include(nil, _, _), do: nil
+
+  def include(%Section{} = section, nil, opts) do
+    section |> Section.to_string(opts) |> String.trim()
+  end
+
+  def include(%Section{} = section, subsection_path, opts) when is_list(subsection_path) do
+    if subsection = get_in(section, subsection_path) do
+      include(subsection, nil, opts)
+    end
+  end
+
+  def include(%Section{} = section, subsection, opts) do
+    if subsection = Section.section_by_title(section, subsection) do
+      include(subsection, nil, opts)
+    end
+  end
+
+  def include(%Concept{} = concept, nil, opts) do
+    concept
+    |> Concept.description_section()
+    |> include(nil, opts)
+  end
+
+  def include(%Concept{} = concept, :title, opts) do
+    include(concept, concept.title, opts)
+  end
+
+  def include(%Concept{} = concept, subsection, opts) do
+    concept
+    |> DocumentStruct.section_by_title(subsection)
+    |> include(nil, opts)
+  end
+
+  def include(%_document_type{content: content}, subsection, opts) do
+    case DocumentStruct.parse(content) do
+      {:ok, document_struct} ->
+        subsection =
+          if subsection in [:title, nil],
+            do: DocumentStruct.title(document_struct),
+            else: subsection
+
+        cond do
+          subsection == :all ->
+            # DocumentStruct.to_string() does not support opts yet
+            document_struct |> DocumentStruct.to_string() |> String.trim()
+
+          section = DocumentStruct.section_by_title(document_struct, subsection) ->
+            include(section, nil, opts)
+
+          true ->
+            nil
+        end
+
+      {:error, error} ->
+        raise error
+    end
+  end
 
   def comment(text) do
     """
