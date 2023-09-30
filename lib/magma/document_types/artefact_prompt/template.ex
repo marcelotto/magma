@@ -77,6 +77,7 @@ defmodule Magma.Artefact.Prompt.Template do
     **Actions**
 
     #{button("Execute", "magma.prompt.exec", color: "blue")}
+    #{button("Copy to clipboard", "magma.prompt.copy")}
     #{button("Update", "magma.prompt.update")}
     """
     |> String.trim_trailing()

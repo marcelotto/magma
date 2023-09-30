@@ -145,4 +145,25 @@ defmodule Magma.Artefact.Prompt do
     |> Section.remove_comments()
     |> Section.to_string(header: false)
   end
+
+  def resolved_content(%__MODULE__{} = prompt) do
+    with {:ok, system_prompt, request_prompt} <- messages(prompt) do
+      {:ok,
+       """
+       # #{@system_prompt_section_title}
+
+       #{system_prompt}
+
+       # #{@request_prompt_section_title}
+
+       #{request_prompt}
+       """}
+    end
+  end
+
+  def to_clipboard(%__MODULE__{} = prompt) do
+    with {:ok, resolved_content} <- resolved_content(prompt) do
+      Clipboard.copy(resolved_content)
+    end
+  end
 end

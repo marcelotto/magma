@@ -33,6 +33,7 @@ defmodule Magma.MixProject do
       {:yaml_front_matter, "~> 1.0"},
       {:jason, "~> 1.4"},
       {:openai, "~> 0.5"},
+      {:clipboard, "~> 0.2"},
       {:exvcr, "~> 0.14", only: [:dev, :test]},
       {:ex_doc, "~> 0.30", only: :dev, runtime: false}
     ]
