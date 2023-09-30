@@ -420,16 +420,6 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                -   x
                -   y
-
-               ------------------------------------------------------------------------
-
-               #### Notes
-
-               ##### Example note
-
-               Here we have an example note with some text.
-
-               ------------------------------------------------------------------------
                """
     end
 
@@ -529,8 +519,6 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                -   x
                -   y
-
-               ------------------------------------------------------------------------
                """
 
       assert """
@@ -607,8 +595,6 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                -   x
                -   y
-
-               ------------------------------------------------------------------------
                """
 
       assert """
@@ -636,8 +622,6 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                -   x
                -   y
-
-               ------------------------------------------------------------------------
                """
 
       assert """
@@ -953,8 +937,6 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                -   x
                -   y
-
-               ------------------------------------------------------------------------
 
                Some final remarks.
 

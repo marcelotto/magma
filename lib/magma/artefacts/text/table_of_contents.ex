@@ -32,12 +32,12 @@ defmodule Magma.Artefacts.TableOfContents do
   end
 
   @impl true
-  def system_prompt(%Concept{subject: %Matter.Text{type: text_type}} = concept) do
-    text_type.system_prompt(concept)
+  def system_prompt_task(%Concept{subject: %Matter.Text{type: text_type}} = concept) do
+    text_type.system_prompt_task(concept)
   end
 
   @impl true
-  def task_prompt(%Concept{} = concept) do
+  def request_prompt_task(%Concept{} = concept) do
     """
     Your task is to write an outline of "#{concept.name}".
 

@@ -29,23 +29,23 @@ defmodule Magma.Artefacts.Article do
     do: "#{concept.name} (article section)"
 
   @impl true
-  def system_prompt(%Concept{subject: %Matter.Text{type: text_type}} = concept) do
-    do_system_prompt(concept, text_type)
+  def system_prompt_task(%Concept{subject: %Matter.Text{type: text_type}} = concept) do
+    do_system_prompt_task(concept, text_type)
   end
 
-  def system_prompt(
+  def system_prompt_task(
         %Concept{subject: %Matter.Text.Section{main_text: %Matter.Text{type: text_type}}} =
           concept
       ) do
-    do_system_prompt(concept, text_type)
+    do_system_prompt_task(concept, text_type)
   end
 
-  defp do_system_prompt(%Concept{} = concept, text_type) do
-    text_type.system_prompt(concept)
+  defp do_system_prompt_task(%Concept{} = concept, text_type) do
+    text_type.system_prompt_task(concept)
   end
 
   @impl true
-  def task_prompt(%Concept{
+  def request_prompt_task(%Concept{
         subject: %Matter.Text.Section{
           name: section_name,
           main_text: %Matter.Text{name: text_name}

@@ -55,7 +55,8 @@ defmodule Magma.Artefact.PromptTest do
   describe "create/1 (and re-load/1)" do
     @tag vault_files: [
            "concepts/modules/Nested/Nested.Example.md",
-           "concepts/Project.md"
+           "concepts/Project.md",
+           "plain/Document.md"
          ]
     test "ModuleDoc artefact" do
       module_concept = Nested.Example |> module_concept() |> Concept.load!()
@@ -93,14 +94,26 @@ defmodule Magma.Artefact.PromptTest do
                - The first line should be a very short one-sentence summary of the main purpose of the module.
                - Generate just the comment for the module, not for its individual functions.
 
-               ### Description of the Some project ![[Project#Description|]]
+               ### Context knowledge
+
+               The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+               #### Description of the Some project ![[Project#Description|]]
+
+
+
+               #### Some background knowledge
+
+               Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
+
+               #### Transcluded background knowledge ![[Document#Title|]]
 
 
                ## Request
 
-               ### ![[Nested.Example#ModuleDoc Prompt|]]
+               ### ![[Nested.Example#ModuleDoc prompt task|]]
 
-               ### Description of the Module ![[Nested.Example#Description|]]
+               ### Description of the module `Nested.Example` ![[Nested.Example#Description|]]
 
                ### Module code
 
@@ -114,7 +127,6 @@ defmodule Magma.Artefact.PromptTest do
                end
 
                ```
-
                """
 
       assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}
@@ -154,16 +166,26 @@ defmodule Magma.Artefact.PromptTest do
 
                The user guide should be written in English in the Markdown format.
 
-               ### Description of the Some project ![[Project#Description|]]
+               ### Context knowledge
+
+               The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+               #### Description of the Some project ![[Project#Description|]]
+
+
+
+               #### Some background knowledge
+
+               Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
+
+               #### Transcluded background knowledge ![[Document#Title|]]
 
 
                ## Request
 
-               ### ![[Some User Guide#TableOfContents Prompt|]]
+               ### ![[Some User Guide#TableOfContents prompt task|]]
 
-               ### Description of the Text ![[Some User Guide#Description|]]
-
-
+               ### Description of the content to be covered by the 'Some User Guide' User guide ![[Some User Guide#Description|]]
                """
 
       assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}
@@ -208,16 +230,28 @@ defmodule Magma.Artefact.PromptTest do
 
                The user guide should be written in English in the Markdown format.
 
-               ### Description of the Some project ![[Project#Description|]]
+               ### Context knowledge
+
+               The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+               #### Description of the Some project ![[Project#Description|]]
+
+               #### Outline of the 'Some User Guide' content ![[Some User Guide ToC#Some User Guide ToC|]]
+
+               #### Some background knowledge
+
+               Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
+
+               #### Transcluded background knowledge ![[Document#Title|]]
+
+               #### Section-specific background knowledge ![[DocumentWithMultipleMainSections#Section|]]
 
 
                ## Request
 
-               ### ![[Some User Guide - Introduction#Article Prompt|]]
+               ### ![[Some User Guide - Introduction#Article prompt task|]]
 
-               ### Description of the Text.Section ![[Some User Guide - Introduction#Description|]]
-
-
+               ### Description of the intended content of the 'Introduction' section ![[Some User Guide - Introduction#Description|]]
                """
 
       assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}

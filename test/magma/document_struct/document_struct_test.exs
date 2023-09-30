@@ -15,62 +15,72 @@ defmodule Magma.DocumentStructTest do
     assert {:ok, document_struct} = DocumentStruct.parse(body)
 
     assert get_in(document_struct, [
-             "Artefact system prompts",
-             "Commons",
-             "Spec",
-             "Expertise"
+             "Artefacts",
+             "ModuleDoc",
+             "ModuleDoc prompt task"
            ]) ==
              %DocumentStruct.Section{
-               title: "Expertise",
-               header: %Panpipe.AST.Header{
-                 children: [%Panpipe.AST.Str{parent: nil, string: "Expertise"}],
-                 parent: nil,
-                 level: 4,
-                 attr: %Panpipe.AST.Attr{
-                   identifier: "expertise",
-                   classes: [],
-                   key_value_pairs: %{}
-                 }
-               },
-               level: 4,
                content: [
-                 %Panpipe.AST.BulletList{
+                 %Panpipe.AST.Para{
                    children: [
-                     %Panpipe.AST.ListElement{
-                       children: [
-                         %Panpipe.AST.Plain{
-                           children: [
-                             %Panpipe.AST.Str{parent: nil, string: "<%="},
-                             %Panpipe.AST.Space{parent: nil},
-                             %Panpipe.AST.Str{parent: nil, string: "project.expertise"},
-                             %Panpipe.AST.Space{parent: nil},
-                             %Panpipe.AST.Str{parent: nil, string: "%>"}
-                           ],
-                           parent: nil
-                         }
-                       ],
-                       parent: nil
+                     %Panpipe.AST.Str{parent: nil, string: "Generate"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "documentation"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "for"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "module"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Code{
+                       parent: nil,
+                       string: "Nested.Example",
+                       attr: %Panpipe.AST.Attr{identifier: "", classes: [], key_value_pairs: %{}}
                      },
-                     %Panpipe.AST.ListElement{
-                       children: [
-                         %Panpipe.AST.Plain{
-                           children: [
-                             %Panpipe.AST.Str{parent: nil, string: "Some"},
-                             %Panpipe.AST.Space{parent: nil},
-                             %Panpipe.AST.Str{parent: nil, string: "additional"},
-                             %Panpipe.AST.Space{parent: nil},
-                             %Panpipe.AST.Str{parent: nil, string: "expertise"}
-                           ],
-                           parent: nil
-                         }
-                       ],
-                       parent: nil
-                     }
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "according"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "to"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "its"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "description"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "and"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "code"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "in"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "the"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "knowledge"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "base"},
+                     %Panpipe.AST.Space{parent: nil},
+                     %Panpipe.AST.Str{parent: nil, string: "below."}
                    ],
                    parent: nil
                  }
                ],
-               sections: []
+               header: %Panpipe.AST.Header{
+                 attr: %Panpipe.AST.Attr{
+                   classes: [],
+                   identifier: "moduledoc-prompt-task",
+                   key_value_pairs: %{}
+                 },
+                 children: [
+                   %Panpipe.AST.Str{parent: nil, string: "ModuleDoc"},
+                   %Panpipe.AST.Space{parent: nil},
+                   %Panpipe.AST.Str{parent: nil, string: "prompt"},
+                   %Panpipe.AST.Space{parent: nil},
+                   %Panpipe.AST.Str{parent: nil, string: "task"}
+                 ],
+                 level: 3,
+                 parent: nil
+               },
+               level: 3,
+               sections: [],
+               title: "ModuleDoc prompt task"
              }
   end
 

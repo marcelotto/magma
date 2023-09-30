@@ -19,6 +19,9 @@ defmodule Magma.Concept do
   @description_section_title "Description"
   def description_section_title, do: @description_section_title
 
+  @context_knowledge_section_title "Context knowledge"
+  def context_knowledge_section_title, do: @context_knowledge_section_title
+
   @impl true
   def title(%__MODULE__{subject: %matter_type{} = matter}) do
     matter_type.concept_title(matter)
@@ -116,4 +119,7 @@ defmodule Magma.Concept do
 
   def description_section(%__MODULE__{} = concept),
     do: get_in(concept, [concept.title, @description_section_title])
+
+  def context_knowledge_section(%__MODULE__{} = concept),
+    do: concept[@context_knowledge_section_title]
 end

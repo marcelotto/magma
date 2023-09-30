@@ -158,30 +158,32 @@ defmodule Magma.ConceptTest do
 
                -->
 
-               # Knowledge Base
 
-               # Notes
+               # Context knowledge
+
+               #{Concept.Template.context_knowledge_hint()}
+
 
                # Sections
 
                <!--
-               Don't remove or edit this section.
-               The results of the generated table of contents will be copied to this place.
-
+               Don't remove or edit this section! The results of the generated table of contents will be copied to this place.
                -->
+
 
                # Artefact previews
 
                - [[Some User Guide (article) Preview]]
 
-               # Artefact Prompts
+
+               # Artefacts
 
                ## TableOfContents
 
                - Prompt: [[Prompt for Some User Guide ToC]]
                - Final version: [[Some User Guide ToC]]
 
-               ### TableOfContents Prompt
+               ### TableOfContents prompt task
 
                Your task is to write an outline of "Some User Guide".
 
@@ -204,9 +206,6 @@ defmodule Magma.ConceptTest do
                <!--
                Please don't change the general structure of this outline format. The section generator relies on an outline with sections.
                -->
-
-
-               # Reference
                """
 
       assert Concept.load(concept.path) == {:ok, concept}
@@ -250,25 +249,24 @@ defmodule Magma.ConceptTest do
 
                #{abstract}
 
-               # Knowledge Base
 
-               # Notes
+               # Context knowledge
+
+               #{Concept.Template.context_knowledge_hint()}
 
 
 
-               # Artefact Prompts
+
+               # Artefacts
 
                ## Article
 
                - Prompt: [[Prompt for Some User Guide - Introduction (article section)]]
                - Final version: [[Some User Guide - Introduction (article section)]]
 
-               ### Article Prompt
+               ### Article prompt task
 
                Your task is to write the section "Introduction" of "Some User Guide".
-
-
-               # Reference
                """
 
       assert Concept.load(concept.path) == {:ok, concept}

@@ -15,10 +15,21 @@ What should "Some User Guide" cover?
 -->
 
 
-# Knowledge Base
+# Context knowledge
+
+<!--
+This section should include background knowledge needed for the model to create a proper response, i.e. information it does know either because of the knowledge cut-off date or unpublished knowledge.
+
+Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
+-->
+
+## Some background knowledge
+
+Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
 
 
-# Notes
+## Transcluded background knowledge ![[Document#Title|]]
+
 
 
 # Sections

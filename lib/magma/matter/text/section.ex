@@ -1,9 +1,12 @@
 defmodule Magma.Matter.Text.Section do
   use Magma.Matter, fields: [:main_text]
 
+  alias Magma.{Concept, Artefact}
   alias Magma.Matter.Text
-  alias Magma.Concept
+  alias Magma.Artefacts.TableOfContents
   alias Magma.Obsidian.View
+
+  require Logger
 
   @type t :: %__MODULE__{}
 
@@ -32,6 +35,27 @@ defmodule Magma.Matter.Text.Section do
 
   @impl true
   def default_description(%__MODULE__{}, abstract: abstract), do: abstract
+
+  @impl true
+  def context_knowledge(%Concept{subject: %__MODULE__{main_text: main_text}}) do
+    """
+    #### Outline of the '#{main_text.name}' content #{View.Helper.transclude(TableOfContents.name(main_text), :title)}
+
+    """ <>
+      case Concept.load(main_text.name) do
+        {:ok, text_concept} ->
+          Artefact.Prompt.Template.include_context_knowledge(text_concept)
+
+        {:error, error} ->
+          Logger.warning("error on main text context knowledge extraction: #{inspect(error)}")
+          ""
+      end
+  end
+
+  @impl true
+  def prompt_concept_description_title(%__MODULE__{name: name}) do
+    "Description of the intended content of the '#{name}' section"
+  end
 
   @impl true
   def new(attrs) when is_list(attrs) do

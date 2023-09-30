@@ -11,35 +11,44 @@ defmodule Magma.Concept.Template do
 
     #{matter_type.default_description(matter, assigns)}
 
-    # Knowledge Base
 
-    # Notes
+    # #{Concept.context_knowledge_section_title()}
+
+    #{context_knowledge_hint()}
 
     #{matter_type.custom_sections(concept)}
 
-    # Artefact Prompts
 
-    #{artefact_prompt_sections(concept)}
+    # Artefacts
 
-
-    # Reference
+    #{artefact_sections(concept)}
     """
   end
 
-  defp artefact_prompt_sections(%Concept{subject: %matter_type{}} = concept) do
-    Enum.map_join(matter_type.artefacts(), "\n", &artefact_prompt_section(concept, &1))
+  def context_knowledge_hint do
+    """
+    This section should include background knowledge needed for the model to create a proper response, i.e. information it does know either because of the knowledge cut-off date or unpublished knowledge.
+
+    Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
+    """
+    |> String.trim_trailing()
+    |> comment()
   end
 
-  defp artefact_prompt_section(concept, artefact_type) do
+  defp artefact_sections(%Concept{subject: %matter_type{}} = concept) do
+    Enum.map_join(matter_type.artefacts(), "\n", &artefact_section(concept, &1))
+  end
+
+  defp artefact_section(concept, artefact_type) do
     """
     ## #{artefact_type.concept_section_title()}
 
     - Prompt: #{link_to_prompt({concept, artefact_type})}
     - Final version: #{link_to_version({concept, artefact_type})}
 
-    ### #{artefact_type.concept_prompt_section_title()}
+    ### #{artefact_type.concept_prompt_task_section_title()}
 
-    #{artefact_type.task_prompt(concept)}
+    #{artefact_type.request_prompt_task(concept)}
     """
     |> String.trim_trailing()
   end

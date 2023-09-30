@@ -38,21 +38,22 @@ defmodule Magma.Matter.Text do
   end
 
   @impl true
+  def prompt_concept_description_title(%__MODULE__{name: name, type: text_type}) do
+    "Description of the content to be covered by the '#{name}' #{text_type.label}"
+  end
+
+  @impl true
   def custom_sections(%Concept{} = concept) do
     """
+
     # #{@sections_section_title}
 
+    #{View.Helper.comment("Don't remove or edit this section! The results of the generated table of contents will be copied to this place.")}
+
+
+    # Artefact previews
+
     """ <>
-      View.Helper.comment("""
-      Don't remove or edit this section.
-      The results of the generated table of contents will be copied to this place.
-      """) <>
-      """
-
-
-      # Artefact previews
-
-      """ <>
       Enum.map_join(
         Matter.Text.Section.artefacts(),
         "\n",
@@ -159,6 +160,6 @@ defmodule Magma.Matter.Text do
   end
 
   def type?(module) do
-    Code.ensure_loaded?(module) and function_exported?(module, :system_prompt, 1)
+    Code.ensure_loaded?(module) and function_exported?(module, :system_prompt_task, 1)
   end
 end

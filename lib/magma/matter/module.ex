@@ -62,9 +62,14 @@ defmodule Magma.Matter.Module do
   end
 
   @impl true
-  def prompt_representation(%__MODULE__{} = matter) do
+  def prompt_concept_description_title(%__MODULE__{name: name}) do
+    "Description of the module `#{inspect(name)}`"
+  end
+
+  @impl true
+  def prompt_matter_description(%__MODULE__{} = matter) do
     """
-    # Module code
+    ### Module code
 
     This is the code of the module to be documented. Ignore commented out code.
 

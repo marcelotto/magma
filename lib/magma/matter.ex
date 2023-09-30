@@ -20,9 +20,13 @@ defmodule Magma.Matter do
 
   @callback default_description(t(), keyword) :: binary
 
-  @callback custom_sections(Concept.t()) :: binary
+  @callback custom_sections(Concept.t()) :: binary | nil
 
-  @callback prompt_representation(t()) :: binary | nil
+  @callback context_knowledge(Concept.t()) :: binary | nil
+
+  @callback prompt_concept_description_title(t()) :: binary
+
+  @callback prompt_matter_description(t()) :: binary | nil
 
   @callback default_concept_aliases(t()) :: list
 
@@ -50,10 +54,13 @@ defmodule Magma.Matter do
       def default_concept_aliases(%__MODULE__{}), do: []
 
       @impl true
-      def custom_sections(%Concept{}), do: ""
+      def custom_sections(%Concept{}), do: nil
 
       @impl true
-      def prompt_representation(%__MODULE__{}), do: nil
+      def context_knowledge(%Concept{}), do: nil
+
+      @impl true
+      def prompt_matter_description(%__MODULE__{}), do: nil
 
       @impl true
       def render_front_matter(%__MODULE__{}) do
@@ -69,7 +76,8 @@ defmodule Magma.Matter do
 
       defoverridable default_concept_aliases: 1,
                      custom_sections: 1,
-                     prompt_representation: 1,
+                     context_knowledge: 1,
+                     prompt_matter_description: 1,
                      render_front_matter: 1,
                      extract_from_metadata: 3
     end

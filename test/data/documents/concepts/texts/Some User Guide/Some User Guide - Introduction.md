@@ -13,16 +13,17 @@ aliases: []
 This is the introduction section of the user guide.
 
 
-# Notes
+# Context knowledge
+
+## Section-specific background knowledge ![[DocumentWithMultipleMainSections#Section]]
+
 
 
 # Artefacts
 
-## Commons
+## Article
 
-### Article
-
-### Article prompt
+## Article prompt task
 
 
 

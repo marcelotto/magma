@@ -67,6 +67,11 @@ defmodule Magma.Matter.Project do
     |> View.Helper.comment()
   end
 
+  @impl true
+  def prompt_concept_description_title(%__MODULE__{name: name}) do
+    "Description of the '#{name}' project"
+  end
+
   def app_name, do: Mix.Project.config()[:app]
 
   def version, do: Mix.Project.config()[:version]

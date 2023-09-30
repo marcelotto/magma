@@ -1,5 +1,7 @@
 defmodule Magma.Matter.Text.Type do
-  @callback system_prompt(Concept.t()) :: binary
+  @callback label :: binary
+
+  @callback system_prompt_task(Concept.t()) :: binary
 
   defmacro __using__(_opts) do
     quote do

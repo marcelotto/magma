@@ -9,7 +9,7 @@ defmodule Magma.Artefacts.ModuleDoc do
   def name(concept), do: "ModuleDoc of #{concept.name}"
 
   @impl true
-  def system_prompt(_concept) do
+  def system_prompt_task(_concept) do
     """
     Your task is to write documentation for Elixir modules.
 
@@ -25,7 +25,7 @@ defmodule Magma.Artefacts.ModuleDoc do
   end
 
   @impl true
-  def task_prompt(concept) do
+  def request_prompt_task(concept) do
     """
     Generate documentation for module `#{concept.name}` according to its description and code in the knowledge base below.
     """

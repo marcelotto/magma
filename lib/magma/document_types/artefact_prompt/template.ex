@@ -1,6 +1,6 @@
 defmodule Magma.Artefact.Prompt.Template do
   alias Magma.Artefact.Prompt
-  alias Magma.Matter
+  alias Magma.Concept
 
   import Magma.Obsidian.View.Helper
 
@@ -16,26 +16,52 @@ defmodule Magma.Artefact.Prompt.Template do
 
     #{persona(project)}
 
-    #{artefact_type.system_prompt(concept)}
+    #{artefact_type.system_prompt_task(concept)}
 
-    ### Description of the #{project.subject.name} project #{transclude("Project", "Description")}
+    #{context_knowledge(project, concept)}
 
 
     ## #{Prompt.request_prompt_section_title()}
 
-    ### #{transclude(concept, artefact_type.concept_prompt_section_title())}
+    ### #{transclude(concept, artefact_type.concept_prompt_task_section_title())}
 
-    ### Description of the #{Matter.type_name(concept.subject.__struct__)} #{transclude(concept, "Description")}
-
-    #{if matter_representation = concept.subject.__struct__.prompt_representation(concept.subject) do
-      "##" <> matter_representation
-    end}
+    #{subject_knowledge(concept)}
     """
   end
 
   def persona(project) do
     """
     You are MagmaGPT, a software developer on the "#{project.subject.name}" project with a lot of experience with Elixir and writing high-quality documentation.
+    """
+    |> String.trim_trailing()
+  end
+
+  def context_knowledge(project, %Concept{subject: %matter_type{}} = concept) do
+    """
+    ### Context knowledge
+
+    The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+    #### Description of the #{project.subject.name} project #{transclude("Project", "Description")}
+
+    #{matter_type.context_knowledge(concept)}
+
+    #{include_context_knowledge(concept)}
+    """
+    |> String.trim_trailing()
+  end
+
+  def include_context_knowledge(%Concept{} = concept) do
+    concept
+    |> Concept.context_knowledge_section()
+    |> include(nil, header: false, level: 3, remove_comments: true)
+  end
+
+  defp subject_knowledge(%Concept{subject: %matter_type{} = matter} = concept) do
+    """
+    ### #{matter_type.prompt_concept_description_title(matter)} #{transclude(concept, "Description")}
+
+    #{matter_type.prompt_matter_description(matter)}
     """
     |> String.trim_trailing()
   end

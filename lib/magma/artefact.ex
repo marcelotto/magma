@@ -8,13 +8,13 @@ defmodule Magma.Artefact do
 
   @callback prompt_name(Concept.t()) :: binary
 
-  @callback system_prompt(Concept.t()) :: binary
+  @callback system_prompt_task(Concept.t()) :: binary
 
-  @callback task_prompt(Concept.t()) :: binary
+  @callback request_prompt_task(Concept.t()) :: binary
 
   @callback concept_section_title :: binary
 
-  @callback concept_prompt_section_title :: binary
+  @callback concept_prompt_task_section_title :: binary
 
   @callback version_prologue(Artefact.Version.t()) :: binary | nil
 
@@ -37,7 +37,7 @@ defmodule Magma.Artefact do
       def concept_section_title, do: Artefact.type_name(__MODULE__)
 
       @impl true
-      def concept_prompt_section_title, do: "#{concept_section_title()} Prompt"
+      def concept_prompt_task_section_title, do: "#{concept_section_title()} prompt task"
 
       @impl true
       def prompt_name(%Concept{} = concept), do: "Prompt for #{name(concept)}"
