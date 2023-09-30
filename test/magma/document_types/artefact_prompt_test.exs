@@ -100,7 +100,17 @@ defmodule Magma.Artefact.PromptTest do
 
                #### Description of the Some project ![[Project#Description|]]
 
+               #### Peripherally relevant modules
 
+               ##### `Nested`
+
+               ###### Description ![[Nested#Description|]]
+
+               ###### Code
+
+               ```elixir
+
+               ```
 
                #### Some background knowledge
 

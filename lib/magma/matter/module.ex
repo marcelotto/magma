@@ -3,6 +3,8 @@ defmodule Magma.Matter.Module do
   # via the Elixir and Erlang reflection API from the module name
   use Magma.Matter
 
+  alias Magma.Concept
+
   import Magma.Utils.Guards
 
   @type t :: %__MODULE__{}
@@ -44,6 +46,18 @@ defmodule Magma.Matter.Module do
     module |> Module.split() |> List.delete_at(-1)
   end
 
+  def context_modules(module) do
+    {result, _} =
+      module
+      |> context_segments()
+      |> Enum.map_reduce(nil, fn module_segment, context ->
+        module = Module.concat(context, module_segment)
+        {module, module}
+      end)
+
+    result
+  end
+
   @impl true
   def concept_name(%__MODULE__{name: module}), do: inspect(module)
 
@@ -59,6 +73,39 @@ defmodule Magma.Matter.Module do
     """
     |> String.trim_trailing()
     |> View.Helper.comment()
+  end
+
+  @impl true
+  def context_knowledge(%Concept{subject: %__MODULE__{name: module}}) do
+    """
+    #### Peripherally relevant modules
+
+    #{context_modules_knowledge(module)}
+    """
+    |> String.trim_trailing()
+  end
+
+  defp context_modules_knowledge(module) do
+    case context_modules(module) do
+      [Mix | _] -> []
+      context_module -> Enum.map_join(context_module, "\n", &context_module_knowledge/1)
+    end
+  end
+
+  defp context_module_knowledge(module) do
+    matter = new!(module)
+
+    """
+    ##### `#{inspect(module)}`
+
+    ###### Description #{matter |> concept_name() |> View.Helper.transclude("Description")}
+
+    ###### Code
+
+    ```elixir
+    #{code(matter)}
+    ```
+    """
   end
 
   @impl true
@@ -90,7 +137,7 @@ defmodule Magma.Matter.Module do
   def code(%__MODULE__{name: module}), do: code(module)
 
   def code(module) when maybe_module(module) do
-    if source_path = source_path(module) do
+    if (source_path = source_path(module)) && File.exists?(source_path) do
       code(source_path)
     end
   end
