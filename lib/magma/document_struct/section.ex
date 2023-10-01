@@ -78,13 +78,13 @@ defmodule Magma.DocumentStruct.Section do
 
   def set_level(%__MODULE__{} = section, nil), do: section
 
-  def set_level(%__MODULE__{level: level}, new_level) when new_level < 1,
-    do: raise("invalid header level: #{level}")
+  def set_level(%__MODULE__{}, new_level) when new_level < 0,
+    do: raise("invalid header level: #{new_level}")
 
   def set_level(%__MODULE__{level: level} = section, new_level),
     do: shift_level(section, new_level - level)
 
-  def shift_level(%__MODULE__{level: level}, shift_level) when level + shift_level < 1 do
+  def shift_level(%__MODULE__{level: level}, shift_level) when level + shift_level < 0 do
     raise "shifting to negative header level"
   end
 

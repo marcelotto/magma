@@ -178,6 +178,37 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Nisi do voluptate esse culpa sint.
                """
+
+      assert """
+             # Example title
+
+             ## Subsection 1
+
+             Labore enim excepteur aute veniam.
+
+             ### Subsection 1.2
+
+             Lorem consequat amet minim pariatur, dolore ut.
+
+             ## Subsection 2
+
+             Nisi do voluptate esse culpa sint.
+             """
+             |> section()
+             |> Section.to_string(level: 0, header: false) ==
+               """
+               # Subsection 1
+
+               Labore enim excepteur aute veniam.
+
+               ## Subsection 1.2
+
+               Lorem consequat amet minim pariatur, dolore ut.
+
+               # Subsection 2
+
+               Nisi do voluptate esse culpa sint.
+               """
     end
 
     @tag skip: "Pandoc resolves Obsidian transclusions to ![[Some Document|]]"
@@ -272,7 +303,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
     test "out of bound shift" do
       assert_raise RuntimeError, fn ->
-        Section.shift_level(section(:with_subsections), -2)
+        Section.shift_level(section(:with_subsections), -3)
       end
     end
   end
@@ -331,7 +362,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
     test "with invalid level" do
       assert_raise RuntimeError, fn ->
-        Section.shift_level(section(:with_subsections), -2)
+        Section.set_level(section(:with_subsections), -1)
       end
     end
   end
