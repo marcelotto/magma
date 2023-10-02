@@ -9,6 +9,7 @@ defmodule Mix.Tasks.Magma.Vault.Init do
   alias Magma.Vault.Initializer
 
   @options [
+    force: :boolean,
     base_vault: :string,
     base_vault_path: :string
   ]
@@ -21,7 +22,10 @@ defmodule Mix.Tasks.Magma.Vault.Init do
         Mix.shell().error("project name missing")
 
       opts, [project_name] ->
-        Initializer.initialize(project_name, base_vault(opts))
+        case Initializer.initialize(project_name, base_vault(opts), opts) do
+          :ok -> :ok
+          {:error, error} -> raise inspect(error)
+        end
     end)
   end
 

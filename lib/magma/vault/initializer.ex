@@ -8,7 +8,7 @@ defmodule Magma.Vault.Initializer do
   import Magma.MixHelper
 
   def initialize(project_name, base_vault \\ nil, opts \\ []) do
-    with :ok <- base_vault |> BaseVault.path!() |> create_vault() do
+    with :ok <- base_vault |> BaseVault.path!() |> create_vault(opts) do
       create_project(project_name)
 
       if Keyword.get(opts, :code_sync, true) do
@@ -19,10 +19,10 @@ defmodule Magma.Vault.Initializer do
     end
   end
 
-  defp create_vault(base_vault) do
+  defp create_vault(base_vault, opts) do
     vault_dest_dir = Vault.path()
 
-    if File.exists?(vault_dest_dir) do
+    if File.exists?(vault_dest_dir) && !Keyword.get(opts, :force) do
       {:error, :vault_already_existing}
     else
       Mix.Generator.create_directory(vault_dest_dir)
