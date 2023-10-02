@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Magma.Prompt.Copy do
       _opts, [prompt_name] ->
         prompt_name
         |> Artefact.Prompt.load!()
-        |> Artefact.Prompt.to_clipboard()
+        |> Artefact.Prompt.copy_to_clipboard()
     end)
   end
 end

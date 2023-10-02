@@ -162,9 +162,10 @@ defmodule Magma.Artefact.Prompt do
     |> Section.to_string(header: false, level: 0)
   end
 
-  def to_clipboard(%__MODULE__{} = prompt) do
-    with {:ok, resolved_content} <- assemble_all(prompt) do
-      Clipboard.copy(resolved_content)
+  def copy_to_clipboard(%__MODULE__{} = prompt) do
+    case assemble_all(prompt) do
+      {:ok, content} -> Clipboard.copy(content)
+      {:error, error} -> raise error
     end
   end
 end

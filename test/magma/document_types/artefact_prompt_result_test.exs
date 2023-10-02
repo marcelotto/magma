@@ -199,6 +199,78 @@ defmodule Magma.Artefact.PromptResultTest do
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
            "concepts/modules/Nested/Nested.Example.md"
          ]
+    test "without execution", %{vault_files: [prompt_file | _]} do
+      prompt =
+        prompt_file
+        |> Vault.path()
+        |> Artefact.Prompt.load!()
+
+      prompt_with_manual_generation = struct(prompt, generation: Generation.Manual.new!())
+      answer = "awesome"
+
+      send(self(), {:mix_shell_input, :prompt, answer})
+
+      assert {:ok,
+              %Artefact.PromptResult{
+                prompt: ^prompt_with_manual_generation,
+                generation: %Generation.Manual{},
+                name: "Generated ModuleDoc of Nested.Example (" <> _,
+                tags: ["magma-vault"],
+                aliases: [],
+                custom_metadata: %{}
+              } = prompt_result} =
+               Artefact.PromptResult.create(prompt_with_manual_generation)
+
+      assert_receive {:mix_shell, :prompt, [_]}
+
+      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+
+      assert prompt_result.content ==
+               """
+               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+               #{delete_current_file_button()}
+
+               Final version: [[ModuleDoc of Nested.Example]]
+
+               # Generated ModuleDoc of Nested.Example
+
+               #{answer}
+               """
+
+      assert File.stat!(prompt_result.path).access == :read_write
+
+      generation = Generation.Manual.new!()
+
+      assert {:ok,
+              %Artefact.PromptResult{
+                prompt: ^prompt,
+                generation: ^generation,
+                name: "Generated ModuleDoc of Nested.Example (" <> _,
+                tags: ["magma-vault"],
+                aliases: [],
+                custom_metadata: %{}
+              } = prompt_result} =
+               Artefact.PromptResult.create(prompt, [generation: generation], interactive: false)
+
+      assert prompt_result.content ==
+               """
+               #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+               #{delete_current_file_button()}
+
+               Final version: [[ModuleDoc of Nested.Example]]
+
+               # Generated ModuleDoc of Nested.Example
+
+
+               """
+
+      assert Artefact.PromptResult.load(prompt_result.path) == {:ok, prompt_result}
+    end
+
+    @tag vault_files: [
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
+         ]
     test "initial header is trimmed (unless trim_header: false)", %{
       vault_files: [prompt_file | _]
     } do
