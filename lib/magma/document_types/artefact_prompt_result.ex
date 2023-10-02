@@ -73,8 +73,7 @@ defmodule Magma.Artefact.PromptResult do
   end
 
   defp execute_prompt(%__MODULE__{} = document, opts) do
-    with {:ok, system_prompt, prompt} <- Artefact.Prompt.messages(document.prompt),
-         {:ok, result} <- Generation.execute(document.generation, prompt, system_prompt) do
+    with {:ok, result} <- Generation.execute(document.generation, document.prompt, opts) do
       {:ok, %__MODULE__{document | content: render(document, post_process_result(result, opts))}}
     end
   end

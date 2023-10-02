@@ -1,4 +1,6 @@
 defmodule Magma.Generation do
+  alias Magma.Artefact
+
   import Magma.Utils.Guards
 
   @type options :: keyword
@@ -8,14 +10,18 @@ defmodule Magma.Generation do
   @type system_prompt :: prompt
   @type result :: binary
 
-  @callback execute(t(), prompt, system_prompt) :: {:ok, result} | {:error, any}
+  @callback execute(t(), Artefact.Prompt.t(), options) :: {:ok, result} | {:error, any}
 
   def default do
     Application.get_env(:magma, :default_generation, Magma.Generation.OpenAI)
   end
 
-  def execute(%generation_type{} = generation, prompt, system_prompt) do
-    generation_type.execute(generation, prompt, system_prompt)
+  def execute(%Artefact.Prompt{} = prompt) do
+    execute(prompt.generation, prompt)
+  end
+
+  def execute(%generation_type{} = generation, %Artefact.Prompt{} = prompt, opts \\ []) do
+    generation_type.execute(generation, prompt, opts)
   end
 
   @doc """

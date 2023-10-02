@@ -111,58 +111,59 @@ defmodule Magma.Artefact.Prompt do
     end
   end
 
-  def messages(%__MODULE__{} = prompt) do
-    with {:ok, document_struct} <- DocumentStruct.parse(prompt.content) do
-      case document_struct.sections do
-        [
-          %{
-            sections: [
-              %Section{title: @system_prompt_section_title} = system_prompt_section,
-              %Section{title: @request_prompt_section_title} = request_section
-              | more_subsections
-            ]
-          }
-          | more_sections
-        ] ->
-          unless Enum.empty?(more_sections) && Enum.empty?(more_subsections) do
-            Logger.warning(
-              "#{prompt.name} contains subsections which won't be taken into account. Put them under the request section if you want that."
-            )
-          end
+  def assemble_parts(%__MODULE__{} = prompt) do
+    with {:ok, section} <- section(prompt) do
+      system_prompt_section = section[@system_prompt_section_title]
+      request_prompt_section = section[@request_prompt_section_title]
+
+      cond do
+        !system_prompt_section ->
+          {:error, "no system prompt section found in #{prompt.path}"}
+
+        !request_prompt_section ->
+          {:error, "no request prompt section found in #{prompt.path}"}
+
+        true ->
+          if Enum.count(section.sections) > 2, do: ignored_section_detected(prompt)
 
           {
             :ok,
-            to_message_string(system_prompt_section),
-            to_message_string(request_section)
+            compile(system_prompt_section),
+            compile(request_prompt_section)
           }
       end
     end
   end
 
-  defp to_message_string(section) do
-    section
-    |> Section.resolve_transclusions()
-    |> Section.remove_comments()
-    |> Section.to_string(header: false)
-  end
-
-  def resolved_content(%__MODULE__{} = prompt) do
-    with {:ok, system_prompt, request_prompt} <- messages(prompt) do
-      {:ok,
-       """
-       # #{@system_prompt_section_title}
-
-       #{system_prompt}
-
-       # #{@request_prompt_section_title}
-
-       #{request_prompt}
-       """}
+  def assemble_all(%__MODULE__{} = prompt) do
+    with {:ok, section} <- section(prompt) do
+      {:ok, compile(section)}
     end
   end
 
+  defp section(prompt) do
+    with {:ok, document_struct} <- DocumentStruct.parse(prompt.content) do
+      if Enum.count(document_struct.sections) > 1, do: ignored_section_detected(prompt)
+
+      {:ok, DocumentStruct.main_section(document_struct)}
+    end
+  end
+
+  defp ignored_section_detected(prompt) do
+    Logger.warning(
+      "Prompt #{prompt.path} contains subsections which won't be taken into account. Put them under the request section if you want that."
+    )
+  end
+
+  defp compile(section) do
+    section
+    |> Section.resolve_transclusions()
+    |> Section.remove_comments()
+    |> Section.to_string(header: false, level: 0)
+  end
+
   def to_clipboard(%__MODULE__{} = prompt) do
-    with {:ok, resolved_content} <- resolved_content(prompt) do
+    with {:ok, resolved_content} <- assemble_all(prompt) do
       Clipboard.copy(resolved_content)
     end
   end

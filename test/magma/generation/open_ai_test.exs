@@ -17,8 +17,10 @@ defmodule Magma.Generation.OpenAITest do
     use_cassette "openai/simple_example" do
       assert Generation.OpenAI.new!()
              |> Generation.OpenAI.execute(
-               "Elixir is ...",
-               "You are an assistent for the Elixir language and answer short in one sentence."
+               custom_prompt(
+                 "Elixir is ...",
+                 "You are an assistent for the Elixir language and answer short in one sentence."
+               )
              ) ==
                {:ok,
                 "a dynamic, functional programming language designed for building scalable and maintainable applications."}
@@ -30,8 +32,10 @@ defmodule Magma.Generation.OpenAITest do
       # TODO: Should this produce a more specific error?
       assert Generation.OpenAI.new!()
              |> Generation.OpenAI.execute(
-               "Elixir is ...",
-               "You are an assistent for the Elixir language and answer short in one sentence."
+               custom_prompt(
+                 "Elixir is ...",
+                 "You are an assistent for the Elixir language and answer short in one sentence."
+               )
              ) ==
                {
                  :error,

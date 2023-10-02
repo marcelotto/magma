@@ -75,6 +75,30 @@ defmodule Magma.TestFactories do
     |> Artefact.PromptResult.new!()
   end
 
+  def custom_prompt(system_prompt, request_prompt) do
+    module_doc_artefact_prompt()
+    |> set_prompt_content(system_prompt, request_prompt)
+  end
+
+  defp set_prompt_content(prompt, system_prompt, request_prompt) do
+    %Artefact.Prompt{
+      prompt
+      | content: """
+        #{Artefact.Prompt.Template.controls(prompt)}
+
+        # #{Artefact.Prompt.title(prompt)}
+
+        ## #{Artefact.Prompt.system_prompt_section_title()}
+
+        #{system_prompt}
+
+        ## #{Artefact.Prompt.request_prompt_section_title()}
+
+        #{request_prompt}
+        """
+    }
+  end
+
   def content_without_subsections do
     """
     ## Example title

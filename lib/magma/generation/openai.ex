@@ -1,6 +1,8 @@
 defmodule Magma.Generation.OpenAI do
   @behaviour Magma.Generation
 
+  alias Magma.Artefact
+
   defstruct model: "gpt-3.5-turbo",
             temperature: 0.2
 
@@ -25,47 +27,51 @@ defmodule Magma.Generation.OpenAI do
     end
   end
 
-  def execute(%__MODULE__{} = generation, prompt, system_prompt \\ nil) do
+  @impl true
+  def execute(%__MODULE__{} = generation, %Artefact.Prompt{} = prompt, _opts \\ []) do
     Logger.info("Executing OpenAI chat completion...")
 
-    generation
-    |> Map.from_struct()
-    |> Keyword.new()
-    |> Keyword.put(:messages, prompt_messages(prompt, system_prompt))
-    |> OpenAI.chat_completion()
-    |> case do
-      {:ok,
-       %{
-         choices: [%{"finish_reason" => "length", "message" => %{"content" => _result}}],
-         usage: %{
-           "completion_tokens" => completion_tokens,
-           "prompt_tokens" => prompt_tokens,
-           "total_tokens" => total_tokens
-         }
-       }} ->
-        Logger.error(
-          "OpenAI chat completion with model #{generation.model} token limit exceeded: #{prompt_tokens} + #{completion_tokens} = #{total_tokens} tokens"
-        )
+    with {:ok, system_prompt, request_prompt} <- Artefact.Prompt.assemble_parts(prompt) do
+      generation
+      |> Map.from_struct()
+      |> Keyword.new()
+      |> Keyword.put(:messages, prompt_messages(request_prompt, system_prompt))
+      |> OpenAI.chat_completion()
+      |> case do
+        {:ok,
+         %{
+           choices: [%{"finish_reason" => "length", "message" => %{"content" => _result}}],
+           usage: %{
+             "completion_tokens" => completion_tokens,
+             "prompt_tokens" => prompt_tokens,
+             "total_tokens" => total_tokens
+           }
+         }} ->
+          Logger.error(
+            "OpenAI chat completion with model #{generation.model} token limit exceeded: #{prompt_tokens} + #{completion_tokens} = #{total_tokens} tokens"
+          )
 
-        {:error, :token_limit_exceeded}
+          # TODO: handle this
+          {:error, :token_limit_exceeded}
 
-      {:ok,
-       %{
-         choices: [%{"finish_reason" => "stop", "message" => %{"content" => result}}],
-         usage: %{
-           "completion_tokens" => completion_tokens,
-           "prompt_tokens" => prompt_tokens,
-           "total_tokens" => total_tokens
-         }
-       }} ->
-        Logger.info(
-          "Finished OpenAI chat completion (#{prompt_tokens} + #{completion_tokens} = #{total_tokens} tokens)"
-        )
+        {:ok,
+         %{
+           choices: [%{"finish_reason" => "stop", "message" => %{"content" => result}}],
+           usage: %{
+             "completion_tokens" => completion_tokens,
+             "prompt_tokens" => prompt_tokens,
+             "total_tokens" => total_tokens
+           }
+         }} ->
+          Logger.info(
+            "Finished OpenAI chat completion (#{prompt_tokens} + #{completion_tokens} = #{total_tokens} tokens)"
+          )
 
-        {:ok, result}
+          {:ok, result}
 
-      {:error, _} = error ->
-        error
+        {:error, _} = error ->
+          error
+      end
     end
   end
 

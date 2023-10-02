@@ -268,7 +268,7 @@ defmodule Magma.Artefact.PromptTest do
     end
   end
 
-  describe "messages/1" do
+  describe "assemble_parts/1" do
     @describetag vault_files: [
                    "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
                    "concepts/modules/Nested/Nested.Example.md",
@@ -281,7 +281,7 @@ defmodule Magma.Artefact.PromptTest do
         |> Vault.path()
         |> Artefact.Prompt.load!()
 
-      assert Artefact.Prompt.messages(prompt) ==
+      assert Artefact.Prompt.assemble_parts(prompt) ==
                {
                  :ok,
                  "You are an assistent for writing Elixir moduledocs.\n",
@@ -306,13 +306,14 @@ defmodule Magma.Artefact.PromptTest do
         )
 
       assert capture_log(fn ->
-               assert Artefact.Prompt.messages(prompt) ==
+               assert Artefact.Prompt.assemble_parts(prompt) ==
                         {
                           :ok,
                           "You are an assistent for writing Elixir moduledocs.\n",
                           "Generate a moduledoc for `Nested.Example`.\n"
                         }
-             end) =~ "#{prompt.name} contains subsections which won't be taken into account"
+             end) =~
+               "Prompt #{prompt.path} contains subsections which won't be taken into account"
     end
 
     test "with other sections under the prompt section", %{vault_files: [prompt_file | _]} do
@@ -332,13 +333,14 @@ defmodule Magma.Artefact.PromptTest do
         )
 
       assert capture_log(fn ->
-               assert Artefact.Prompt.messages(prompt) ==
+               assert Artefact.Prompt.assemble_parts(prompt) ==
                         {
                           :ok,
                           "You are an assistent for writing Elixir moduledocs.\n",
                           "Generate a moduledoc for `Nested.Example`.\n"
                         }
-             end) =~ "#{prompt.name} contains subsections which won't be taken into account"
+             end) =~
+               "Prompt #{prompt.path} contains subsections which won't be taken into account"
     end
 
     test "transclusion are resolved", %{vault_files: [prompt_file | _]} do
@@ -355,14 +357,14 @@ defmodule Magma.Artefact.PromptTest do
               """)
         )
 
-      assert Artefact.Prompt.messages(prompt) ==
+      assert Artefact.Prompt.assemble_parts(prompt) ==
                {
                  :ok,
                  "You are an assistent for writing Elixir moduledocs.\n",
                  """
                  Generate a moduledoc for `Nested.Example`.
 
-                 ### Background knowledge of the Some project
+                 # Background knowledge of the Some project
 
                  This is the project description.
                  """
@@ -391,7 +393,7 @@ defmodule Magma.Artefact.PromptTest do
               """)
         )
 
-      assert Artefact.Prompt.messages(prompt) ==
+      assert Artefact.Prompt.assemble_parts(prompt) ==
                {
                  :ok,
                  "You are an assistent for writing Elixir moduledocs.\n",
