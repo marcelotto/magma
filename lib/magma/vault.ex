@@ -8,8 +8,15 @@ defmodule Magma.Vault do
   @artefact_generation_path_prefix Path.join(@artefact_path_prefix, "generated")
   @artefact_version_path_prefix Path.join(@artefact_path_prefix, "final")
 
+  @template_path_prefix "templates"
+  @custom_prompt_template_name "custom_prompt.md"
+
   def path, do: Application.get_env(:magma, :dir, @default_path) |> Path.expand()
   def path(segments), do: Path.join([path() | List.wrap(segments)])
+
+  def template_path(segments \\ nil), do: path([@template_path_prefix | List.wrap(segments)])
+
+  def custom_prompt_template_path, do: template_path(@custom_prompt_template_name)
 
   def concept_path(segments \\ nil), do: path([@concept_path_prefix | List.wrap(segments)])
 

@@ -1,5 +1,36 @@
 {
-  "choices": [],
+  "choices": [
+    {
+      "id": "aa69ad2c-b0d6-4b89-937b-678071c7eebb",
+      "name": "Custom Magma prompt",
+      "type": "Template",
+      "command": true,
+      "templatePath": "templates/custom_prompt.md",
+      "fileNameFormat": {
+        "enabled": false,
+        "format": ""
+      },
+      "folder": {
+        "enabled": true,
+        "folders": [
+          "custom_prompts"
+        ],
+        "chooseWhenCreatingNote": false,
+        "createInSameFolderAsActiveFile": false,
+        "chooseFromSubfolders": false
+      },
+      "appendLink": false,
+      "openFileInNewTab": {
+        "enabled": false,
+        "direction": "vertical",
+        "focus": true
+      },
+      "openFile": true,
+      "openFileInMode": "default",
+      "fileExistsMode": "Increment the file name",
+      "setFileExistsBehavior": false
+    }
+  ],
   "macros": [],
   "inputPrompt": "single-line",
   "devMode": false,

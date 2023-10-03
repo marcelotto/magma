@@ -8,6 +8,31 @@ defmodule Magma.Prompt.Template do
   @request_prompt_section_title "Request"
   def request_prompt_section_title, do: @request_prompt_section_title
 
+  def custom_prompt_obsidian_template(project, prompt) do
+    """
+    ---
+    magma_type: Prompt
+    #{Prompt.render_front_matter(prompt)}
+    created_at: {{DATE:YYYY-MM-DD[T]HH:mm:ss.SSS[Z]}}
+    tags: #{yaml_list(prompt.tags)}
+    aliases: []
+    ---
+    #{controls(prompt)}
+
+    # {{NAME}}
+
+    ## #{@system_prompt_section_title}
+
+    #{persona(project)}
+
+    #{context_knowledge(project)}
+
+
+    ## #{@request_prompt_section_title}
+
+    """
+  end
+
   def render(%Prompt{} = prompt, project) do
     """
     #{controls(prompt)}
