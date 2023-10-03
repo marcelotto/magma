@@ -1,21 +1,39 @@
-defmodule Magma.Artefact.PromptResult do
+defmodule Magma.PromptResult do
   use Magma.Document, fields: [:prompt, :generation]
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Generation}
+  alias Magma.{Vault, Artefact, Generation, Prompt}
+  alias Magma.Document.Loader
 
+  import Magma.Obsidian.View.Helper
   import Magma.Utils, only: [init_field: 2, set_file_read_only: 1]
 
   require Logger
+
+  @impl true
+  def title(%__MODULE__{prompt: %Prompt{} = prompt}) do
+    "Prompt result of '#{prompt.name}'"
+  end
 
   @impl true
   def title(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact, concept: concept}}) do
     "Generated #{artefact.name(concept)}"
   end
 
+  def build_name(%__MODULE__{prompt: %Prompt{} = prompt} = result) do
+    "#{prompt.name} (Prompt result #{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()})"
+  end
+
   def build_name(%__MODULE__{} = result) do
     "#{title(result)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()})"
+  end
+
+  @impl true
+  def build_path(%__MODULE__{prompt: %Prompt{}} = result) do
+    {:ok,
+     [Prompt.path_prefix(), "__prompt_results__", "#{build_name(result)}.md"]
+     |> Vault.path()}
   end
 
   @impl true
@@ -65,7 +83,7 @@ defmodule Magma.Artefact.PromptResult do
     do:
       raise(
         ArgumentError,
-        "Magma.Artefact.PromptResult.create/3 is available only with new/2 arguments"
+        "Magma.PromptResult.create/3 is available only with an initialized document"
       )
 
   def create(prompt, attrs, opts) do
@@ -107,9 +125,11 @@ defmodule Magma.Artefact.PromptResult do
     """
   end
 
-  def controls(prompt_result) do
-    import Magma.Obsidian.View.Helper
+  def controls(%__MODULE__{prompt: %Prompt{}}) do
+    delete_current_file_button()
+  end
 
+  def controls(%__MODULE__{prompt: %Artefact.Prompt{}} = prompt_result) do
     """
     #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
     #{delete_current_file_button()}
@@ -121,8 +141,6 @@ defmodule Magma.Artefact.PromptResult do
 
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
-    import Magma.Obsidian.View.Helper
-
     """
     magma_prompt: "#{link_to(document.prompt)}"
     magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
@@ -137,7 +155,7 @@ defmodule Magma.Artefact.PromptResult do
     {prompt_link, metadata} = Map.pop(prompt_result.custom_metadata, :magma_prompt)
 
     if prompt_link do
-      with {:ok, prompt} <- Artefact.Prompt.load_linked(prompt_link),
+      with {:ok, prompt} <- Loader.load_linked([Prompt, Artefact.Prompt], prompt_link),
            {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
         {:ok,
          %__MODULE__{

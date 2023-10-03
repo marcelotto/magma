@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Magma.Artefact.SelectDraft do
 
   import Magma.MixHelper
 
-  alias Magma.Artefact
+  alias Magma.{Artefact, PromptResult}
 
   @options []
 
@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Magma.Artefact.SelectDraft do
       _opts, [prompt_result_name] ->
         {:ok, _} =
           prompt_result_name
-          |> Artefact.PromptResult.load!()
+          |> PromptResult.load!()
           |> Artefact.Version.create()
     end)
   end

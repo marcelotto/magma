@@ -3,7 +3,7 @@ defmodule Magma.Artefact.VersionTest do
 
   doctest Magma.Artefact.Version
 
-  alias Magma.{Artefact, Concept}
+  alias Magma.{Artefact, Concept, PromptResult}
   alias Magma.Artefacts.{ModuleDoc, Article}
   alias Magma.Text.Preview
 
@@ -38,7 +38,7 @@ defmodule Magma.Artefact.VersionTest do
       missing_prompt_result =
         %Magma.DocumentNotFound{
           name: "Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)",
-          document_type: Artefact.PromptResult
+          document_type: PromptResult
         }
 
       assert {:ok,
@@ -86,7 +86,7 @@ defmodule Magma.Artefact.VersionTest do
       prompt_result =
         prompt_result_file
         |> Vault.path()
-        |> Artefact.PromptResult.load!()
+        |> PromptResult.load!()
 
       assert {:ok,
               %Artefact.Version{
@@ -119,7 +119,7 @@ defmodule Magma.Artefact.VersionTest do
       prompt_result =
         prompt_result_file
         |> Vault.path()
-        |> Artefact.PromptResult.load!()
+        |> PromptResult.load!()
 
       assert {:ok,
               %Artefact.Version{
@@ -168,7 +168,7 @@ defmodule Magma.Artefact.VersionTest do
       prompt_result =
         prompt_result_file
         |> Vault.path()
-        |> Artefact.PromptResult.load!()
+        |> PromptResult.load!()
 
       assert {:ok,
               %Artefact.Version{

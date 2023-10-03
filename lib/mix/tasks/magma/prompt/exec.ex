@@ -5,8 +5,10 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
   use Mix.Task
 
   import Magma.MixHelper
+  import Magma.Utils.Guards
 
-  alias Magma.{Artefact, Generation}
+  alias Magma.{Generation, PromptResult}
+  alias Magma.Document.Loader
 
   # TODO: add Magma.Generation options
   @options [
@@ -30,9 +32,16 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
           end
 
         {:ok, _} =
-          prompt_name
-          |> Artefact.Prompt.load!()
-          |> Artefact.PromptResult.create(attrs, opts)
+          case Loader.load(prompt_name) do
+            {:ok, prompt} when is_prompt(prompt) ->
+              PromptResult.create(prompt, attrs, opts)
+
+            {:ok, invalid_document} ->
+              raise "invalid document type of #{invalid_document.path}; must be a prompt document"
+
+            {:error, error} ->
+              raise error
+          end
     end)
   end
 end

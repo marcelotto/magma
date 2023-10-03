@@ -3,9 +3,7 @@ defmodule Magma.Artefact.PromptTest do
 
   doctest Magma.Artefact.Prompt
 
-  import ExUnit.CaptureLog
-
-  alias Magma.{Artefacts, Artefact, Concept, Generation}
+  alias Magma.{Artefacts, Artefact, Concept, Generation, Prompt}
 
   describe "new/1" do
     test "ModuleDoc artefact" do
@@ -76,7 +74,7 @@ defmodule Magma.Artefact.PromptTest do
 
       assert prompt.content ==
                """
-               #{Artefact.Prompt.Template.controls(prompt)}
+               #{Prompt.Template.controls(prompt)}
 
                # #{prompt.name}
 
@@ -164,7 +162,7 @@ defmodule Magma.Artefact.PromptTest do
 
       assert prompt.content ==
                """
-               #{Artefact.Prompt.Template.controls(prompt)}
+               #{Prompt.Template.controls(prompt)}
 
                # #{prompt.name}
 
@@ -172,7 +170,7 @@ defmodule Magma.Artefact.PromptTest do
 
                You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
 
-               Your task is to help write a user guide called `Some User Guide`.
+               Your task is to help write a user guide called "Some User Guide".
 
                The user guide should be written in English in the Markdown format.
 
@@ -228,7 +226,7 @@ defmodule Magma.Artefact.PromptTest do
 
       assert prompt.content ==
                """
-               #{Artefact.Prompt.Template.controls(prompt)}
+               #{Prompt.Template.controls(prompt)}
 
                # #{prompt.name}
 
@@ -236,7 +234,7 @@ defmodule Magma.Artefact.PromptTest do
 
                You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
 
-               Your task is to help write a user guide called `Some User Guide`.
+               Your task is to help write a user guide called "Some User Guide".
 
                The user guide should be written in English in the Markdown format.
 
@@ -265,140 +263,6 @@ defmodule Magma.Artefact.PromptTest do
                """
 
       assert Artefact.Prompt.load(prompt.path) == {:ok, prompt}
-    end
-  end
-
-  describe "assemble_parts/1" do
-    @describetag vault_files: [
-                   "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
-                   "concepts/modules/Nested/Nested.Example.md",
-                   "concepts/Project.md"
-                 ]
-
-    test "with one setup and one request section", %{vault_files: [prompt_file | _]} do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
-
-      assert Artefact.Prompt.assemble_parts(prompt) ==
-               {
-                 :ok,
-                 "You are an assistent for writing Elixir moduledocs.\n",
-                 "Generate a moduledoc for `Nested.Example`.\n"
-               }
-    end
-
-    test "with multiple top-level sections", %{vault_files: [prompt_file | _]} do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
-        |> Map.update!(
-          :content,
-          &(&1 <>
-              """
-
-              # Another top-level section
-
-              Foo bar
-              """)
-        )
-
-      assert capture_log(fn ->
-               assert Artefact.Prompt.assemble_parts(prompt) ==
-                        {
-                          :ok,
-                          "You are an assistent for writing Elixir moduledocs.\n",
-                          "Generate a moduledoc for `Nested.Example`.\n"
-                        }
-             end) =~
-               "Prompt #{prompt.path} contains subsections which won't be taken into account"
-    end
-
-    test "with other sections under the prompt section", %{vault_files: [prompt_file | _]} do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
-        |> Map.update!(
-          :content,
-          &(&1 <>
-              """
-
-              ## Another top-level section
-
-              Foo bar
-              """)
-        )
-
-      assert capture_log(fn ->
-               assert Artefact.Prompt.assemble_parts(prompt) ==
-                        {
-                          :ok,
-                          "You are an assistent for writing Elixir moduledocs.\n",
-                          "Generate a moduledoc for `Nested.Example`.\n"
-                        }
-             end) =~
-               "Prompt #{prompt.path} contains subsections which won't be taken into account"
-    end
-
-    test "transclusion are resolved", %{vault_files: [prompt_file | _]} do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
-        |> Map.update!(
-          :content,
-          &(&1 <>
-              """
-
-              ### Background knowledge of the Some project ![[Project#Description]]
-              """)
-        )
-
-      assert Artefact.Prompt.assemble_parts(prompt) ==
-               {
-                 :ok,
-                 "You are an assistent for writing Elixir moduledocs.\n",
-                 """
-                 Generate a moduledoc for `Nested.Example`.
-
-                 # Background knowledge of the Some project
-
-                 This is the project description.
-                 """
-               }
-    end
-
-    test "comments are not rendered", %{vault_files: [prompt_file | _]} do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
-        |> Map.update!(
-          :content,
-          &(&1 <>
-              """
-
-              This is a document with <!-- inline --> comments.
-
-              <!--
-              across
-
-              multiple
-
-              lines
-              -->
-              """)
-        )
-
-      assert Artefact.Prompt.assemble_parts(prompt) ==
-               {
-                 :ok,
-                 "You are an assistent for writing Elixir moduledocs.\n",
-                 "Generate a moduledoc for `Nested.Example`.\n\nThis is a document with comments.\n"
-               }
     end
   end
 end

@@ -3,7 +3,7 @@ defmodule Magma.Artefact.Version do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, DocumentStruct}
+  alias Magma.{Vault, Artefact, Concept, PromptResult, DocumentStruct}
   alias Magma.DocumentStruct.Section
   alias Magma.Document.Loader
   alias Magma.Text.Preview
@@ -27,12 +27,12 @@ defmodule Magma.Artefact.Version do
   def from(%Artefact.Prompt{} = prompt),
     do: from({Concept.from(prompt), prompt.artefact})
 
-  def from(%Artefact.PromptResult{} = result),
+  def from(%PromptResult{prompt: %Artefact.Prompt{}} = result),
     do: from({Concept.from(result), result.prompt.artefact})
 
   def new(draft, attrs \\ [])
 
-  def new(%Artefact.PromptResult{} = prompt_result, attrs) do
+  def new(%PromptResult{prompt: %Artefact.Prompt{}} = prompt_result, attrs) do
     attrs =
       attrs
       |> Keyword.put_new(:concept, prompt_result.prompt.concept)
@@ -102,7 +102,7 @@ defmodule Magma.Artefact.Version do
     end
   end
 
-  defp assemble(%__MODULE__{draft: %Artefact.PromptResult{}} = document) do
+  defp assemble(%__MODULE__{draft: %PromptResult{}} = document) do
     content =
       """
       # #{title(document)}
@@ -165,7 +165,7 @@ defmodule Magma.Artefact.Version do
 
       artefact_module = Artefact.type(artefact_type) ->
         with {:ok, draft} <-
-               (case Loader.load_linked([Artefact.PromptResult, Preview], draft_link) do
+               (case Loader.load_linked([PromptResult, Preview], draft_link) do
                   {:ok, _} = ok -> ok
                   {:error, %Magma.DocumentNotFound{} = e} -> {:ok, e}
                 end),

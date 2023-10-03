@@ -11,7 +11,7 @@ defmodule Magma.Concept do
       :sections
     ]
 
-  alias Magma.{Vault, Matter, DocumentStruct, Artefact}
+  alias Magma.{Vault, Matter, DocumentStruct, Artefact, PromptResult}
   alias Magma.Concept.Template
 
   @type t :: %__MODULE__{}
@@ -35,7 +35,7 @@ defmodule Magma.Concept do
   @impl true
   def from(%__MODULE__{} = concept), do: concept
   def from(%Artefact.Prompt{} = prompt), do: prompt.concept
-  def from(%Artefact.PromptResult{} = result), do: result.prompt.concept
+  def from(%PromptResult{prompt: %Artefact.Prompt{}} = result), do: result.prompt.concept
   def from(%Artefact.Version{} = version), do: version.concept
 
   def new(subject, attrs \\ []) do
@@ -64,7 +64,11 @@ defmodule Magma.Concept do
   end
 
   def create(%__MODULE__{}, _, _),
-    do: raise(ArgumentError, "Magma.Concept.create/3 is available only with new/2 arguments")
+    do:
+      raise(
+        ArgumentError,
+        "Magma.Concept.create/3 is available only with an initialized document"
+      )
 
   def create(subject, attrs, opts) do
     with {:ok, document} <- new(subject, attrs) do

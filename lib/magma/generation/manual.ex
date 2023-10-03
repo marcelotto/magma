@@ -1,7 +1,9 @@
 defmodule Magma.Generation.Manual do
   @behaviour Magma.Generation
 
-  alias Magma.Artefact
+  alias Magma.Prompt.Assembler
+
+  import Magma.Utils.Guards
 
   defstruct []
 
@@ -19,8 +21,8 @@ defmodule Magma.Generation.Manual do
   end
 
   @impl true
-  def execute(%__MODULE__{}, %Artefact.Prompt{} = prompt, opts \\ []) do
-    Artefact.Prompt.copy_to_clipboard(prompt)
+  def execute(%__MODULE__{}, prompt, opts \\ []) when is_prompt(prompt) do
+    Assembler.copy_to_clipboard(prompt)
 
     if Keyword.get(opts, :interactive, true) do
       {:ok, result_from_user()}

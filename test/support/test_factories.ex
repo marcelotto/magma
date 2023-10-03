@@ -6,8 +6,9 @@ defmodule Magma.TestFactories do
   alias Magma.{
     Concept,
     Matter,
-    Artefact,
     Artefacts,
+    Prompt,
+    PromptResult,
     DocumentStruct
   }
 
@@ -57,6 +58,10 @@ defmodule Magma.TestFactories do
     |> Concept.new!()
   end
 
+  def prompt(name \\ "Foo-Prompt") do
+    Prompt.new!(name)
+  end
+
   def module_doc_artefact_prompt(mod \\ Nested.Example) do
     mod
     |> module_concept()
@@ -72,27 +77,32 @@ defmodule Magma.TestFactories do
   def module_doc_artefact_prompt_result(mod \\ Nested.Example) do
     mod
     |> module_doc_artefact_prompt()
-    |> Artefact.PromptResult.new!()
+    |> PromptResult.new!()
   end
 
-  def custom_prompt(system_prompt, request_prompt) do
+  def custom_artefact_prompt(system_prompt, request_prompt) do
     module_doc_artefact_prompt()
     |> set_prompt_content(system_prompt, request_prompt)
   end
 
-  defp set_prompt_content(prompt, system_prompt, request_prompt) do
-    %Artefact.Prompt{
+  def custom_prompt(system_prompt, request_prompt) do
+    prompt()
+    |> set_prompt_content(system_prompt, request_prompt)
+  end
+
+  defp set_prompt_content(%prompt_type{} = prompt, system_prompt, request_prompt) do
+    %{
       prompt
       | content: """
-        #{Artefact.Prompt.Template.controls(prompt)}
+        #{Prompt.Template.controls(prompt)}
 
-        # #{Artefact.Prompt.title(prompt)}
+        # #{prompt_type.title(prompt)}
 
-        ## #{Artefact.Prompt.system_prompt_section_title()}
+        ## #{Prompt.Template.system_prompt_section_title()}
 
         #{system_prompt}
 
-        ## #{Artefact.Prompt.request_prompt_section_title()}
+        ## #{Prompt.Template.request_prompt_section_title()}
 
         #{request_prompt}
         """

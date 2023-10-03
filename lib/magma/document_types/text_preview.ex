@@ -60,11 +60,11 @@ defmodule Magma.Text.Preview do
     end
   end
 
-  def create(%__MODULE__{}, _, _, []),
+  def create(%__MODULE__{}, _, _, _),
     do:
       raise(
         ArgumentError,
-        "Magma.Preview.create/4 is available only with new/2 arguments"
+        "Magma.Preview.create/4 is available only with an initialized document"
       )
 
   def create(concept, artefact, attrs, opts) do

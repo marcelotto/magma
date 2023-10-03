@@ -16,11 +16,11 @@ defmodule Magma.Generation do
     Application.get_env(:magma, :default_generation, Magma.Generation.OpenAI)
   end
 
-  def execute(%Artefact.Prompt{} = prompt) do
+  def execute(prompt) when is_prompt(prompt) do
     execute(prompt.generation, prompt)
   end
 
-  def execute(%generation_type{} = generation, %Artefact.Prompt{} = prompt, opts \\ []) do
+  def execute(%generation_type{} = generation, prompt, opts \\ []) when is_prompt(prompt) do
     generation_type.execute(generation, prompt, opts)
   end
 
@@ -31,6 +31,9 @@ defmodule Magma.Generation do
 
       iex> Magma.Generation.type("OpenAI")
       Magma.Generation.OpenAI
+
+      iex> Magma.Generation.type("Manual")
+      Magma.Generation.Manual
 
       iex> Magma.Generation.type("Mock")
       Magma.Generation.Mock

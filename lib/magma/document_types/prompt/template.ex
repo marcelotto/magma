@@ -1,18 +1,40 @@
-defmodule Magma.Artefact.Prompt.Template do
-  alias Magma.Artefact.Prompt
-  alias Magma.Concept
+defmodule Magma.Prompt.Template do
+  alias Magma.{Artefact, Prompt, Concept}
 
   import Magma.Obsidian.View.Helper
 
-  def render(%Prompt{artefact: artefact_type} = prompt, project) do
-    concept = prompt.concept
+  @system_prompt_section_title "System prompt"
+  def system_prompt_section_title, do: @system_prompt_section_title
+  @request_prompt_section_title "Request"
+  def request_prompt_section_title, do: @request_prompt_section_title
 
+  def render(%Prompt{} = prompt, project) do
     """
     #{controls(prompt)}
 
     # #{Prompt.title(prompt)}
 
-    ## #{Prompt.system_prompt_section_title()}
+    ## #{@system_prompt_section_title}
+
+    #{persona(project)}
+
+    #{context_knowledge(project)}
+
+
+    ## #{@request_prompt_section_title}
+
+    """
+  end
+
+  def render(%Artefact.Prompt{artefact: artefact_type} = prompt, project) do
+    concept = prompt.concept
+
+    """
+    #{controls(prompt)}
+
+    # #{Artefact.Prompt.title(prompt)}
+
+    ## #{@system_prompt_section_title}
 
     #{persona(project)}
 
@@ -21,7 +43,7 @@ defmodule Magma.Artefact.Prompt.Template do
     #{context_knowledge(project, concept)}
 
 
-    ## #{Prompt.request_prompt_section_title()}
+    ## #{@request_prompt_section_title}
 
     ### #{transclude(concept, artefact_type.concept_prompt_task_section_title())}
 
@@ -36,13 +58,20 @@ defmodule Magma.Artefact.Prompt.Template do
     |> String.trim_trailing()
   end
 
-  def context_knowledge(project, %Concept{subject: %matter_type{}} = concept) do
+  def context_knowledge(project) do
     """
     ### Context knowledge
 
     The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
     #### Description of the #{project.subject.name} project #{transclude("Project", "Description")}
+    """
+    |> String.trim_trailing()
+  end
+
+  def context_knowledge(project, %Concept{subject: %matter_type{}} = concept) do
+    """
+    #{context_knowledge(project)}
 
     #{matter_type.context_knowledge(concept)}
 
@@ -66,7 +95,22 @@ defmodule Magma.Artefact.Prompt.Template do
     |> String.trim_trailing()
   end
 
-  def controls(prompt) do
+  def controls(%Prompt{}) do
+    """
+    **Generated results**
+
+    #{prompt_results_table()}
+
+    **Actions**
+
+    #{button("Execute", "magma.prompt.exec", color: "blue")}
+    #{button("Execute manually", "magma.prompt.exec-manual", color: "blue")}
+    #{button("Copy to clipboard", "magma.prompt.copy")}
+    """
+    |> String.trim_trailing()
+  end
+
+  def controls(%Artefact.Prompt{} = prompt) do
     """
     **Generated results**
 

@@ -1,5 +1,5 @@
 ---
-magma_type: Artefact.PromptResult
+magma_type: PromptResult
 magma_prompt: "[[Prompt for ModuleDoc of TopLevelExample]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-3.5-turbo", "temperature":0.2}

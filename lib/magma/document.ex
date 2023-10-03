@@ -1,12 +1,14 @@
 defmodule Magma.Document do
   alias Magma.Vault
+  alias Magma.Obsidian.View
 
   import Magma.Utils, only: [init_fields: 2]
 
   @type t ::
           Magma.Concept.t()
+          | Magma.Prompt.t()
           | Magma.Artefact.Prompt.t()
-          | Magma.Artefact.PromptResult.t()
+          | Magma.PromptResult.t()
           | Magma.Artefact.Version.t()
           | Magma.Text.Preview.t()
 
@@ -121,15 +123,13 @@ defmodule Magma.Document do
   end
 
   def render_front_matter(%document_type{} = document) do
-    import Magma.Obsidian.View.Helper
-
     """
     ---
     magma_type: #{type_name(document_type)}
     #{document_type.render_front_matter(document)}
     created_at: #{document.created_at}
-    tags: #{yaml_list(document.tags)}
-    aliases: #{yaml_list(document.aliases)}
+    tags: #{View.Helper.yaml_list(document.tags)}
+    aliases: #{View.Helper.yaml_list(document.aliases)}
     ---
     """
   end
@@ -169,11 +169,14 @@ defmodule Magma.Document do
       iex> Magma.Document.type_name(Magma.Concept)
       "Concept"
 
+      iex> Magma.Document.type_name(Magma.Prompt)
+      "Prompt"
+
       iex> Magma.Document.type_name(Magma.Artefact.Prompt)
       "Artefact.Prompt"
 
-      iex> Magma.Document.type_name(Magma.Artefact.PromptResult)
-      "Artefact.PromptResult"
+      iex> Magma.Document.type_name(Magma.PromptResult)
+      "PromptResult"
 
       iex> Magma.Document.type_name(Magma.Artefact.Version)
       "Artefact.Version"

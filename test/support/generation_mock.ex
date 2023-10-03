@@ -1,7 +1,9 @@
 defmodule Magma.Generation.Mock do
   @behaviour Magma.Generation
 
-  alias Magma.Artefact
+  alias Magma.Prompt.Assembler
+
+  import Magma.Utils.Guards
 
   defstruct result: "foo", expected_prompt: nil, expected_system_prompt: nil
 
@@ -16,8 +18,8 @@ defmodule Magma.Generation.Mock do
   @impl true
   def execute(generation, prompt, opts \\ [])
 
-  def execute(%__MODULE__{} = generation, %Artefact.Prompt{} = prompt, _opts) do
-    with {:ok, system_prompt, request_prompt} <- Artefact.Prompt.assemble_parts(prompt) do
+  def execute(%__MODULE__{} = generation, prompt, _opts) when is_prompt(prompt) do
+    with {:ok, system_prompt, request_prompt} <- Assembler.assemble_parts(prompt) do
       execute(generation, request_prompt, system_prompt)
     end
   end

@@ -25,7 +25,7 @@ defmodule Magma.VaultTest do
              {:ok, Magma.Artefact.Prompt}
 
     assert prompt_result |> Document.name_from_path() |> Vault.document_type() ==
-             {:ok, Magma.Artefact.PromptResult}
+             {:ok, Magma.PromptResult}
 
     assert version |> Document.name_from_path() |> Vault.document_type() ==
              {:ok, Magma.Artefact.Version}

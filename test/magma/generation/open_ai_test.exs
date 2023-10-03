@@ -13,7 +13,21 @@ defmodule Magma.Generation.OpenAITest do
     :ok
   end
 
-  test "successful request" do
+  test "with artefact prompt" do
+    use_cassette "openai/simple_example" do
+      assert Generation.OpenAI.new!()
+             |> Generation.OpenAI.execute(
+               custom_artefact_prompt(
+                 "Elixir is ...",
+                 "You are an assistent for the Elixir language and answer short in one sentence."
+               )
+             ) ==
+               {:ok,
+                "a dynamic, functional programming language designed for building scalable and maintainable applications."}
+    end
+  end
+
+  test "with custom prompt" do
     use_cassette "openai/simple_example" do
       assert Generation.OpenAI.new!()
              |> Generation.OpenAI.execute(
@@ -32,7 +46,7 @@ defmodule Magma.Generation.OpenAITest do
       # TODO: Should this produce a more specific error?
       assert Generation.OpenAI.new!()
              |> Generation.OpenAI.execute(
-               custom_prompt(
+               custom_artefact_prompt(
                  "Elixir is ...",
                  "You are an assistent for the Elixir language and answer short in one sentence."
                )

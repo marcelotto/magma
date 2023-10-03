@@ -3,12 +3,11 @@ defmodule Magma.Generation.ManualTest do
 
   doctest Magma.Generation.Manual
 
-  alias Magma.Generation
-  alias Magma.Artefact
+  alias Magma.{Generation, Prompt}
 
   test "shell interaction" do
     prompt =
-      custom_prompt(
+      custom_artefact_prompt(
         "Elixir is ...",
         "You are an assistent for the Elixir language and answer short in one sentence."
       )
@@ -26,7 +25,7 @@ defmodule Magma.Generation.ManualTest do
 
   test "without shell interaction" do
     prompt =
-      custom_prompt(
+      custom_artefact_prompt(
         "Elixir is ...",
         "You are an assistent for the Elixir language and answer short in one sentence."
       )
@@ -43,7 +42,7 @@ defmodule Magma.Generation.ManualTest do
       "You are an assistent for the Elixir language and answer short in one sentence."
 
     prompt =
-      custom_prompt(
+      custom_artefact_prompt(
         system_prompt,
         request_prompt
       )
@@ -61,11 +60,11 @@ defmodule Magma.Generation.ManualTest do
 
     assert Clipboard.paste() ==
              """
-             # #{Artefact.Prompt.system_prompt_section_title()}
+             # #{Prompt.Template.system_prompt_section_title()}
 
              #{system_prompt}
 
-             # #{Artefact.Prompt.request_prompt_section_title()}
+             # #{Prompt.Template.request_prompt_section_title()}
 
              #{request_prompt}
              """

@@ -1,10 +1,12 @@
 defmodule Magma.Generation.OpenAI do
   @behaviour Magma.Generation
 
-  alias Magma.Artefact
+  alias Magma.Prompt.Assembler
 
   defstruct model: "gpt-3.5-turbo",
             temperature: 0.2
+
+  import Magma.Utils.Guards
 
   require Logger
 
@@ -28,10 +30,10 @@ defmodule Magma.Generation.OpenAI do
   end
 
   @impl true
-  def execute(%__MODULE__{} = generation, %Artefact.Prompt{} = prompt, _opts \\ []) do
+  def execute(%__MODULE__{} = generation, prompt, _opts \\ []) when is_prompt(prompt) do
     Logger.info("Executing OpenAI chat completion...")
 
-    with {:ok, system_prompt, request_prompt} <- Artefact.Prompt.assemble_parts(prompt) do
+    with {:ok, system_prompt, request_prompt} <- Assembler.assemble_parts(prompt) do
       generation
       |> Map.from_struct()
       |> Keyword.new()

@@ -1,5 +1,5 @@
 defmodule Magma.Obsidian.View.Helper do
-  alias Magma.{Concept, Artefact, Text, DocumentStruct}
+  alias Magma.{Concept, PromptResult, Artefact, Text, DocumentStruct}
   alias Magma.DocumentStruct.Section
 
   def link_to(document_or_target, section \\ nil)
@@ -16,7 +16,7 @@ defmodule Magma.Obsidian.View.Helper do
     do: document |> Artefact.Prompt.from() |> link_to(section)
 
   def link_to_prompt_result(document, section \\ nil),
-    do: document |> Artefact.PromptResult.from() |> link_to(section)
+    do: document |> PromptResult.from() |> link_to(section)
 
   def link_to_version(document, section \\ nil),
     do: document |> Artefact.Version.from() |> link_to(section)
@@ -39,7 +39,7 @@ defmodule Magma.Obsidian.View.Helper do
     do: document |> Artefact.Prompt.from() |> transclude(section)
 
   def transclude_prompt_result(document, section \\ nil),
-    do: document |> Artefact.PromptResult.from() |> transclude(section)
+    do: document |> PromptResult.from() |> transclude(section)
 
   def transclude_version(document, section \\ nil),
     do: document |> Artefact.Version.from() |> transclude(section)

@@ -7,6 +7,7 @@ defmodule Mix.Tasks.Magma.Prompt.Copy do
   import Magma.MixHelper
 
   alias Magma.Artefact
+  alias Magma.Prompt.Assembler
 
   @options []
 
@@ -20,7 +21,7 @@ defmodule Mix.Tasks.Magma.Prompt.Copy do
       _opts, [prompt_name] ->
         prompt_name
         |> Artefact.Prompt.load!()
-        |> Artefact.Prompt.copy_to_clipboard()
+        |> Assembler.copy_to_clipboard()
     end)
   end
 end

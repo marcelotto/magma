@@ -3,17 +3,8 @@ defmodule Magma.Artefact.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Matter, Generation}
-  alias Magma.DocumentStruct
-  alias Magma.DocumentStruct.Section
-  alias Magma.Artefact.Prompt.Template
-
-  require Logger
-
-  @system_prompt_section_title "System prompt"
-  def system_prompt_section_title, do: @system_prompt_section_title
-  @request_prompt_section_title "Request"
-  def request_prompt_section_title, do: @request_prompt_section_title
+  alias Magma.{Vault, Artefact, Concept, Matter, Generation, Prompt, PromptResult}
+  alias Magma.Prompt.Template
 
   @impl true
   def title(%__MODULE__{name: name}), do: name
@@ -26,8 +17,8 @@ defmodule Magma.Artefact.Prompt do
   @impl true
   def from(%__MODULE__{} = prompt), do: prompt
   def from({%Concept{} = concept, artefact}), do: artefact.prompt!(concept).name
-  def from(%Artefact.PromptResult{} = result), do: result.prompt
-  def from(%Artefact.Version{} = version), do: version.draft.prompt
+  def from(%PromptResult{prompt: %__MODULE__{}} = result), do: result.prompt
+  def from(%Artefact.Version{} = version), do: from(version.draft)
 
   def new(concept, artefact, attrs \\ []) do
     struct(__MODULE__, [{:artefact, artefact}, {:concept, concept} | attrs])
@@ -50,11 +41,11 @@ defmodule Magma.Artefact.Prompt do
     |> Document.create(opts)
   end
 
-  def create(%__MODULE__{}, _, _, []),
+  def create(%__MODULE__{}, _, _, _),
     do:
       raise(
         ArgumentError,
-        "Magma.Artefact.Prompt.create/4 is available only with new/2 arguments"
+        "Magma.Artefact.Prompt.create/4 is available only with an initialized document"
       )
 
   def create(concept, artefact, attrs, opts) do
@@ -70,8 +61,7 @@ defmodule Magma.Artefact.Prompt do
     """
     magma_artefact: #{Artefact.type_name(document.artefact)}
     magma_concept: "#{link_to(document.concept)}"
-    magma_generation_type: #{inspect(Generation.short_name(document.generation))}
-    magma_generation_params: #{yaml_nested_map(document.generation)}
+    #{Prompt.render_front_matter(document)}
     """
     |> String.trim_trailing()
   end
@@ -108,64 +98,6 @@ defmodule Magma.Artefact.Prompt do
 
       true ->
         {:error, "invalid magma_artefact type: #{artefact_type}"}
-    end
-  end
-
-  def assemble_parts(%__MODULE__{} = prompt) do
-    with {:ok, section} <- section(prompt) do
-      system_prompt_section = section[@system_prompt_section_title]
-      request_prompt_section = section[@request_prompt_section_title]
-
-      cond do
-        !system_prompt_section ->
-          {:error, "no system prompt section found in #{prompt.path}"}
-
-        !request_prompt_section ->
-          {:error, "no request prompt section found in #{prompt.path}"}
-
-        true ->
-          if Enum.count(section.sections) > 2, do: ignored_section_detected(prompt)
-
-          {
-            :ok,
-            compile(system_prompt_section),
-            compile(request_prompt_section)
-          }
-      end
-    end
-  end
-
-  def assemble_all(%__MODULE__{} = prompt) do
-    with {:ok, section} <- section(prompt) do
-      {:ok, compile(section)}
-    end
-  end
-
-  defp section(prompt) do
-    with {:ok, document_struct} <- DocumentStruct.parse(prompt.content) do
-      if Enum.count(document_struct.sections) > 1, do: ignored_section_detected(prompt)
-
-      {:ok, DocumentStruct.main_section(document_struct)}
-    end
-  end
-
-  defp ignored_section_detected(prompt) do
-    Logger.warning(
-      "Prompt #{prompt.path} contains subsections which won't be taken into account. Put them under the request section if you want that."
-    )
-  end
-
-  defp compile(section) do
-    section
-    |> Section.resolve_transclusions()
-    |> Section.remove_comments()
-    |> Section.to_string(header: false, level: 0)
-  end
-
-  def copy_to_clipboard(%__MODULE__{} = prompt) do
-    case assemble_all(prompt) do
-      {:ok, content} -> Clipboard.copy(content)
-      {:error, error} -> raise error
     end
   end
 end

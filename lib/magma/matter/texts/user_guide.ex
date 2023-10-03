@@ -17,7 +17,7 @@ defmodule Magma.Matter.Texts.UserGuide do
 
   def system_prompt_task(%Matter.Text{type: __MODULE__, name: name}) do
     """
-    Your task is to help write a user guide called `#{name}`.
+    Your task is to help write a user guide called "#{name}".
 
     The user guide should be written in English in the Markdown format.
     """
