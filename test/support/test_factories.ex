@@ -17,6 +17,11 @@ defmodule Magma.TestFactories do
   def datetime(amount_to_add, unit \\ :second),
     do: datetime() |> DateTime.add(amount_to_add, unit)
 
+  def naive_datetime, do: ~N[2023-10-04 13:25:47]
+
+  def native_datetime(amount_to_add, unit \\ :second),
+    do: naive_datetime() |> NaiveDateTime.add(amount_to_add, unit)
+
   def project_matter(name \\ "Some") do
     Matter.Project.new!(name)
   end

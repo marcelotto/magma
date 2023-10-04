@@ -13,7 +13,7 @@ defmodule Magma.Prompt.Template do
     ---
     magma_type: Prompt
     #{Prompt.render_front_matter(prompt)}
-    created_at: {{DATE:YYYY-MM-DD[T]HH:mm:ss.SSS[Z]}}
+    created_at: {{DATE:YYYY-MM-DD[T]HH:mm:ss}}
     tags: #{yaml_list(prompt.tags)}
     aliases: []
     ---

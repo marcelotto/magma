@@ -87,7 +87,7 @@ defmodule Magma.ConceptTest do
                |> Concept.create()
 
       assert concept.path == expected_path
-      assert DateTime.diff(DateTime.utc_now(), concept.created_at, :second) <= 2
+      assert is_just_now(concept.created_at)
 
       assert Concept.load(concept.path) == {:ok, concept}
 
@@ -113,8 +113,9 @@ defmodule Magma.ConceptTest do
                |> Matter.Project.new!()
                |> Concept.create()
 
+      assert is_just_now(concept.created_at)
+
       assert concept.path == expected_path
-      assert DateTime.diff(DateTime.utc_now(), concept.created_at, :second) <= 2
 
       assert Concept.load(concept.path) == {:ok, concept}
 
@@ -144,8 +145,9 @@ defmodule Magma.ConceptTest do
                |> Matter.Texts.UserGuide.new()
                |> Concept.create()
 
+      assert is_just_now(concept.created_at)
+
       assert concept.path == expected_path
-      assert DateTime.diff(DateTime.utc_now(), concept.created_at, :second) <= 2
 
       assert concept.content ==
                """
@@ -238,8 +240,9 @@ defmodule Magma.ConceptTest do
               } = concept} =
                Concept.create(section_matter, [], assigns: [abstract: abstract])
 
+      assert is_just_now(concept.created_at)
+
       assert concept.path == expected_path
-      assert DateTime.diff(DateTime.utc_now(), concept.created_at, :second) <= 2
 
       assert concept.content ==
                """
@@ -303,7 +306,7 @@ defmodule Magma.ConceptTest do
                  custom_metadata: %{},
                  aliases: [],
                  tags: ["foo", "bar"],
-                 created_at: ~U[2023-07-11 14:25:00Z],
+                 created_at: ~N[2023-07-11 14:25:00],
                  title: "`Nested.Example`",
                  prologue: []
                } = concept
@@ -336,7 +339,7 @@ defmodule Magma.ConceptTest do
                  custom_metadata: %{},
                  aliases: ["Some project", "Some-project"],
                  tags: ["foo"],
-                 created_at: ~U[2023-07-11 14:25:00Z],
+                 created_at: ~N[2023-07-11 14:25:00],
                  title: "Some project",
                  prologue: []
                } = concept
@@ -371,7 +374,7 @@ defmodule Magma.ConceptTest do
                  custom_metadata: %{},
                  aliases: [],
                  tags: [],
-                 created_at: ~U[2023-09-13 02:41:42.00Z],
+                 created_at: ~N[2023-09-13 02:41:42],
                  title: "Some User Guide",
                  prologue: []
                } = concept

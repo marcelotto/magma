@@ -3,7 +3,7 @@ magma_type: PromptResult
 magma_prompt: "[[Prompt for ModuleDoc of TopLevelExample]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-3.5-turbo", "temperature":0.2}
-created_at: 2023-09-07 21:17:00Z
+created_at: 2023-09-07T21:17:00
 tags: [magma-vault]
 aliases: []
 ---

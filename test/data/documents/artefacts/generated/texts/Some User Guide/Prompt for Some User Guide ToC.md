@@ -2,7 +2,7 @@
 magma_type: Artefact.Prompt
 magma_artefact: TableOfContents
 magma_concept: "[[Some User Guide]]"
-created_at: 2023-09-16 01:29:30.00Z
+created_at: 2023-09-16T01:29:30
 tags: [magma-vault]
 aliases: []
 ---

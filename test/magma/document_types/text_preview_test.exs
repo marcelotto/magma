@@ -30,6 +30,8 @@ defmodule Magma.Text.PreviewTest do
                 custom_metadata: %{}
               } = preview} = Preview.create(concept, Artefacts.Article)
 
+      assert is_just_now(preview.created_at)
+
       assert preview.name == "Some User Guide (article) Preview"
 
       assert preview.path ==
@@ -49,8 +51,6 @@ defmodule Magma.Text.PreviewTest do
 
                ## Another section ![[Some User Guide - Another section (article section)#Some User Guide - Another section (article section)|]]
                """
-
-      assert DateTime.diff(DateTime.utc_now(), preview.created_at, :second) <= 2
 
       assert Preview.load(preview.path) == {:ok, preview}
     end

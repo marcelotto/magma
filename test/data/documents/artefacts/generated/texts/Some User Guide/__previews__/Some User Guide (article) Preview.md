@@ -2,7 +2,7 @@
 magma_type: Text.Preview
 magma_artefact: Article
 magma_concept: "[[Some User Guide]]"
-created_at: 2023-09-25 20:54:00.00Z
+created_at: 2023-09-25T20:54:00
 tags: [magma-vault]
 aliases: []
 ---

@@ -107,8 +107,6 @@ defmodule Magma.Document.Loader do
   end
 
   defp to_datetime(string) do
-    with {:ok, datetime, _} <- DateTime.from_iso8601(string) do
-      {:ok, datetime}
-    end
+    NaiveDateTime.from_iso8601(string)
   end
 end

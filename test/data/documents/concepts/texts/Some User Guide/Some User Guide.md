@@ -2,7 +2,7 @@
 magma_type: Concept
 magma_matter_type: Text
 magma_matter_text_type: UserGuide
-created_at: 2023-09-13 02:41:42.00Z
+created_at: 2023-09-13T02:41:42
 tags: []
 aliases: []
 ---

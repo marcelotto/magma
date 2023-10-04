@@ -3,7 +3,7 @@ magma_type: Artefact.Version
 magma_artefact: TableOfContents
 magma_concept: "[[Some User Guide]]"
 magma_draft: "[[Generated Some User Guide ToC (2023-09-18T12:56:00)]]"
-created_at: 2023-09-18 12:58:00Z
+created_at: 2023-09-18T12:58:00
 tags: [magma-vault]
 aliases: []
 ---

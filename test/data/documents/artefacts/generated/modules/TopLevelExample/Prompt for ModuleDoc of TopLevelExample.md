@@ -2,7 +2,7 @@
 magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[TopLevelExample]]"
-created_at: 2023-09-07 18:26:30.401436Z
+created_at: 2023-09-07T18:26:30
 tags: [magma-vault]
 aliases: []
 ---

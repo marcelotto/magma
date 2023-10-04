@@ -16,4 +16,12 @@ defmodule Magma.TestCase do
       import unquote(__MODULE__)
     end
   end
+
+  def is_just_now(%DateTime{} = datetime) do
+    DateTime.diff(DateTime.utc_now(), datetime, :second) <= 2
+  end
+
+  def is_just_now(%NaiveDateTime{} = datetime) do
+    NaiveDateTime.diff(NaiveDateTime.local_now(), datetime, :second) <= 2
+  end
 end

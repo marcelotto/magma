@@ -69,8 +69,9 @@ defmodule Magma.Artefact.PromptTest do
                 custom_metadata: %{}
               } = prompt} = Artefacts.ModuleDoc.create_prompt(module_concept)
 
+      assert is_just_now(prompt.created_at)
+
       assert prompt.name == "Prompt for ModuleDoc of Nested.Example"
-      assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2
 
       assert prompt.content ==
                """
@@ -172,8 +173,9 @@ defmodule Magma.Artefact.PromptTest do
                 custom_metadata: %{}
               } = prompt} = Artefacts.TableOfContents.create_prompt(text_concept)
 
+      assert is_just_now(prompt.created_at)
+
       assert prompt.name == "Prompt for Some User Guide ToC"
-      assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2
 
       assert prompt.content ==
                """
@@ -232,12 +234,12 @@ defmodule Magma.Artefact.PromptTest do
                 custom_metadata: %{}
               } = prompt} = Artefacts.Article.create_prompt(section_concept)
 
+      assert is_just_now(prompt.created_at)
+
       assert prompt.name == "Prompt for Some User Guide - Introduction (article section)"
 
       assert prompt.path ==
                Vault.path("artefacts/generated/texts/Some User Guide/article/#{prompt.name}.md")
-
-      assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2
 
       assert prompt.content ==
                """

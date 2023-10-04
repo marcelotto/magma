@@ -75,7 +75,7 @@ defmodule Magma.Document do
     init_fields(
       document,
       [
-        created_at: DateTime.utc_now(),
+        created_at: now(),
         tags: :magma |> Application.get_env(:default_tags) |> List.wrap(),
         aliases: []
       ]
@@ -160,6 +160,9 @@ defmodule Magma.Document do
       _ -> raise "invalid document #{document.path}: no title header found"
     end
   end
+
+  @doc false
+  def now, do: NaiveDateTime.local_now()
 
   @doc """
   Returns the document type name for the given document.

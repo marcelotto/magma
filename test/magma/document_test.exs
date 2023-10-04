@@ -14,10 +14,10 @@ defmodule Magma.DocumentTest do
         |> Concept.load!()
         |> struct(created_at: datetime())
 
-      assert {:ok, %Concept{created_at: created_at} = new_concept} =
+      assert {:ok, %Concept{} = new_concept} =
                Document.recreate(original_concept)
 
-      assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+      assert is_just_now(new_concept.created_at)
 
       assert struct(new_concept,
                created_at: nil,
@@ -43,10 +43,10 @@ defmodule Magma.DocumentTest do
         |> Artefact.Prompt.load!()
         |> struct(created_at: datetime())
 
-      assert {:ok, %Artefact.Prompt{created_at: created_at} = new_prompt} =
+      assert {:ok, %Artefact.Prompt{} = new_prompt} =
                Document.recreate(original_prompt)
 
-      assert DateTime.diff(DateTime.utc_now(), created_at, :second) <= 2
+      assert is_just_now(new_prompt.created_at)
 
       assert struct(new_prompt,
                created_at: nil,

@@ -2,7 +2,7 @@
 magma_type: Prompt
 magma_generation_type: Mock
 magma_generation_params: {"result":"foo"}
-created_at: 2023-10-03 03:40:00Z
+created_at: 2023-10-03T03:40:00
 tags: [magma-vault]
 aliases: []
 ---

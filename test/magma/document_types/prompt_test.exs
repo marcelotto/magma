@@ -15,10 +15,10 @@ defmodule Magma.PromptTest do
               custom_metadata: %{}
             } = prompt} = Prompt.create("Foo")
 
+    assert is_just_now(prompt.created_at)
+
     assert prompt.name == "Foo"
     assert prompt.path == Vault.path("custom_prompts/#{prompt.name}.md")
-
-    assert DateTime.diff(DateTime.utc_now(), prompt.created_at, :second) <= 2
 
     assert prompt.content ==
              """

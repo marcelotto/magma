@@ -2,7 +2,7 @@
 magma_type: Concept
 magma_matter_type: Text.Section
 magma_section_of: "[[Some User Guide]]"
-created_at: 2023-09-22 20:31:00.00Z
+created_at: 2023-09-22T20:31:00
 tags: []
 aliases: []
 ---

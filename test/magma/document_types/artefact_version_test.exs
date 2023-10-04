@@ -96,7 +96,7 @@ defmodule Magma.Artefact.VersionTest do
                 custom_metadata: %{}
               } = version} = Artefact.Version.create(prompt_result)
 
-      assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2
+      assert is_just_now(version.created_at)
 
       assert version.name == "ModuleDoc of Nested.Example"
 
@@ -136,7 +136,7 @@ defmodule Magma.Artefact.VersionTest do
                 custom_metadata: %{}
               } = version} = Artefact.Version.create(prompt_result)
 
-      assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2
+      assert is_just_now(version.created_at)
 
       assert version.name == "Some User Guide ToC"
 
@@ -190,7 +190,7 @@ defmodule Magma.Artefact.VersionTest do
       assert version.path ==
                Vault.path("artefacts/final/texts/Some User Guide/article/#{version.name}.md")
 
-      assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2
+      assert is_just_now(version.created_at)
 
       assert version.content ==
                """
@@ -251,7 +251,7 @@ defmodule Magma.Artefact.VersionTest do
                The content of another final section.
                """
 
-      assert DateTime.diff(DateTime.utc_now(), version.created_at, :second) <= 2
+      assert is_just_now(version.created_at)
 
       assert Artefact.Version.load(version.path) == {:ok, version}
     end

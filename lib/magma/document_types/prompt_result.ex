@@ -22,11 +22,11 @@ defmodule Magma.PromptResult do
   end
 
   def build_name(%__MODULE__{prompt: %Prompt{} = prompt} = result) do
-    "#{prompt.name} (Prompt result #{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()})"
+    "#{prompt.name} (Prompt result #{NaiveDateTime.to_iso8601(result.created_at)})"
   end
 
   def build_name(%__MODULE__{} = result) do
-    "#{title(result)} (#{result.created_at |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()})"
+    "#{title(result)} (#{NaiveDateTime.to_iso8601(result.created_at)})"
   end
 
   @impl true
@@ -55,7 +55,7 @@ defmodule Magma.PromptResult do
 
   def new(prompt, attrs \\ []) do
     struct(__MODULE__, [{:prompt, prompt} | attrs])
-    |> init_field(created_at: DateTime.utc_now())
+    |> init_field(created_at: Document.now())
     |> Document.init_path()
   end
 

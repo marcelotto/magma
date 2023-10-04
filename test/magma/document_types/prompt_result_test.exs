@@ -10,7 +10,7 @@ defmodule Magma.PromptResultTest do
   describe "new/1" do
     test "ModuleDoc artefact prompt" do
       prompt = module_doc_artefact_prompt()
-      created_at = datetime()
+      created_at = naive_datetime()
 
       assert {:ok,
               %PromptResult{
@@ -24,7 +24,7 @@ defmodule Magma.PromptResultTest do
                PromptResult.new(prompt, created_at: created_at)
 
       assert result.name ==
-               "Generated ModuleDoc of Nested.Example (#{datetime() |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()})"
+               "Generated ModuleDoc of Nested.Example (#{NaiveDateTime.to_iso8601(naive_datetime())})"
 
       assert result.path ==
                Vault.path(
@@ -34,7 +34,7 @@ defmodule Magma.PromptResultTest do
 
     test "custom prompt" do
       prompt = prompt()
-      created_at = datetime()
+      created_at = naive_datetime()
 
       assert {:ok,
               %PromptResult{
@@ -48,7 +48,7 @@ defmodule Magma.PromptResultTest do
                PromptResult.new(prompt, created_at: created_at)
 
       assert result.name ==
-               "#{prompt.name} (Prompt result #{datetime() |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()})"
+               "#{prompt.name} (Prompt result #{NaiveDateTime.to_iso8601(naive_datetime())})"
 
       assert result.path ==
                Vault.path("custom_prompts/__prompt_results__/#{result.name}.md")
@@ -66,11 +66,8 @@ defmodule Magma.PromptResultTest do
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
            "concepts/modules/Nested/Nested.Example.md"
          ]
-    test "ModuleDoc artefact prompt", %{vault_files: [prompt_file | _]} do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
+    test "ModuleDoc artefact prompt (with prompt-specified generation)" do
+      prompt = Artefact.Prompt.load!("Prompt for ModuleDoc of Nested.Example")
 
       assert {:ok,
               %PromptResult{
@@ -82,7 +79,7 @@ defmodule Magma.PromptResultTest do
                 custom_metadata: %{}
               } = prompt_result} = PromptResult.create(prompt)
 
-      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+      assert is_just_now(prompt_result.created_at)
 
       assert prompt_result.content ==
                """
@@ -99,6 +96,14 @@ defmodule Magma.PromptResultTest do
       assert File.stat!(prompt_result.path).access == :read
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
+    end
+
+    @tag vault_files: [
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
+         ]
+    test "ModuleDoc artefact prompt (with explicit generation)" do
+      prompt = Artefact.Prompt.load!("Prompt for ModuleDoc of Nested.Example")
 
       generation =
         Generation.Mock.new!(
@@ -138,7 +143,7 @@ defmodule Magma.PromptResultTest do
                 custom_metadata: %{}
               } = prompt_result} = PromptResult.create(prompt)
 
-      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+      assert is_just_now(prompt_result.created_at)
 
       assert prompt_result.content ==
                """
@@ -153,23 +158,6 @@ defmodule Magma.PromptResultTest do
                """
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
-
-      generation =
-        Generation.Mock.new!(
-          expected_system_prompt: Prompt.Template.persona(project_concept()) <> "\n",
-          expected_prompt: "Generate the table of content of Some User Guide ...\n",
-          result: "bar"
-        )
-
-      assert {:ok,
-              %PromptResult{
-                prompt: ^prompt,
-                generation: ^generation,
-                name: "Generated Some User Guide ToC (" <> _,
-                tags: ["magma-vault"],
-                aliases: [],
-                custom_metadata: %{}
-              }} = PromptResult.create(prompt, generation: generation)
     end
 
     @tag vault_files: [
@@ -210,13 +198,13 @@ defmodule Magma.PromptResultTest do
                  "artefacts/generated/texts/Some User Guide/article/__prompt_results__/#{prompt_result.name}.md"
                )
 
-      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+      assert is_just_now(prompt_result.created_at)
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
     end
 
     @tag vault_files: ["prompts/Foo-Prompt.md"]
-    test "with custom prompt" do
+    test "with custom prompt (with prompt-specified generation)" do
       prompt = Prompt.load!("Foo-Prompt")
 
       assert {:ok,
@@ -229,7 +217,7 @@ defmodule Magma.PromptResultTest do
                 custom_metadata: %{}
               } = prompt_result} = PromptResult.create(prompt)
 
-      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+      assert is_just_now(prompt_result.created_at)
 
       assert prompt_result.content ==
                """
@@ -243,6 +231,11 @@ defmodule Magma.PromptResultTest do
       assert File.stat!(prompt_result.path).access == :read
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
+    end
+
+    @tag vault_files: ["prompts/Foo-Prompt.md"]
+    test "with custom prompt (with explicit generation)" do
+      prompt = Prompt.load!("Foo-Prompt")
 
       generation =
         Generation.Mock.new!(
@@ -267,11 +260,8 @@ defmodule Magma.PromptResultTest do
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
            "concepts/modules/Nested/Nested.Example.md"
          ]
-    test "artefact prompt without execution", %{vault_files: [prompt_file | _]} do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
+    test "artefact prompt without execution (interactive; prompt-specified generation)" do
+      prompt = Artefact.Prompt.load!("Prompt for ModuleDoc of Nested.Example")
 
       prompt_with_manual_generation = struct(prompt, generation: Generation.Manual.new!())
       answer = "awesome"
@@ -291,7 +281,7 @@ defmodule Magma.PromptResultTest do
 
       assert_receive {:mix_shell, :prompt, [_]}
 
-      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+      assert is_just_now(prompt_result.created_at)
 
       assert prompt_result.content ==
                """
@@ -306,6 +296,14 @@ defmodule Magma.PromptResultTest do
                """
 
       assert File.stat!(prompt_result.path).access == :read_write
+    end
+
+    @tag vault_files: [
+           "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+           "concepts/modules/Nested/Nested.Example.md"
+         ]
+    test "artefact prompt without execution (non-interactive; explicit generation)" do
+      prompt = Artefact.Prompt.load!("Prompt for ModuleDoc of Nested.Example")
 
       generation = Generation.Manual.new!()
 
@@ -336,13 +334,10 @@ defmodule Magma.PromptResultTest do
     end
 
     @tag vault_files: ["prompts/Foo-Prompt.md"]
-    test "custom prompt without execution" do
+    test "custom prompt without execution (non-interactive; prompt-specified generation)" do
       prompt = Prompt.load!("Foo-Prompt")
 
       prompt_with_manual_generation = struct(prompt, generation: Generation.Manual.new!())
-      answer = "awesome"
-
-      send(self(), {:mix_shell_input, :prompt, answer})
 
       assert {:ok,
               %PromptResult{
@@ -353,11 +348,9 @@ defmodule Magma.PromptResultTest do
                 aliases: [],
                 custom_metadata: %{}
               } = prompt_result} =
-               PromptResult.create(prompt_with_manual_generation)
+               PromptResult.create(prompt_with_manual_generation, [], interactive: false)
 
-      assert_receive {:mix_shell, :prompt, [_]}
-
-      assert DateTime.diff(DateTime.utc_now(), prompt_result.created_at, :second) <= 2
+      assert is_just_now(prompt_result.created_at)
 
       assert prompt_result.content ==
                """
@@ -365,12 +358,20 @@ defmodule Magma.PromptResultTest do
 
                # Prompt result of '#{prompt.name}'
 
-               #{answer}
+
                """
 
       assert File.stat!(prompt_result.path).access == :read_write
+    end
+
+    @tag vault_files: ["prompts/Foo-Prompt.md"]
+    test "custom prompt without execution (interactive; explicit generation)" do
+      prompt = Prompt.load!("Foo-Prompt")
+      answer = "awesome"
 
       generation = Generation.Manual.new!()
+
+      send(self(), {:mix_shell_input, :prompt, answer})
 
       assert {:ok,
               %PromptResult{
@@ -381,7 +382,7 @@ defmodule Magma.PromptResultTest do
                 aliases: [],
                 custom_metadata: %{}
               } = prompt_result} =
-               PromptResult.create(prompt, [generation: generation], interactive: false)
+               PromptResult.create(prompt, generation: generation)
 
       assert prompt_result.content ==
                """
@@ -389,8 +390,10 @@ defmodule Magma.PromptResultTest do
 
                # Prompt result of '#{prompt.name}'
 
-
+               #{answer}
                """
+
+      assert_receive {:mix_shell, :prompt, [_]}
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
     end

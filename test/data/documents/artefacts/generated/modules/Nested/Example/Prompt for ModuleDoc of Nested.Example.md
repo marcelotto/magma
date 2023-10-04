@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Nested.Example]]"
 magma_generation_type: Mock
 magma_generation_params: {"result":"foo"}
-created_at: 2023-08-23 12:52:00Z
+created_at: 2023-08-23T12:52:00
 tags: [magma-vault]
 aliases: []
 ---

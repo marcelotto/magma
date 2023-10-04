@@ -3,7 +3,7 @@ magma_type: PromptResult
 magma_prompt: "[[Prompt for ModuleDoc of Nested.Example]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-3.5-turbo", "temperature":0.2}
-created_at: 2023-08-23 12:53:00Z
+created_at: 2023-08-23T12:53:00
 tags: [magma-vault]
 aliases: []
 ---

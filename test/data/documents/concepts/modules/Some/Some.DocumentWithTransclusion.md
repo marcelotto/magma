@@ -1,7 +1,7 @@
 ---
 magma_type: Concept
 magma_matter_type: Module
-created_at: 2023-09-03T21:17:00Z
+created_at: 2023-09-03T21:17:00
 tags: []
 aliases: []
 ---
