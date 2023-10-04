@@ -9,4 +9,13 @@ aliases: []
 ---
 # ModuleDoc of `Nested.Example`
 
+## Moduledoc
+
 The final documentation of `Nested.Example`.
+
+## Function docs
+
+### `new/1`
+
+Some function documentation
+

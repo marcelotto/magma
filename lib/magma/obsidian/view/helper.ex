@@ -118,8 +118,8 @@ defmodule Magma.Obsidian.View.Helper do
 
   def callout(text, type \\ "info") do
     """
-    > [!#{type}]
-    > #{String.replace(text, "\n", "\n> ")}
+    >[!#{type}]
+    >#{String.replace(text, "\n", "\n>")}
     """
     |> String.trim_trailing()
   end

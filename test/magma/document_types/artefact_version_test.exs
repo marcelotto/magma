@@ -102,7 +102,14 @@ defmodule Magma.Artefact.VersionTest do
 
       assert version.content ==
                """
+               >[!caution]
+               >Ensure that the module documentation is under a "Moduledoc" section, as the contents of this section is used for the `@moduledoc`.
+               >
+               >Note, that the function docs are not used automatically. They are just suggestions for improvements and must be applied manually.
+
                # #{version.name}
+
+               ## #{ModuleDoc.prompt_result_section_title()}
 
                The final documentation of `Nested.Example`.
                """

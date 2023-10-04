@@ -16,4 +16,6 @@ color blue
 
 # Generated ModuleDoc of Nested.Example
 
+## Moduledoc
+
 The final documentation of `Nested.Example`.

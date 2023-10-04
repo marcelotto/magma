@@ -94,26 +94,40 @@ defmodule Magma.PromptResult do
 
   defp execute_prompt(%__MODULE__{} = document, opts) do
     with {:ok, result} <- Generation.execute(document.generation, document.prompt, opts) do
-      {:ok, %__MODULE__{document | content: render(document, post_process_result(result, opts))}}
+      {:ok,
+       %__MODULE__{
+         document
+         | content: render(document, post_process_result(document, result))
+       }}
     end
   end
 
-  defp post_process_result(result, opts) do
+  defp post_process_result(document, result) do
     result
     |> String.trim_leading()
-    |> trim_header(Keyword.get(opts, :trim_header, true))
+    |> trim_header(document)
     |> String.trim_trailing()
   end
 
-  defp trim_header("#" <> result, true) do
-    case String.split(result, "\n", parts: 2) do
-      [_, rest] -> String.trim_leading(rest)
-      # It seems we're only getting a single header as a result, so we at least indent it.
-      [only_header_result] -> "##" <> only_header_result
+  defp trim_header("#" <> _ = result, document) do
+    if trim_header?(document) do
+      case String.split(result, "\n", parts: 2) do
+        [_, rest] -> String.trim_leading(rest)
+        # It seems we're only getting just a header and nothing else, so we at least indent it.
+        [only_header_result] -> "#" <> only_header_result
+      end
+    else
+      result
     end
   end
 
   defp trim_header(result, _), do: result
+
+  defp trim_header?(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact_type}}) do
+    artefact_type.trim_prompt_result_header?()
+  end
+
+  defp trim_header?(_), do: false
 
   defp render(prompt_result, execution_result) do
     """

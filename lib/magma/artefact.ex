@@ -18,6 +18,8 @@ defmodule Magma.Artefact do
 
   @callback version_prologue(Artefact.Version.t()) :: binary | nil
 
+  @callback trim_prompt_result_header? :: boolean
+
   @callback relative_base_path(Concept.t()) :: Path.t()
 
   @callback relative_prompt_path(Concept.t()) :: Path.t()
@@ -59,6 +61,9 @@ defmodule Magma.Artefact do
       @impl true
       def version_prologue(%Artefact.Version{artefact: __MODULE__}), do: nil
 
+      @impl true
+      def trim_prompt_result_header?, do: true
+
       def prompt(%Concept{subject: %unquote(matter_type){}} = concept, attrs \\ []) do
         Artefact.Prompt.new(concept, __MODULE__, attrs)
       end
@@ -90,6 +95,7 @@ defmodule Magma.Artefact do
 
       defoverridable prompt_name: 1,
                      version_prologue: 1,
+                     trim_prompt_result_header?: 0,
                      relative_prompt_path: 1,
                      relative_version_path: 1
     end

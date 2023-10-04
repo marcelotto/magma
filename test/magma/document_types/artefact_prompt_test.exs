@@ -82,15 +82,30 @@ defmodule Magma.Artefact.PromptTest do
 
                You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
 
-               Your task is to write documentation for Elixir modules.
+               Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
 
-               Specification of the responses you give:
+               ```markdown
+               ## Moduledoc
 
-               - Language: English
-               - Format: Markdown
-               - Documentation that is clear, concise and comprehensible and covers the main aspects of the requested module.
-               - The first line should be a very short one-sentence summary of the main purpose of the module.
-               - Generate just the comment for the module, not for its individual functions.
+               The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
+
+               Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
+
+
+               ## Function docs
+
+               In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
+
+               ### `function/1`
+
+               The first line should be a very short one-sentence summary of the main purpose of this function.
+
+               Then follows the main body of the function documentation.
+               ```
+
+               <!--
+               You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
+               -->
 
                ### Context knowledge
 

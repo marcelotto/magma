@@ -397,22 +397,20 @@ defmodule Magma.PromptResultTest do
 
     @tag vault_files: [
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
-           "concepts/modules/Nested/Nested.Example.md"
+           "concepts/modules/Nested/Nested.Example.md",
+           "artefacts/generated/texts/Some User Guide/article/Prompt for Some User Guide - Introduction (article section).md",
+           "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
+           "concepts/texts/Some User Guide/Some User Guide.md"
          ]
-    test "initial header is trimmed (unless trim_header: false)", %{
-      vault_files: [prompt_file | _]
-    } do
-      prompt =
-        prompt_file
-        |> Vault.path()
-        |> Artefact.Prompt.load!()
+    test "initial header handling" do
+      prompt = Artefact.Prompt.load!("Prompt for ModuleDoc of Nested.Example")
 
       generation =
         Generation.Mock.new!(
           expected_system_prompt: "You are an assistent for writing Elixir moduledocs.\n",
           expected_prompt: "Generate a moduledoc for `Nested.Example`.\n",
           result: """
-          # Initial header
+          ## Initial header
 
           42
           """
@@ -427,19 +425,34 @@ defmodule Magma.PromptResultTest do
 
                # Generated ModuleDoc of Nested.Example
 
+               ## Initial header
+
                42
                """
 
+      prompt =
+        Artefact.Prompt.load!("Prompt for Some User Guide - Introduction (article section)")
+
+      generation =
+        Generation.Mock.new!(
+          expected_system_prompt:
+            "You are MagmaGPT, a software developer on the \"Some\" project with a lot of experience with Elixir and writing high-quality documentation.\n",
+          expected_prompt: "Generate the \"Introduction\" section of Some User Guide ...\n",
+          result: """
+          ## Introduction
+
+          42
+          """
+        )
+
       assert {:ok, %PromptResult{} = prompt_result} =
-               PromptResult.create(prompt, [generation: generation], trim_header: false)
+               PromptResult.create(prompt, generation: generation)
 
       assert prompt_result.content ==
                """
                #{PromptResult.controls(prompt_result)}
 
-               # Generated ModuleDoc of Nested.Example
-
-               # Initial header
+               # Generated Some User Guide - Introduction (article section)
 
                42
                """

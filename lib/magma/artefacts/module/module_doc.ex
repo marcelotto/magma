@@ -1,9 +1,13 @@
 defmodule Magma.Artefacts.ModuleDoc do
   use Magma.Artefact, matter: Magma.Matter.Module
 
-  alias Magma.{Artefact, Concept, Matter}
+  alias Magma.{Artefact, Concept, Matter, DocumentStruct}
+  alias Magma.Obsidian.View
 
   import Magma.Utils.Guards
+
+  @prompt_result_section_title "Moduledoc"
+  def prompt_result_section_title, do: @prompt_result_section_title
 
   @impl true
   def name(concept), do: "ModuleDoc of #{concept.name}"
@@ -11,15 +15,29 @@ defmodule Magma.Artefacts.ModuleDoc do
   @impl true
   def system_prompt_task(_concept) do
     """
-    Your task is to write documentation for Elixir modules.
+    Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
 
-    Specification of the responses you give:
+    ```markdown
+    ## #{@prompt_result_section_title}
 
-    - Language: English
-    - Format: Markdown
-    - Documentation that is clear, concise and comprehensible and covers the main aspects of the requested module.
-    - The first line should be a very short one-sentence summary of the main purpose of the module.
-    - Generate just the comment for the module, not for its individual functions.
+    The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
+
+    Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
+
+
+    ## Function docs
+
+    In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
+
+    ### `function/1`
+
+    The first line should be a very short one-sentence summary of the main purpose of this function.
+
+    Then follows the main body of the function documentation.
+    ```
+
+    #{View.Helper.comment("You can edit this prompt, as long you ensure the moduledoc is generated in a section named '#{@prompt_result_section_title}', as the contents of this section is used for the @moduledoc.")}
+
     """
     |> String.trim_trailing()
   end
@@ -31,6 +49,20 @@ defmodule Magma.Artefacts.ModuleDoc do
     """
     |> String.trim_trailing()
   end
+
+  @impl true
+  def version_prologue(%Artefact.Version{artefact: __MODULE__}) do
+    """
+    Ensure that the module documentation is under a "#{@prompt_result_section_title}" section, as the contents of this section is used for the `@moduledoc`.
+
+    Note, that the function docs are not used automatically. They are just suggestions for improvements and must be applied manually.
+    """
+    |> String.trim_trailing()
+    |> View.Helper.callout("caution")
+  end
+
+  @impl true
+  def trim_prompt_result_header?, do: false
 
   @impl true
   def relative_base_path(%Concept{subject: %Matter.Module{name: module} = matter}) do
@@ -53,18 +85,21 @@ defmodule Magma.Artefacts.ModuleDoc do
     path = version_path(mod)
 
     if File.exists?(path) do
-      path
-      |> File.read!()
-      |> String.split(~r{^\# }m, parts: 2)
-      |> case do
-        [_, stripped_content] ->
-          case String.split(stripped_content, "\n", parts: 2) do
-            [_, stripped_content] -> String.trim(stripped_content)
-            _ -> raise "invalid ModuleDoc artefact version document: #{path}"
-          end
-
-        _ ->
-          raise "invalid ModuleDoc artefact version document: #{path}"
+      with {:ok, document_struct} <-
+             path
+             |> File.read!()
+             |> Magma.DocumentStruct.parse() do
+        if section =
+             DocumentStruct.section_by_title(document_struct, @prompt_result_section_title) do
+          section
+          |> DocumentStruct.Section.to_string(header: false)
+          |> String.trim()
+        else
+          raise "invalid ModuleDoc artefact version document at #{path}: no '#{@prompt_result_section_title}' section found"
+        end
+      else
+        {:error, error} ->
+          raise "invalid ModuleDoc artefact version document at #{path}: #{inspect(error)}"
       end
     end
   end
