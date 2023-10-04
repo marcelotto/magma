@@ -146,7 +146,7 @@ defmodule Magma.DocumentStruct.ParserTest do
                          children: [],
                          format: "html",
                          string:
-                           "<!--\nThis section should include background knowledge needed for the model to create a proper response, i.e. information it does know either because of the knowledge cut-off date or unpublished knowledge.\n\nWrite it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.\n-->"
+                           "<!--\nThis section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.\n\nWrite it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.\n-->"
                        }
                      ],
                      header: %Panpipe.AST.Header{
