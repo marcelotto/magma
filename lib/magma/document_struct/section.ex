@@ -264,10 +264,12 @@ defmodule Magma.DocumentStruct.Section do
          {:ok, section} <- fetch_transcluded_content(document_struct, section_title) do
       case do_resolve_transclusions(section, [document_name | visited]) do
         {:transclusion_expansion, _, _} ->
-          {:error, "transclusion of transclusion sections are not allowed"}
+          raise "transclusion of transclusion sections are not allowed"
 
         resolved_section ->
-          set_level(resolved_section, level)
+          resolved_section
+          |> remove_comments()
+          |> set_level(level)
       end
     else
       {:error, error} ->
