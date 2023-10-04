@@ -96,15 +96,7 @@ defmodule Magma.Matter.Module do
     matter = new!(module)
 
     """
-    ##### `#{inspect(module)}`
-
-    ###### Description #{matter |> concept_name() |> View.Helper.transclude("Description")}
-
-    ###### Code
-
-    ```elixir
-    #{code(matter)}
-    ```
+    ##### `#{inspect(module)}` #{matter |> concept_name() |> View.Helper.transclude("Description")}
     """
   end
 
