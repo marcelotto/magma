@@ -53,12 +53,6 @@ defmodule Magma.PromptResultTest do
       assert result.path ==
                Vault.path("custom_prompts/__prompt_results__/#{result.name}.md")
     end
-
-    #    test "without created_at" do
-    #      prompt = module_doc_artefact_prompt()
-    #
-    #      assert PromptResult.new(prompt) == {:error, "missing attribute: :created_at"}
-    #    end
   end
 
   describe "create/1 (and re-load/1)" do
@@ -83,6 +77,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
@@ -147,6 +142,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
@@ -183,6 +179,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
@@ -221,6 +218,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{delete_current_file_button()}
 
                # Prompt result of '#{prompt.name}'
@@ -285,6 +283,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
@@ -320,6 +319,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
                #{delete_current_file_button()}
 
@@ -354,6 +354,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{delete_current_file_button()}
 
                # Prompt result of '#{prompt.name}'
@@ -386,6 +387,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{delete_current_file_button()}
 
                # Prompt result of '#{prompt.name}'
@@ -424,6 +426,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{PromptResult.controls(prompt_result)}
 
                # Generated ModuleDoc of Nested.Example
@@ -453,6 +456,7 @@ defmodule Magma.PromptResultTest do
 
       assert prompt_result.content ==
                """
+
                #{PromptResult.controls(prompt_result)}
 
                # Generated Some User Guide - Introduction (article section)

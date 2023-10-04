@@ -122,6 +122,7 @@ defmodule Magma.Prompt.Template do
 
   def controls(%Prompt{}) do
     """
+
     **Generated results**
 
     #{prompt_results_table()}
@@ -137,6 +138,7 @@ defmodule Magma.Prompt.Template do
 
   def controls(%Artefact.Prompt{} = prompt) do
     """
+
     **Generated results**
 
     #{prompt_results_table()}

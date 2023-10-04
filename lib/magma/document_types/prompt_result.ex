@@ -131,6 +131,7 @@ defmodule Magma.PromptResult do
 
   defp render(prompt_result, execution_result) do
     """
+
     #{controls(prompt_result)}
 
     # #{title(prompt_result)}

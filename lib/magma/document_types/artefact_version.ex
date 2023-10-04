@@ -128,7 +128,11 @@ defmodule Magma.Artefact.Version do
 
   defp prologue(%__MODULE__{artefact: artefact} = version) do
     if prologue = artefact.version_prologue(version) do
-      prologue <> "\n\n"
+      """
+
+      #{prologue}
+
+      """
     else
       ""
     end

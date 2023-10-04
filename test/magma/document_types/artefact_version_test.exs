@@ -102,6 +102,7 @@ defmodule Magma.Artefact.VersionTest do
 
       assert version.content ==
                """
+
                >[!caution]
                >Ensure that the module documentation is under a "Moduledoc" section, as the contents of this section is used for the `@moduledoc`.
                >
@@ -145,6 +146,7 @@ defmodule Magma.Artefact.VersionTest do
 
       assert version.content ==
                """
+
                #{button("Assemble sections", "magma.text.assemble", color: "blue")}
 
                # #{version.name}
