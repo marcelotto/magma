@@ -44,4 +44,11 @@ defmodule Magma.Matter.ModuleTest do
     assert Matter.Module.submodules(Nested) ==
              [Nested.Example]
   end
+
+  test "ignore?/1" do
+    assert Matter.Module.ignore?(Magma.DocumentStruct.Parser)
+    refute Matter.Module.ignore?(Matter.Module)
+    refute Matter.Module.ignore?(TopLevelExample)
+    refute Matter.Module.ignore?(Nested.Example)
+  end
 end

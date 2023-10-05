@@ -1,5 +1,7 @@
+# Magma pragma: include
+
 defmodule TopLevelExample do
-  use Magma
+  @moduledoc false
 
   def foo, do: :bar
 end

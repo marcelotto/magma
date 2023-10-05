@@ -30,6 +30,13 @@ defmodule Magma.Vault.CodeSyncTest do
                  |> Artefacts.ModuleDoc.prompt!()
                  |> Artefact.Prompt.load()
       end)
+
+      concept =
+        Magma.DocumentStruct.Parser
+        |> Matter.Module.new!()
+        |> Concept.new!()
+
+      refute File.exists?(concept.path)
     end
 
     test "when the vault not exists" do

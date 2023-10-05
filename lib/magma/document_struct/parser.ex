@@ -1,4 +1,6 @@
 defmodule Magma.DocumentStruct.Parser do
+  @moduledoc false
+
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
   alias Panpipe.AST.Header

@@ -155,4 +155,20 @@ defmodule Magma.Matter.Module do
   def code(path) when is_binary(path) do
     File.read!(path)
   end
+
+  @ignore_pragma "# Magma pragma: ignore"
+  @include_pragma "# Magma pragma: include"
+
+  def ignore?(module) do
+    if module_code = code(module) do
+      module_code = String.trim_leading(module_code)
+
+      String.starts_with?(module_code, @ignore_pragma) or
+        ((Regex.match?(~r/\s@moduledoc (false|nil)\s/, module_code) or
+            Regex.match?(~r/\s@moduledoc !"/, module_code)) and
+           not String.starts_with?(module_code, @include_pragma))
+    else
+      true
+    end
+  end
 end

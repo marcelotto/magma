@@ -80,7 +80,9 @@ defmodule Magma.Matter.Project do
 
   def modules do
     with {:ok, modules} <- :application.get_key(app_name(), :modules) do
-      Enum.map(modules, &Matter.Module.new!(&1))
+      modules
+      |> Enum.reject(&Matter.Module.ignore?/1)
+      |> Enum.map(&Matter.Module.new!(&1))
     end
   end
 end
