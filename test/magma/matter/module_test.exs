@@ -1,5 +1,5 @@
 defmodule Magma.Matter.ModuleTest do
-  use Magma.TestCase
+  use Magma.Vault.Case
 
   doctest Magma.Matter.Module
 
@@ -37,5 +37,11 @@ defmodule Magma.Matter.ModuleTest do
              Magma.Obsidian,
              Magma.Obsidian.View
            ]
+  end
+
+  @tag vault_files: ["concepts/modules/Nested/Nested.Example.md"]
+  test "submodules/1" do
+    assert Matter.Module.submodules(Nested) ==
+             [Nested.Example]
   end
 end

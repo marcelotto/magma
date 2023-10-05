@@ -53,6 +53,7 @@ defmodule Magma.Artefact.PromptTest do
   describe "create/1 (and re-load/1)" do
     @tag vault_files: [
            "concepts/modules/Nested/Nested.Example.md",
+           "concepts/modules/Nested/Example/Nested.Example.Sub.md",
            "concepts/Project.md",
            "plain/Document.md"
          ]
@@ -117,6 +118,8 @@ defmodule Magma.Artefact.PromptTest do
                #### Peripherally relevant modules
 
                ##### `Nested` ![[Nested#Description|]]
+
+               ##### `Nested.Example.Sub` ![[Nested.Example.Sub#Description|]]
 
                #### Some background knowledge
 

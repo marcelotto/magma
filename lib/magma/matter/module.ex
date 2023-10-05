@@ -58,6 +58,18 @@ defmodule Magma.Matter.Module do
     result
   end
 
+  def submodules(module) do
+    {:ok, path} = module |> Module.concat(X) |> new!() |> Concept.build_path()
+    module_path = Path.dirname(path)
+
+    if File.exists?(module_path) do
+      module_path
+      |> File.ls!()
+      |> Enum.filter(&(Path.extname(&1) == ".md"))
+      |> Enum.map(&Module.concat(Elixir, &1 |> Path.basename(".md") |> String.to_atom()))
+    end
+  end
+
   @impl true
   def concept_name(%__MODULE__{name: module}), do: inspect(module)
 
@@ -86,10 +98,16 @@ defmodule Magma.Matter.Module do
   end
 
   defp context_modules_knowledge(module) do
-    case context_modules(module) do
-      [Mix | _] -> []
-      context_module -> Enum.map_join(context_module, "\n", &context_module_knowledge/1)
-    end
+    context_modules =
+      case context_modules(module) do
+        # ignore modules for Mix tasks
+        [Mix | _] -> []
+        context_modules -> context_modules
+      end
+
+    submodules = module |> submodules() |> List.wrap()
+
+    Enum.map_join(context_modules ++ submodules, "\n", &context_module_knowledge/1)
   end
 
   defp context_module_knowledge(module) do
