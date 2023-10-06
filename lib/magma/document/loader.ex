@@ -1,7 +1,7 @@
 defmodule Magma.Document.Loader do
   @moduledoc false
 
-  alias Magma.{Document, Vault, Utils}
+  alias Magma.{Document, Vault, Utils, InvalidDocumentType}
   alias Magma.Document
 
   def load(%document_type{path: path} = _document) do
@@ -38,7 +38,7 @@ defmodule Magma.Document.Loader do
 
       {:ok, %unexpected_document_type{}} ->
         {:error,
-         Magma.InvalidDocumentType.exception(
+         InvalidDocumentType.exception(
            document: path,
            expected: document_type,
            actual: unexpected_document_type
@@ -56,7 +56,12 @@ defmodule Magma.Document.Loader do
       if document_type in types do
         document_type.load(name)
       else
-        {:error, "document #{name} has unexpected document type #{document_type}"}
+        {:error,
+         InvalidDocumentType.exception(
+           document: name,
+           expected: [types],
+           actual: document_type
+         )}
       end
     end
   end

@@ -43,7 +43,11 @@ defmodule Mix.Tasks.Magma.Text.Assemble do
     Assembler.assemble(version, opts)
   end
 
-  def assemble_toc(%invalid_document_type{name: name}, _) do
-    raise "#{name} has invalid document type #{inspect(invalid_document_type)}"
+  def assemble_toc(%invalid_document_type{path: path}, _) do
+    raise Magma.InvalidDocumentType.exception(
+            document: path,
+            expected: [Concept, Artefact.Version],
+            actual: invalid_document_type
+          )
   end
 end

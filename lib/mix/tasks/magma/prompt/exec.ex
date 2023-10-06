@@ -37,7 +37,11 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
               PromptResult.create(prompt, attrs, opts)
 
             {:ok, invalid_document} ->
-              raise "invalid document type of #{invalid_document.path}; must be a prompt document"
+              raise Magma.InvalidDocumentType.exception(
+                      document: invalid_document.path,
+                      expected: Magma.Prompt,
+                      actual: invalid_document.__struct__
+                    )
 
             {:error, error} ->
               raise error
