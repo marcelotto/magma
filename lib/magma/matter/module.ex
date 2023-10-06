@@ -164,11 +164,16 @@ defmodule Magma.Matter.Module do
       module_code = String.trim_leading(module_code)
 
       String.starts_with?(module_code, @ignore_pragma) or
-        ((Regex.match?(~r/\s@moduledoc (false|nil)\s/, module_code) or
-            Regex.match?(~r/\s@moduledoc !"/, module_code)) and
-           not String.starts_with?(module_code, @include_pragma))
+        (hidden?(module) and not String.starts_with?(module_code, @include_pragma))
     else
       true
     end
+  end
+
+  defp hidden?(module) do
+    match?(
+      {_docs_v1, _annotation, _beam_language, _format, :hidden, _metadata, _docs},
+      Code.fetch_docs(module)
+    )
   end
 end
