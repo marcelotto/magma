@@ -1,4 +1,6 @@
 defmodule Magma.Prompt.Assembler do
+  @moduledoc false
+
   alias Magma.{Prompt, DocumentStruct}
   alias Magma.DocumentStruct.Section
 

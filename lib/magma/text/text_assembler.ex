@@ -1,4 +1,6 @@
 defmodule Magma.Text.Assembler do
+  @moduledoc false
+
   alias Magma.{Concept, Matter, Artefact, Document, DocumentStruct}
   alias Magma.Text.Preview
   alias Magma.Artefacts.TableOfContents

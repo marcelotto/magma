@@ -1,4 +1,6 @@
 defmodule Magma.MixHelper do
+  @moduledoc !"Internal helper functions for Mix tasks"
+
   def with_valid_options(args, options_spec, fun) do
     case OptionParser.parse(args, strict: options_spec) do
       {opts, remaining, []} ->

@@ -1,4 +1,6 @@
 defmodule Magma.Utils do
+  @moduledoc !"Internal helper functions"
+
   @doc """
   Sets the field of a struct to a given value, unless it already has a value.
   """
