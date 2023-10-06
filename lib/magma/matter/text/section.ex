@@ -4,7 +4,7 @@ defmodule Magma.Matter.Text.Section do
   alias Magma.{Concept, Prompt}
   alias Magma.Matter.Text
   alias Magma.Artefacts.TableOfContents
-  alias Magma.Obsidian.View
+  alias Magma.View
 
   require Logger
 
@@ -39,7 +39,7 @@ defmodule Magma.Matter.Text.Section do
   @impl true
   def context_knowledge(%Concept{subject: %__MODULE__{main_text: main_text}}) do
     """
-    #### Outline of the '#{main_text.name}' content #{View.Helper.transclude(TableOfContents.name(main_text), :title)}
+    #### Outline of the '#{main_text.name}' content #{View.transclude(TableOfContents.name(main_text), :title)}
 
     """ <>
       case Concept.load(main_text.name) do
@@ -97,7 +97,7 @@ defmodule Magma.Matter.Text.Section do
   def render_front_matter(%__MODULE__{} = section) do
     """
     #{super(section)}
-    magma_section_of: "#{View.Helper.link_to(section.main_text)}"
+    magma_section_of: "#{View.link_to(section.main_text)}"
     """
     |> String.trim_trailing()
   end

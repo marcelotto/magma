@@ -1,4 +1,4 @@
-defmodule Magma.Obsidian.View.Helper do
+defmodule Magma.View do
   alias Magma.{Concept, PromptResult, Artefact, Text, DocumentStruct}
   alias Magma.DocumentStruct.Section
 

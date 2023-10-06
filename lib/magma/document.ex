@@ -1,6 +1,6 @@
 defmodule Magma.Document do
   alias Magma.Vault
-  alias Magma.Obsidian.View
+  alias Magma.View
 
   import Magma.Utils, only: [init_fields: 2]
 
@@ -128,8 +128,8 @@ defmodule Magma.Document do
     magma_type: #{type_name(document_type)}
     #{document_type.render_front_matter(document)}
     created_at: #{document.created_at}
-    tags: #{View.Helper.yaml_list(document.tags)}
-    aliases: #{View.Helper.yaml_list(document.aliases)}
+    tags: #{View.yaml_list(document.tags)}
+    aliases: #{View.yaml_list(document.aliases)}
     ---
     """
   end

@@ -1,7 +1,7 @@
 defmodule Magma.Prompt.Template do
   alias Magma.{Artefact, Prompt, Concept}
 
-  import Magma.Obsidian.View.Helper
+  import Magma.View
 
   @system_prompt_section_title "System prompt"
   def system_prompt_section_title, do: @system_prompt_section_title

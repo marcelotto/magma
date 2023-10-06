@@ -3,7 +3,7 @@ defmodule Magma.Artefact.Version do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, PromptResult, DocumentStruct}
+  alias Magma.{Vault, Artefact, Concept, PromptResult, DocumentStruct, View}
   alias Magma.DocumentStruct.Section
   alias Magma.Document.Loader
   alias Magma.Text.Preview
@@ -140,12 +140,10 @@ defmodule Magma.Artefact.Version do
 
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
-    import Magma.Obsidian.View.Helper
-
     """
     magma_artefact: #{Magma.Artefact.type_name(document.artefact)}
-    magma_concept: "#{link_to(document.concept)}"
-    magma_draft: "#{link_to(document.draft)}"
+    magma_concept: "#{View.link_to(document.concept)}"
+    magma_draft: "#{View.link_to(document.draft)}"
     """
     |> String.trim_trailing()
   end

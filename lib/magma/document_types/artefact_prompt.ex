@@ -3,7 +3,7 @@ defmodule Magma.Artefact.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Matter, Generation, Prompt, PromptResult}
+  alias Magma.{Vault, Artefact, Concept, Matter, Generation, Prompt, PromptResult, View}
   alias Magma.Prompt.Template
 
   @impl true
@@ -56,11 +56,9 @@ defmodule Magma.Artefact.Prompt do
 
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
-    import Magma.Obsidian.View.Helper
-
     """
     magma_artefact: #{Artefact.type_name(document.artefact)}
-    magma_concept: "#{link_to(document.concept)}"
+    magma_concept: "#{View.link_to(document.concept)}"
     #{Prompt.render_front_matter(document)}
     """
     |> String.trim_trailing()

@@ -3,7 +3,7 @@ defmodule Magma.Artefacts.TableOfContents do
 
   alias Magma.{Concept, Matter, Artefact}
 
-  import Magma.Obsidian.View.Helper
+  import Magma.View
 
   @impl true
   def name(concept), do: "#{concept.name} ToC"

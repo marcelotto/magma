@@ -1,9 +1,9 @@
-defmodule Magma.Obsidian.View.HelperTest do
+defmodule Magma.ViewTest do
   use Magma.Vault.Case, async: false
 
-  doctest Magma.Obsidian.View.Helper
+  doctest Magma.View
 
-  alias Magma.Obsidian.View.Helper
+  alias Magma.View
 
   alias Magma.{Concept, Document}
   alias Magma.DocumentStruct.Section
@@ -25,9 +25,9 @@ defmodule Magma.Obsidian.View.HelperTest do
 
       section = section(section_content)
 
-      assert Helper.include(section) == String.trim(section_content)
+      assert View.include(section) == String.trim(section_content)
 
-      assert Helper.include(section, "Bar") ==
+      assert View.include(section, "Bar") ==
                """
                ## Bar
 
@@ -35,7 +35,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(section, ["Bar"]) ==
+      assert View.include(section, ["Bar"]) ==
                """
                ## Bar
 
@@ -43,7 +43,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(section, nil, header: false) ==
+      assert View.include(section, nil, header: false) ==
                """
                <!--
                Some comment
@@ -55,7 +55,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(section, nil, level: 3) ==
+      assert View.include(section, nil, level: 3) ==
                """
                ### Foo
 
@@ -69,7 +69,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(section, nil, remove_comments: true) ==
+      assert View.include(section, nil, remove_comments: true) ==
                """
                # Foo
 
@@ -79,7 +79,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(section, nil, header: false, level: 2, remove_comments: true) ==
+      assert View.include(section, nil, header: false, level: 2, remove_comments: true) ==
                """
                ### Bar
 
@@ -105,9 +105,9 @@ defmodule Magma.Obsidian.View.HelperTest do
         """
         |> String.trim()
 
-      assert Helper.include(concept) == description
+      assert View.include(concept) == description
 
-      assert Helper.include(concept, :title) ==
+      assert View.include(concept, :title) ==
                """
                # `Nested.Example`
 
@@ -115,15 +115,15 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(concept, "Description") == description
+      assert View.include(concept, "Description") == description
 
-      assert Helper.include(concept, "Context knowledge") ==
+      assert View.include(concept, "Context knowledge") ==
                concept
                |> Concept.context_knowledge_section()
                |> Section.to_string()
                |> String.trim()
 
-      assert Helper.include(concept, "Some background knowledge") ==
+      assert View.include(concept, "Some background knowledge") ==
                """
                ## Some background knowledge
 
@@ -131,10 +131,10 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(concept, "Some background knowledge", header: false) ==
+      assert View.include(concept, "Some background knowledge", header: false) ==
                "Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod"
 
-      assert Helper.include(concept, nil, level: 1) ==
+      assert View.include(concept, nil, level: 1) ==
                """
                # Description
 
@@ -148,7 +148,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(concept, "Context knowledge",
+      assert View.include(concept, "Context knowledge",
                header: false,
                level: 3,
                remove_comments: true
@@ -188,12 +188,12 @@ defmodule Magma.Obsidian.View.HelperTest do
         """
         |> String.trim()
 
-      assert Helper.include(document) == body
+      assert View.include(document) == body
 
-      assert Helper.include(document, :title) == body
-      assert Helper.include(document, "Some User Guide ToC") == body
+      assert View.include(document, :title) == body
+      assert View.include(document, "Some User Guide ToC") == body
 
-      assert Helper.include(document, :all) ==
+      assert View.include(document, :all) ==
                """
                ``` button
                name Assemble sections
@@ -206,7 +206,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(document, "Introduction") ==
+      assert View.include(document, "Introduction") ==
                """
                ## Introduction
 
@@ -214,10 +214,10 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(document, "Introduction", header: false) ==
+      assert View.include(document, "Introduction", header: false) ==
                "Abstract: Abstract of the introduction."
 
-      assert Helper.include(document, nil, level: 3) ==
+      assert View.include(document, nil, level: 3) ==
                """
                ### Some User Guide ToC
 
@@ -235,7 +235,7 @@ defmodule Magma.Obsidian.View.HelperTest do
                """
                |> String.trim()
 
-      assert Helper.include(document, "Some User Guide ToC",
+      assert View.include(document, "Some User Guide ToC",
                header: false,
                level: 2,
                remove_comments: true

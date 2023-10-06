@@ -34,7 +34,7 @@ defmodule Magma.Matter.Text do
     """
     What should "#{name}" cover?
     """
-    |> View.Helper.comment()
+    |> View.comment()
   end
 
   @impl true
@@ -48,7 +48,7 @@ defmodule Magma.Matter.Text do
 
     # #{@sections_section_title}
 
-    #{View.Helper.comment("Don't remove or edit this section! The results of the generated table of contents will be copied to this place.")}
+    #{View.comment("Don't remove or edit this section! The results of the generated table of contents will be copied to this place.")}
 
 
     # Artefact previews
@@ -57,7 +57,7 @@ defmodule Magma.Matter.Text do
       Enum.map_join(
         Matter.Text.Section.artefacts(),
         "\n",
-        &"- #{View.Helper.link_to_preview({concept, &1})}"
+        &"- #{View.link_to_preview({concept, &1})}"
       )
   end
 

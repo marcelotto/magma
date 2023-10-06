@@ -3,7 +3,7 @@ defmodule Magma.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Generation, PromptResult}
+  alias Magma.{Vault, Generation, PromptResult, View}
   alias Magma.Matter.Project
   alias Magma.Prompt.Template
 
@@ -55,11 +55,9 @@ defmodule Magma.Prompt do
 
   @impl true
   def render_front_matter(%{generation: generation}) do
-    import Magma.Obsidian.View.Helper
-
     """
     magma_generation_type: #{inspect(Generation.short_name(generation))}
-    magma_generation_params: #{yaml_nested_map(generation)}
+    magma_generation_params: #{View.yaml_nested_map(generation)}
     """
     |> String.trim_trailing()
   end

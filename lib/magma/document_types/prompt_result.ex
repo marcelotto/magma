@@ -3,10 +3,9 @@ defmodule Magma.PromptResult do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Generation, Prompt}
+  alias Magma.{Vault, Artefact, Generation, Prompt, View}
   alias Magma.Document.Loader
 
-  import Magma.Obsidian.View.Helper
   import Magma.Utils, only: [init_field: 2, set_file_read_only: 1]
 
   require Logger
@@ -141,15 +140,15 @@ defmodule Magma.PromptResult do
   end
 
   def controls(%__MODULE__{prompt: %Prompt{}}) do
-    delete_current_file_button()
+    View.delete_current_file_button()
   end
 
   def controls(%__MODULE__{prompt: %Artefact.Prompt{}} = prompt_result) do
     """
-    #{button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
-    #{delete_current_file_button()}
+    #{View.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
+    #{View.delete_current_file_button()}
 
-    Final version: #{link_to_version(prompt_result)}
+    Final version: #{View.link_to_version(prompt_result)}
     """
     |> String.trim_trailing()
   end
@@ -157,9 +156,9 @@ defmodule Magma.PromptResult do
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
     """
-    magma_prompt: "#{link_to(document.prompt)}"
+    magma_prompt: "#{View.link_to(document.prompt)}"
     magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
-    magma_generation_params: #{yaml_nested_map(document.generation)}
+    magma_generation_params: #{View.yaml_nested_map(document.generation)}
     """
     |> String.trim_trailing()
   end

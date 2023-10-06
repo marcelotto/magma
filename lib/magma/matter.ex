@@ -46,7 +46,7 @@ defmodule Magma.Matter do
     quote do
       @behaviour Magma.Matter
 
-      alias Magma.Obsidian.View
+      alias Magma.View
 
       defstruct Magma.Matter.fields() ++ unquote(additional_fields)
 

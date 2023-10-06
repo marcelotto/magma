@@ -64,7 +64,7 @@ defmodule Magma.Matter.Project do
     What is the #{name} project about?
     """
     |> String.trim_trailing()
-    |> View.Helper.comment()
+    |> View.comment()
   end
 
   @impl true

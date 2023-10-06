@@ -5,7 +5,7 @@ defmodule Magma.PromptResultTest do
 
   alias Magma.{Prompt, PromptResult, Artefact, Generation}
 
-  import Magma.Obsidian.View.Helper
+  import Magma.View
 
   describe "new/1" do
     test "ModuleDoc artefact prompt" do

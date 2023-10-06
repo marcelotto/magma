@@ -1,7 +1,7 @@
 defmodule Magma.Concept.Template do
   alias Magma.Concept
 
-  import Magma.Obsidian.View.Helper
+  import Magma.View
 
   def render(%Concept{subject: %matter_type{} = matter} = concept, assigns) do
     """

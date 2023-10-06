@@ -32,10 +32,10 @@ defmodule Magma.Matter.ModuleTest do
              Magma.DocumentStruct
            ]
 
-    assert Matter.Module.context_modules(Magma.Obsidian.View.Helper) == [
+    assert Matter.Module.context_modules(Magma.Matter.Text.Section) == [
              Magma,
-             Magma.Obsidian,
-             Magma.Obsidian.View
+             Magma.Matter,
+             Magma.Matter.Text
            ]
   end
 

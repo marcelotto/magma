@@ -7,7 +7,7 @@ defmodule Magma.Artefact.VersionTest do
   alias Magma.Artefacts.{ModuleDoc, Article}
   alias Magma.Text.Preview
 
-  import Magma.Obsidian.View.Helper
+  import Magma.View
   import ExUnit.CaptureLog
 
   describe "new/1" do

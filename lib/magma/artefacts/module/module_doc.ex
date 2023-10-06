@@ -2,7 +2,7 @@ defmodule Magma.Artefacts.ModuleDoc do
   use Magma.Artefact, matter: Magma.Matter.Module
 
   alias Magma.{Artefact, Concept, Matter, DocumentStruct}
-  alias Magma.Obsidian.View
+  alias Magma.View
 
   import Magma.Utils.Guards
 
@@ -36,7 +36,7 @@ defmodule Magma.Artefacts.ModuleDoc do
     Then follows the main body of the function documentation.
     ```
 
-    #{View.Helper.comment("You can edit this prompt, as long you ensure the moduledoc is generated in a section named '#{@prompt_result_section_title}', as the contents of this section is used for the @moduledoc.")}
+    #{View.comment("You can edit this prompt, as long you ensure the moduledoc is generated in a section named '#{@prompt_result_section_title}', as the contents of this section is used for the @moduledoc.")}
 
     """
     |> String.trim_trailing()
@@ -58,7 +58,7 @@ defmodule Magma.Artefacts.ModuleDoc do
     Note, that the function docs are not used automatically. They are just suggestions for improvements and must be applied manually.
     """
     |> String.trim_trailing()
-    |> View.Helper.callout("caution")
+    |> View.callout("caution")
   end
 
   @impl true

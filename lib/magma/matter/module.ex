@@ -84,7 +84,7 @@ defmodule Magma.Matter.Module do
     Your knowledge about the module, i.e. facts, problems and properties etc.
     """
     |> String.trim_trailing()
-    |> View.Helper.comment()
+    |> View.comment()
   end
 
   @impl true
@@ -114,7 +114,7 @@ defmodule Magma.Matter.Module do
     matter = new!(module)
 
     """
-    ##### `#{inspect(module)}` #{matter |> concept_name() |> View.Helper.transclude("Description")}
+    ##### `#{inspect(module)}` #{matter |> concept_name() |> View.transclude("Description")}
     """
   end
 

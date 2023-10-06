@@ -2,7 +2,7 @@ defmodule Magma.Text.Assembler do
   alias Magma.{Concept, Matter, Artefact, Document, DocumentStruct}
   alias Magma.Text.Preview
   alias Magma.Artefacts.TableOfContents
-  alias Magma.Obsidian.View
+  alias Magma.View
 
   import Magma.Utils, only: [map_while_ok: 2, flat_map_while_ok: 2]
 
@@ -68,7 +68,7 @@ defmodule Magma.Text.Assembler do
                  section_concept_name = Matter.Text.Section.concept_name(section_matter)
 
                  """
-                 ## #{View.Helper.link_to(section_concept_name, section_matter.name)} #{View.Helper.transclude(section_concept_name, Concept.description_section_title())}
+                 ## #{View.link_to(section_concept_name, section_matter.name)} #{View.transclude(section_concept_name, Concept.description_section_title())}
                  """
                end)
            ) do

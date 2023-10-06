@@ -3,8 +3,7 @@ defmodule Magma.Text.Preview do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Concept, Matter, Artefact}
-  alias Magma.Obsidian.View
+  alias Magma.{Vault, Concept, Matter, Artefact, View}
 
   import Magma.Utils, only: [map_while_ok: 2]
 
@@ -77,7 +76,7 @@ defmodule Magma.Text.Preview do
   def render_front_matter(%__MODULE__{} = document) do
     """
     magma_artefact: #{Artefact.type_name(document.artefact)}
-    magma_concept: "#{View.Helper.link_to(document.concept)}"
+    magma_concept: "#{View.link_to(document.concept)}"
     """
     |> String.trim_trailing()
   end
@@ -112,7 +111,7 @@ defmodule Magma.Text.Preview do
   end
 
   def prologue do
-    View.Helper.button("Finalize", "magma.text.finalize", color: "blue")
+    View.button("Finalize", "magma.text.finalize", color: "blue")
   end
 
   defp extract_concept_toc(section) do
@@ -139,7 +138,7 @@ defmodule Magma.Text.Preview do
   defp version_section_transclusion(preview, concept_name) do
     with {:ok, concept} <- Concept.load(concept_name) do
       {:ok,
-       "## #{Concept.title(concept)} #{View.Helper.transclude_version({concept, preview.artefact}, :title)}"}
+       "## #{Concept.title(concept)} #{View.transclude_version({concept, preview.artefact}, :title)}"}
     end
   end
 
