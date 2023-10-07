@@ -31,17 +31,20 @@ defmodule Magma.DocumentStruct do
   end
 
   def main_section(%{sections: [%Section{} = main_section | _]}), do: main_section
+  def main_section(%{sections: []}), do: nil
 
   def title(document) do
-    String.trim(main_section(document).title)
-  end
-
-  def ast(%{sections: sections}, opts \\ []) do
-    Enum.flat_map(sections, &Section.ast(&1, opts))
+    if main_section = main_section(document) do
+      String.trim(main_section.title)
+    end
   end
 
   def to_string(%{prologue: prologue} = document) do
     %Panpipe.Document{children: prologue ++ ast(document)}
     |> Panpipe.Pandoc.Conversion.convert(to: @pandoc_extension, wrap: "none")
+  end
+
+  defp ast(%{sections: sections}, opts \\ []) do
+    Enum.flat_map(sections, &Section.ast(&1, opts))
   end
 end
