@@ -83,7 +83,6 @@ defmodule Magma.Matter.Module do
 
     Your knowledge about the module, i.e. facts, problems and properties etc.
     """
-    |> String.trim_trailing()
     |> View.comment()
   end
 

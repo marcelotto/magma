@@ -110,7 +110,7 @@ defmodule Magma.View do
   def comment(text) do
     """
     <!--
-    #{text}
+    #{String.trim_trailing(text)}
     -->
     """
     |> String.trim_trailing()

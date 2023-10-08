@@ -157,7 +157,6 @@ defmodule Magma.ConceptTest do
 
                <!--
                What should "Some User Guide" cover?
-
                -->
 
 

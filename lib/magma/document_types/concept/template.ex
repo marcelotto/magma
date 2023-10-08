@@ -31,7 +31,6 @@ defmodule Magma.Concept.Template do
 
     Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
     """
-    |> String.trim_trailing()
     |> comment()
   end
 
