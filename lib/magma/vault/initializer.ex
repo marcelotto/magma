@@ -1,4 +1,6 @@
 defmodule Magma.Vault.Initializer do
+  @moduledoc false
+
   alias Magma.Vault
   alias Magma.Vault.{BaseVault, CodeSync}
   alias Magma.Matter.Project
@@ -46,7 +48,7 @@ defmodule Magma.Vault.Initializer do
     |> Concept.create()
   end
 
-  def create_custom_prompt_template(project) do
+  defp create_custom_prompt_template(project) do
     prompt =
       "default"
       |> Prompt.new!(generation: Generation.default().new!())

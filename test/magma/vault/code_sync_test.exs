@@ -16,7 +16,7 @@ defmodule Magma.Vault.CodeSyncTest do
         Magma,
         Magma.Vault,
         Magma.Concept,
-        Magma.Vault.CodeSync
+        Magma.DocumentStruct.Section
       ]
       |> Enum.each(fn module ->
         assert {:ok, %Concept{} = concept} =

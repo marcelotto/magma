@@ -1,4 +1,6 @@
 defmodule Magma.Vault.CodeSync do
+  @moduledoc false
+
   alias Magma.Matter.Project
   alias Magma.{Vault, Concept, Artefacts}
 
