@@ -4,7 +4,7 @@ defmodule Magma.Vault.InitializerTest do
   doctest Magma.Vault.Initializer
 
   alias Magma.Vault.Initializer
-  alias Magma.{Concept, Matter, Artefact}
+  alias Magma.{Concept, Matter}
 
   describe "initialize/0" do
     test "copies the base Obsidian vault and creates concepts for the project and modules" do
@@ -37,22 +37,6 @@ defmodule Magma.Vault.InitializerTest do
     test "when the vault already exists" do
       File.mkdir(Vault.path())
       assert Initializer.initialize("foo") == {:error, :vault_already_existing}
-    end
-  end
-
-  describe "create_text/2" do
-    @tag vault_files: ["concepts/Project.md"]
-    test "creates concept and artefact prompts" do
-      text_name = "Example Guide"
-      refute Vault.document_path(text_name)
-
-      assert {:ok, %Concept{} = concept} =
-               Initializer.create_text(text_name, Matter.Texts.UserGuide)
-
-      assert {:ok, ^concept} = Concept.load(text_name)
-
-      assert {:ok, %Artefact.Prompt{}} =
-               Artefact.Prompt.load("Prompt for #{text_name} ToC")
     end
   end
 end

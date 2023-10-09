@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Magma.Text.New do
 
   import Magma.MixHelper
 
-  alias Magma.Vault.Initializer
+  alias Magma.Text
 
   @options []
 
@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Magma.Text.New do
         Mix.shell().error("text_type and/or name missing")
 
       _opts, [text_type_name, text_name] ->
-        case Initializer.create_text(text_name, text_type_name) do
+        case Text.create(text_name, text_type_name) do
           {:ok, _} -> :ok
           {:error, error} -> raise error
         end
