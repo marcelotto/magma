@@ -287,11 +287,11 @@ defmodule Magma.DocumentStruct.Section do
         DocumentStruct.parse(document.content)
 
       {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->
-        with {:ok, _metadata, body} <-
+        with {:ok, body} <-
                document_name
                # We can assume here that the file exists, because the initial loader has found the file already
                |> Vault.document_path()
-               |> YamlFrontMatter.parse_file() do
+               |> File.read() do
           DocumentStruct.parse(body)
         end
 
