@@ -4,6 +4,8 @@ defmodule Magma.Document.Loader do
   alias Magma.{Document, Vault, Utils, InvalidDocumentType}
   alias Magma.Document
 
+  import Magma.Utils.Guards
+
   def load(%document_type{path: path} = _document) do
     load(document_type, path)
   end
@@ -79,6 +81,23 @@ defmodule Magma.Document.Loader do
     case Map.pop(metadata, :magma_type) do
       {nil, _} -> {:error, :magma_type_missing}
       {magma_type, metadata} -> {:ok, Document.type(magma_type), metadata}
+    end
+  end
+
+  def with_prompt(prompt_name, fun) do
+    case load(prompt_name) do
+      {:ok, prompt} when is_prompt(prompt) ->
+        fun.(prompt)
+
+      {:ok, invalid_document} ->
+        raise InvalidDocumentType.exception(
+                document: invalid_document.path,
+                expected: [Magma.Prompt, Magma.Artefact.Prompt],
+                actual: invalid_document.__struct__
+              )
+
+      {:error, error} ->
+        raise error
     end
   end
 

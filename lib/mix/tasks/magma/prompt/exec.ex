@@ -5,7 +5,6 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
   use Mix.Task
 
   import Magma.MixHelper
-  import Magma.Utils.Guards
 
   alias Magma.{Generation, PromptResult}
   alias Magma.Document.Loader
@@ -32,20 +31,7 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
           end
 
         {:ok, _} =
-          case Loader.load(prompt_name) do
-            {:ok, prompt} when is_prompt(prompt) ->
-              PromptResult.create(prompt, attrs, opts)
-
-            {:ok, invalid_document} ->
-              raise Magma.InvalidDocumentType.exception(
-                      document: invalid_document.path,
-                      expected: Magma.Prompt,
-                      actual: invalid_document.__struct__
-                    )
-
-            {:error, error} ->
-              raise error
-          end
+          Loader.with_prompt(prompt_name, &PromptResult.create(&1, attrs, opts))
     end)
   end
 end

@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Magma.Prompt.Copy do
 
   import Magma.MixHelper
 
-  alias Magma.Artefact
+  alias Magma.Document.Loader
   alias Magma.Prompt.Assembler
 
   @options []
@@ -19,9 +19,7 @@ defmodule Mix.Tasks.Magma.Prompt.Copy do
         Mix.shell().error("prompt name or path missing")
 
       _opts, [prompt_name] ->
-        prompt_name
-        |> Artefact.Prompt.load!()
-        |> Assembler.copy_to_clipboard()
+        Loader.with_prompt(prompt_name, &Assembler.copy_to_clipboard/1)
     end)
   end
 end
