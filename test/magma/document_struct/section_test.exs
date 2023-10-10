@@ -1133,6 +1133,74 @@ defmodule Magma.DocumentStruct.SectionTest do
     end
   end
 
+  describe "resolve_links/1" do
+    test "unstyled" do
+      assert """
+             # `Some.DocumentWithLinks`
+
+             This is a section with an [[embedded internal link]].
+
+             [[A single link paragraph]]
+
+             ## Some special kinds of links
+
+             - [[Link with|Alternative Title]]
+             - [[Link to#Section]]
+             - [[Link to#^block]]
+
+             """
+             |> section()
+             |> Section.resolve_links()
+             |> Section.to_string() ==
+               """
+               # `Some.DocumentWithLinks`
+
+               This is a section with an embedded internal link.
+
+               A single link paragraph
+
+               ## Some special kinds of links
+
+               -   Alternative Title
+               -   Link to#Section
+               -   Link to#\\^block
+               """
+    end
+
+    test "styled" do
+      assert """
+             # `Some.DocumentWithLinks`
+
+             This is a section with an [[embedded internal link]].
+
+             [[A single link paragraph]]
+
+             ## Some special kinds of links
+
+             - [[Link with|Alternative Title]]
+             - [[Link to#Section]]
+             - [[Link to#^block]]
+
+             """
+             |> section()
+             |> Section.resolve_links(style: :emph)
+             |> Section.to_string() ==
+               """
+               # `Some.DocumentWithLinks`
+
+               This is a section with an *embedded internal link*.
+
+               *A single link paragraph*
+
+               ## Some special kinds of links
+
+               -   *Alternative Title*
+               -   *Link to#Section*
+               -   *Link to#\\^block*
+               """
+    end
+  end
+
   test "remove_comments/1" do
     assert """
            # `Some.DocumentWithComments`

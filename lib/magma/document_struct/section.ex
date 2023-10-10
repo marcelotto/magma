@@ -7,6 +7,8 @@ defmodule Magma.DocumentStruct.Section do
 
   require Logger
 
+  @default_link_resolution_style :plain
+
   def new(%Header{level: level} = header, content, sections) do
     %__MODULE__{
       title: header_title(header),
@@ -337,6 +339,41 @@ defmodule Magma.DocumentStruct.Section do
 
   defp trim_leading_ast([%Panpipe.AST.Space{} | rest]), do: trim_leading_ast(rest)
   defp trim_leading_ast(ast), do: ast
+
+  def resolve_links(%__MODULE__{} = section, opts \\ []) do
+    do_resolve_links(
+      section,
+      opts
+      |> Keyword.get(:style)
+      |> link_resolution_style()
+    )
+  end
+
+  defp do_resolve_links(section, style) do
+    %__MODULE__{
+      section
+      | content: Enum.map(section.content, &transform_links(&1, style)),
+        sections: Enum.map(section.sections, &do_resolve_links(&1, style))
+    }
+  end
+
+  defp transform_links(ast, style) do
+    Panpipe.transform(ast, fn
+      %Panpipe.AST.Link{title: "wikilink", children: children} -> style.(children)
+      _ -> nil
+    end)
+  end
+
+  defp link_resolution_style(nil), do: default_link_resolution_style() |> link_resolution_style()
+  defp link_resolution_style(:plain), do: & &1
+  defp link_resolution_style(:emph), do: &%Panpipe.AST.Emph{children: &1}
+  defp link_resolution_style(:strong), do: &%Panpipe.AST.Strong{children: &1}
+  defp link_resolution_style(:underline), do: &%Panpipe.AST.Underline{children: &1}
+  defp link_resolution_style(fun) when is_function(fun), do: fun
+
+  defp default_link_resolution_style do
+    Application.get_env(:magma, :link_resolution_style, @default_link_resolution_style)
+  end
 
   def remove_comments(%__MODULE__{} = section) do
     %__MODULE__{
