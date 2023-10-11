@@ -55,6 +55,7 @@ defmodule Magma.Prompt.Assembler do
   defp compile(section) do
     section
     |> Section.resolve_transclusions()
+    |> Section.resolve_links()
     |> Section.remove_comments()
     |> Section.to_string(header: false, level: 0)
   end

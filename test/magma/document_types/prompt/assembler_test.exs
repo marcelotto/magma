@@ -111,6 +111,33 @@ defmodule Magma.Prompt.AssemblerTest do
                }
     end
 
+    test "links are resolved", %{vault_files: [prompt_file | _]} do
+      prompt =
+        prompt_file
+        |> Vault.path()
+        |> Artefact.Prompt.load!()
+        |> Map.update!(
+          :content,
+          &(&1 <>
+              """
+
+              [[Some link]]
+
+              """)
+        )
+
+      assert Assembler.assemble_parts(prompt) ==
+               {
+                 :ok,
+                 "You are an assistent for writing Elixir moduledocs.\n",
+                 """
+                 Generate a moduledoc for `Nested.Example`.
+
+                 Some link
+                 """
+               }
+    end
+
     test "comments are not rendered", %{vault_files: [prompt_file | _]} do
       prompt =
         prompt_file
