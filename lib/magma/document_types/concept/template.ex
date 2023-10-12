@@ -16,7 +16,7 @@ defmodule Magma.Concept.Template do
 
     #{context_knowledge_hint()}
 
-    #{matter_type.custom_sections(concept)}
+    #{matter_type.custom_concept_sections(concept)}
 
 
     # Artefacts

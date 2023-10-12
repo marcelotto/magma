@@ -43,7 +43,7 @@ defmodule Magma.Matter.Text do
   end
 
   @impl true
-  def custom_sections(%Concept{} = concept) do
+  def custom_concept_sections(%Concept{} = concept) do
     """
 
     # #{@sections_section_title}
