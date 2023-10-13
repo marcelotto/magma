@@ -392,6 +392,18 @@ defmodule Magma.DocumentStruct.SectionTest do
       assert capture_log(fn ->
                assert Section.resolve_transclusions(section) == section
              end) =~ "failed to load [[Nested.Example]] during resolution"
+
+      section =
+        """
+        ## Example title
+
+        ### ![[Nested.Example]]
+        """
+        |> section()
+
+      assert capture_log(fn ->
+               assert Section.resolve_transclusions(section) == section
+             end) =~ "failed to load [[Nested.Example]] during resolution"
     end
 
     @describetag vault_files: [
@@ -400,7 +412,7 @@ defmodule Magma.DocumentStruct.SectionTest do
                    "concepts/Project.md"
                  ]
 
-    test "document transclusion" do
+    test "inline transclusion" do
       assert """
              ## Example title
 
@@ -417,13 +429,11 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Foo:
 
-               ### Some project
-
-               #### Description
+               ### Description
 
                This is the project description.
 
-               #### Knowledge Base
+               ### Knowledge Base
                """
 
       assert """
@@ -441,9 +451,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Foo:
 
-               ### `Nested.Example`
-
-               #### Description
+               ### Description
 
                This is an example description of the module:
 
@@ -452,15 +460,13 @@ defmodule Magma.DocumentStruct.SectionTest do
                -   x
                -   y
                """
-    end
 
-    test "section transclusion" do
       assert """
              ## Example title
 
              Foo:
 
-             ![[Project#Description|]]
+             ![[Nested.Example#Description|]]
 
              """
              |> section()
@@ -471,9 +477,12 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Foo:
 
-               ### Description
+               This is an example description of the module:
 
-               This is the project description.
+               Module `Nested.Example` does:
+
+               -   x
+               -   y
                """
 
       assert """
@@ -482,6 +491,8 @@ defmodule Magma.DocumentStruct.SectionTest do
              Foo:
 
              ![[Nested.Example#Notes]]
+
+             This text should appear at the end of the transcluded content.
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -491,13 +502,57 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Foo:
 
-               ### Notes
-
-               #### Example note
+               ### Example note
 
                Here we have an example note with some text.
 
                ------------------------------------------------------------------------
+
+               This text should appear at the end of the transcluded content.
+               """
+    end
+
+    test "multiple inline transclusions" do
+      assert """
+             ## Example title
+
+             ![[Project]]
+
+             Foo:
+
+             ![[Nested.Example|]]
+
+             ![[Nested.Example#Description|]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Description
+
+               This is the project description.
+
+               ### Knowledge Base
+
+               Foo:
+
+               ### Description
+
+               This is an example description of the module:
+
+               Module `Nested.Example` does:
+
+               -   x
+               -   y
+
+               This is an example description of the module:
+
+               Module `Nested.Example` does:
+
+               -   x
+               -   y
                """
     end
 
@@ -598,11 +653,13 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Foo:
 
-               ### Description
+               ### Some project
+
+               #### Description
 
                This is the project description.
 
-               ### Knowledge Base
+               #### Knowledge Base
                """
 
       assert """
@@ -619,6 +676,8 @@ defmodule Magma.DocumentStruct.SectionTest do
                ## Example title
 
                Foo:
+
+               ### Description
 
                This is an example description of the module:
 
@@ -647,6 +706,8 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                bar
 
+               ### Description
+
                This is an example description of the module:
 
                Module `Nested.Example` does:
@@ -660,7 +721,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
              Foo:
 
-             #### ![[Nested.Example#Notes]]
+             ### ![[Nested.Example#Notes]]
 
              This text should appear at the end of the transcluded content.
              """
@@ -672,6 +733,8 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                Foo:
 
+               ### Notes
+
                #### Example note
 
                Here we have an example note with some text.
@@ -680,32 +743,38 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                This text should appear at the end of the transcluded content.
                """
-    end
 
-    test "empty header transclusion on the top-level" do
-      assert_raise Magma.TopLevelEmptyHeaderTransclusionError, fn ->
-        """
-        ## ![[Project]]
-        """
-        |> section()
-        |> Section.resolve_transclusions() == {:error}
-      end
+      assert """
+             # ![[Project]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               # Some project
 
-      assert_raise Magma.TopLevelEmptyHeaderTransclusionError, fn ->
-        """
-        # ![[Project]]
-        """
-        |> section()
-        |> Section.resolve_transclusions() == {:error}
-      end
+               ## Description
 
-      assert_raise Magma.TopLevelEmptyHeaderTransclusionError, fn ->
-        """
-        ## ![[Nested.Example#Notes]]
-        """
-        |> section()
-        |> Section.resolve_transclusions()
-      end
+               This is the project description.
+
+               ## Knowledge Base
+               """
+
+      assert """
+             ## ![[Nested.Example#Notes]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Notes
+
+               ### Example note
+
+               Here we have an example note with some text.
+
+               ------------------------------------------------------------------------
+               """
     end
 
     test "custom header transclusion with empty content" do
@@ -746,12 +815,30 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
-    @tag vault_files: "plain/Document.md"
+    @tag vault_files: ["plain/Document.md"]
     test "plain Markdown documents" do
       assert """
              ## Example title
 
              ![[Document]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               ### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ### ![[Document]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -799,11 +886,9 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
                ## Example title
 
-               ### Title
-
                This is an ordinary Markdown document, i.e. a document without a `magma_type`.
 
-               #### Section
+               ### Section
 
                Deserunt amet velit consequat exercitation cillum nisi nisi.
                """
@@ -829,12 +914,95 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
     end
 
+    @tag vault_files: ["plain/DocumentWithPrologue.md"]
+    test "plain Markdown document with prologue" do
+      assert """
+             ## Example title
+
+             ![[DocumentWithPrologue]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               This prologue will be ignored on header transclusions.
+
+               ### Title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ### ![[DocumentWithPrologue]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ### Alt. title ![[DocumentWithPrologue]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               ### Alt. title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               #### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+    end
+
     @tag vault_files: "plain/DocumentWithoutFrontmatter.md"
     test "plain Markdown documents without frontmatter" do
       assert """
              ## Example title
 
              ![[DocumentWithoutFrontmatter]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               ### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+               """
+
+      assert """
+             ## Example title
+
+             ### ![[DocumentWithoutFrontmatter]]
              """
              |> section()
              |> Section.resolve_transclusions()
@@ -882,11 +1050,9 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
                ## Example title
 
-               ### Title
-
                This is an ordinary Markdown document, i.e. a document without a `magma_type`.
 
-               #### Section
+               ### Section
 
                Deserunt amet velit consequat exercitation cillum nisi nisi.
                """
@@ -925,11 +1091,33 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
                ## Example title
 
+               This is an ordinary Markdown document, i.e. a document without a `magma_type`.
+
+               ### Section
+
+               Deserunt amet velit consequat exercitation cillum nisi nisi.
+
+               ### Reference
+
+               This is another top-level section.
+               """
+
+      assert """
+             ## Example title
+
+             ### ![[DocumentWithMultipleMainSections]]
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
                ### Title
 
                This is an ordinary Markdown document, i.e. a document without a `magma_type`.
 
-               ##### Section
+               #### Section
 
                Deserunt amet velit consequat exercitation cillum nisi nisi.
 
@@ -953,7 +1141,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                This is an ordinary Markdown document, i.e. a document without a `magma_type`.
 
-               ##### Section
+               #### Section
 
                Deserunt amet velit consequat exercitation cillum nisi nisi.
 
@@ -973,11 +1161,9 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
                ## Example title
 
-               ### Title
-
                This is an ordinary Markdown document, i.e. a document without a `magma_type`.
 
-               #### Section
+               ### Section
 
                Deserunt amet velit consequat exercitation cillum nisi nisi.
                """
@@ -1014,11 +1200,26 @@ defmodule Magma.DocumentStruct.SectionTest do
                """
                ## Example title
 
+               This is the project description.
+               """
+
+      assert """
+             ## Example title
+
+             ### ![[Project#Description]]
+
+             ### ![[Project#Knowledge Base]]
+
+             """
+             |> section()
+             |> Section.resolve_transclusions()
+             |> Section.to_string() ==
+               """
+               ## Example title
+
                ### Description
 
                This is the project description.
-
-               ### Knowledge Base
                """
     end
 
@@ -1026,7 +1227,7 @@ defmodule Magma.DocumentStruct.SectionTest do
       assert """
              ## Example title
 
-             ![[Some.DocumentWithTransclusion]]
+             ### ![[Some.DocumentWithTransclusion]]
 
              """
              |> section()
@@ -1042,8 +1243,6 @@ defmodule Magma.DocumentStruct.SectionTest do
                This is an example description of the module:
 
                `Nested.Example` is relevant so we include its description
-
-               ##### Description
 
                This is an example description of the module:
 

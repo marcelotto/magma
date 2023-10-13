@@ -23,15 +23,3 @@ defmodule Magma.InvalidDocumentType do
     "invalid document type of #{document}: expected #{inspect(expected)}, but got #{inspect(actual)}"
   end
 end
-
-defmodule Magma.TopLevelEmptyHeaderTransclusionError do
-  @moduledoc """
-  Raised when an empty header transclusion on the outermost section is resolved,
-  which is not supported, since it might expand to multiple sections and section-less content.
-  """
-  defexception []
-
-  def message(_) do
-    "empty header transclusions are not allowed on the top-level section"
-  end
-end

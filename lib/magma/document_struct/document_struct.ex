@@ -7,7 +7,6 @@ defmodule Magma.DocumentStruct do
    %{
      enable: [:wikilinks_title_after_pipe],
      disable: [
-       :yaml_metadata_block,
        :multiline_tables,
        :smart,
        # for unknown reasons Pandoc sometimes generates header attributes where there should be none, when this is enabled
@@ -46,5 +45,33 @@ defmodule Magma.DocumentStruct do
 
   defp ast(%{sections: sections}, opts \\ []) do
     Enum.flat_map(sections, &Section.ast(&1, opts))
+  end
+
+  def set_level(%__MODULE__{} = document_struct, level) do
+    %__MODULE__{
+      document_struct
+      | sections: Enum.map(document_struct.sections, &Section.set_level(&1, level))
+    }
+  end
+
+  def resolve_transclusions(%__MODULE__{} = document_struct, visited \\ []) do
+    {new_content, new_sections} =
+      Section.resolve_inline_transclusions(document_struct.prologue, 1, visited)
+
+    %__MODULE__{
+      document_struct
+      | prologue: new_content,
+        sections:
+          new_sections ++
+            Enum.map(document_struct.sections, &Section.resolve_transclusions(&1, visited))
+    }
+  end
+
+  def remove_comments(%__MODULE__{} = document_struct) do
+    %__MODULE__{
+      document_struct
+      | prologue: Section.remove_comments(document_struct.prologue),
+        sections: Enum.map(document_struct.sections, &Section.remove_comments/1)
+    }
   end
 end
