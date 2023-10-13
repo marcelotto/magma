@@ -2,6 +2,7 @@ defmodule Magma.DocumentStruct do
   defstruct [:prologue, :sections]
 
   alias Magma.DocumentStruct.{Section, Parser}
+  alias Magma.DocumentStruct.TransclusionResolution
 
   @pandoc_extension {:markdown,
    %{
@@ -54,19 +55,6 @@ defmodule Magma.DocumentStruct do
     }
   end
 
-  def resolve_transclusions(%__MODULE__{} = document_struct, visited \\ []) do
-    {new_content, new_sections} =
-      Section.resolve_inline_transclusions(document_struct.prologue, 1, visited)
-
-    %__MODULE__{
-      document_struct
-      | prologue: new_content,
-        sections:
-          new_sections ++
-            Enum.map(document_struct.sections, &Section.resolve_transclusions(&1, visited))
-    }
-  end
-
   def remove_comments(%__MODULE__{} = document_struct) do
     %__MODULE__{
       document_struct
@@ -74,4 +62,6 @@ defmodule Magma.DocumentStruct do
         sections: Enum.map(document_struct.sections, &Section.remove_comments/1)
     }
   end
+
+  defdelegate resolve_transclusions(document_struct), to: TransclusionResolution
 end
