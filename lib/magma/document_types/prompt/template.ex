@@ -70,7 +70,7 @@ defmodule Magma.Prompt.Template do
 
     ## #{@request_prompt_section_title}
 
-    ### #{transclude(concept, artefact_type.concept_prompt_task_section_title())}
+    #{transclude(concept, artefact_type.concept_prompt_task_section_title())}
 
     #{subject_knowledge(concept)}
     """

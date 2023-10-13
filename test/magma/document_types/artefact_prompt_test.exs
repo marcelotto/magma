@@ -130,7 +130,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## Request
 
-               ### ![[Nested.Example#ModuleDoc prompt task|]]
+               ![[Nested.Example#ModuleDoc prompt task|]]
 
                ### Description of the module `Nested.Example` ![[Nested.Example#Description|]]
 
@@ -203,7 +203,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## Request
 
-               ### ![[Some User Guide#TableOfContents prompt task|]]
+               ![[Some User Guide#TableOfContents prompt task|]]
 
                ### Description of the content to be covered by the 'Some User Guide' User guide ![[Some User Guide#Description|]]
                """
@@ -269,7 +269,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## Request
 
-               ### ![[Some User Guide - Introduction#Article prompt task|]]
+               ![[Some User Guide - Introduction#Article prompt task|]]
 
                ### Description of the intended content of the 'Introduction' section ![[Some User Guide - Introduction#Description|]]
                """
