@@ -6,6 +6,8 @@ created_at: 2023-07-11T14:25:00
 tags: [foo]
 aliases: [Some project, Some-project]
 ---
+This is ignored, because prologues of Magma documents are ignored in general. 
+
 # Some project
 
 ## Description

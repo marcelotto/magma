@@ -189,11 +189,13 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
 
   defp transcluded_document_struct(document_name) do
     case Document.Loader.load(document_name) do
-      {:ok, %{sections: _} = document} ->
-        {:ok, document}
+      {:ok, %Concept{} = concept} ->
+        {:ok, %DocumentStruct{prologue: [], sections: concept.sections}}
 
       {:ok, document} ->
-        DocumentStruct.parse(document.content)
+        with {:ok, document_struct} <- DocumentStruct.parse(document.content) do
+          {:ok, %DocumentStruct{document_struct | prologue: []}}
+        end
 
       {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->
         with {:ok, body} <-
@@ -209,10 +211,6 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
     end
   end
 
-  defp fetch_transcluded_content(%Concept{} = concept, nil) do
-    {:ok, DocumentStruct.main_section(concept)}
-  end
-
   defp fetch_transcluded_content(%DocumentStruct{prologue: [], sections: [section]}, nil) do
     {:ok, section}
   end
@@ -221,7 +219,7 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
     {:ok, document_struct}
   end
 
-  defp fetch_transcluded_content(%{sections: _} = document_struct, section_title) do
+  defp fetch_transcluded_content(%DocumentStruct{} = document_struct, section_title) do
     if section = DocumentStruct.section_by_title(document_struct, section_title) do
       {:ok, section}
     else

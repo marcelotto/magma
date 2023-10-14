@@ -7,12 +7,6 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
   import ExUnit.CaptureLog
 
-  @moduletag vault_files: [
-               "concepts/modules/Nested/Nested.Example.md",
-               "concepts/modules/Some/Some.DocumentWithTransclusion.md",
-               "concepts/Project.md"
-             ]
-
   test "transclusion of unknown document" do
     section =
       """
@@ -51,6 +45,10 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            end) =~ "failed to load [[NotExisting]] during resolution"
   end
 
+  @tag vault_files: [
+         "concepts/modules/Nested/Nested.Example.md",
+         "concepts/Project.md"
+       ]
   test "inline transclusion" do
     assert """
            ## Example title
@@ -73,31 +71,6 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              This is the project description.
 
              ### Knowledge Base
-             """
-
-    assert """
-           ## Example title
-
-           Foo:
-
-           ![[Nested.Example|]]
-           """
-           |> section()
-           |> Section.resolve_transclusions()
-           |> Section.to_string() ==
-             """
-             ## Example title
-
-             Foo:
-
-             ### Description
-
-             This is an example description of the module:
-
-             Module `Nested.Example` does:
-
-             -   x
-             -   y
              """
 
     assert """
@@ -151,6 +124,11 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: [
+         "concepts/modules/Nested/Nested.Example.md",
+         "concepts/modules/Some/Some.DocumentWithTransclusion.md",
+         "concepts/Project.md"
+       ]
   test "multiple inline transclusions" do
     assert """
            ## Example title
@@ -159,7 +137,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
            Foo:
 
-           ![[Nested.Example|]]
+           ![[Some.DocumentWithTransclusion|]]
 
            ![[Nested.Example#Description|]]
            """
@@ -181,10 +159,28 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              This is an example description of the module:
 
+             `Nested.Example` is relevant so we include its description
+
+             This is an example description of the module:
+
              Module `Nested.Example` does:
 
              -   x
              -   y
+
+             Some final remarks.
+
+             ### Background knowledge about the project
+
+             #### Description
+
+             This is the project description.
+
+             #### Knowledge Base
+
+             Again, some final remarks.
+
+             #### Subsection after transclusion
 
              This is an example description of the module:
 
@@ -195,6 +191,10 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: [
+         "concepts/modules/Nested/Nested.Example.md",
+         "concepts/Project.md"
+       ]
   test "custom header transclusion" do
     assert """
            ## Example title
@@ -275,6 +275,10 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: [
+         "concepts/modules/Nested/Nested.Example.md",
+         "concepts/Project.md"
+       ]
   test "empty header transclusion" do
     assert """
            ## Example title
@@ -416,6 +420,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: ["concepts/Project.md"]
   test "custom header transclusion with empty content" do
     assert """
            ## Example title
@@ -435,6 +440,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: ["concepts/Project.md"]
   test "empty header transclusion with empty content" do
     assert """
            ## Example title
@@ -824,6 +830,34 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: [
+         "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
+         "concepts/modules/Nested/Nested.Example.md"
+       ]
+  test "prologue of Magma.Documents is ignored" do
+    assert """
+           ## Example title
+
+           ![[Prompt for ModuleDoc of Nested.Example]]
+
+           """
+           |> section()
+           |> Section.resolve_transclusions()
+           |> Section.to_string() ==
+             """
+             ## Example title
+
+             ### System prompt
+
+             You are an assistent for writing Elixir moduledocs.
+
+             ### Request
+
+             Generate a moduledoc for `Nested.Example`.
+             """
+  end
+
+  @tag vault_files: ["concepts/Project.md"]
   test "when the same document is transcluded multiple times" do
     assert """
            ## Example title
@@ -862,6 +896,11 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: [
+         "concepts/modules/Nested/Nested.Example.md",
+         "concepts/modules/Some/Some.DocumentWithTransclusion.md",
+         "concepts/Project.md"
+       ]
   test "recursive transclusion resolution" do
     assert """
            ## Example title

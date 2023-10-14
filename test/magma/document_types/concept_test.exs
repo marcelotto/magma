@@ -334,13 +334,11 @@ defmodule Magma.ConceptTest do
                  subject: %Matter.Project{name: "Some"},
                  path: ^document_path,
                  name: "Project",
-                 content: content,
                  custom_metadata: %{},
                  aliases: ["Some project", "Some-project"],
                  tags: ["foo"],
                  created_at: ~N[2023-07-11 14:25:00],
-                 title: "Some project",
-                 prologue: []
+                 title: "Some project"
                } = concept
              } =
                "Some"
@@ -351,7 +349,7 @@ defmodule Magma.ConceptTest do
       assert document_path
              |> File.read!()
              |> String.trim()
-             |> String.ends_with?(String.trim(content))
+             |> String.ends_with?(String.trim(concept.content))
 
       assert Concept.load(document_path) == {:ok, concept}
     end
