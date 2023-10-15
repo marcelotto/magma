@@ -72,20 +72,4 @@ defmodule Magma.Utils do
   end
 
   def extract_link_text(_), do: nil
-
-  def set_file_read_only(path) do
-    case File.stat(path) do
-      {:ok, %File.Stat{access: :read}} ->
-        :ok
-
-      {:ok, %File.Stat{} = stat} ->
-        with :ok <- File.write_stat(path, %File.Stat{stat | access: :read}),
-             :ok <- File.chmod(path, 0o444) do
-          :ok
-        end
-
-      {:error, _} = error ->
-        error
-    end
-  end
 end

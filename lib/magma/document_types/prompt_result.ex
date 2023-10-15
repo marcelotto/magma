@@ -6,7 +6,7 @@ defmodule Magma.PromptResult do
   alias Magma.{Vault, Artefact, Generation, Prompt, View}
   alias Magma.Document.Loader
 
-  import Magma.Utils, only: [init_field: 2, set_file_read_only: 1]
+  import Magma.Utils, only: [init_field: 2]
 
   require Logger
 
@@ -73,7 +73,6 @@ defmodule Magma.PromptResult do
            |> Document.init(generation: document.prompt.generation || Generation.default().new!())
            |> execute_prompt(opts),
          {:ok, document} <- Document.create(document, opts) do
-      make_read_only(document)
       {:ok, document}
     end
   end
@@ -149,6 +148,8 @@ defmodule Magma.PromptResult do
     #{View.delete_current_file_button()}
 
     Final version: #{View.link_to_version(prompt_result)}
+
+    #{View.callout("This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.", :attention)}
     """
     |> String.trim_trailing()
   end
@@ -181,19 +182,6 @@ defmodule Magma.PromptResult do
       end
     else
       {:error, "magma_prompt missing"}
-    end
-  end
-
-  defp make_read_only(%__MODULE__{generation: %Generation.Manual{}} = result), do: result
-
-  defp make_read_only(result) do
-    case set_file_read_only(result.path) do
-      :ok ->
-        result
-
-      {:error, error} ->
-        Logger.warning("Failed to make #{result.path} read-only: #{inspect(error)}")
-        result
     end
   end
 end

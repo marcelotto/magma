@@ -83,12 +83,13 @@ defmodule Magma.PromptResultTest do
 
                Final version: [[ModuleDoc of Nested.Example]]
 
+               >[!attention]
+               >This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.
+
                # Generated ModuleDoc of Nested.Example
 
                foo
                """
-
-      assert File.stat!(prompt_result.path).access == :read
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
     end
@@ -148,6 +149,9 @@ defmodule Magma.PromptResultTest do
 
                Final version: [[Some User Guide ToC]]
 
+               >[!attention]
+               >This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.
+
                # Generated Some User Guide ToC
 
                foo
@@ -184,6 +188,9 @@ defmodule Magma.PromptResultTest do
                #{delete_current_file_button()}
 
                Final version: [[Some User Guide - Introduction (article section)]]
+
+               >[!attention]
+               >This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.
 
                # Generated Some User Guide - Introduction (article section)
 
@@ -225,8 +232,6 @@ defmodule Magma.PromptResultTest do
 
                foo
                """
-
-      assert File.stat!(prompt_result.path).access == :read
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
     end
@@ -289,12 +294,13 @@ defmodule Magma.PromptResultTest do
 
                Final version: [[ModuleDoc of Nested.Example]]
 
+               >[!attention]
+               >This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.
+
                # Generated ModuleDoc of Nested.Example
 
                #{answer}
                """
-
-      assert File.stat!(prompt_result.path).access == :read_write
     end
 
     @tag vault_files: [
@@ -324,6 +330,9 @@ defmodule Magma.PromptResultTest do
                #{delete_current_file_button()}
 
                Final version: [[ModuleDoc of Nested.Example]]
+
+               >[!attention]
+               >This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.
 
                # Generated ModuleDoc of Nested.Example
 
@@ -361,8 +370,6 @@ defmodule Magma.PromptResultTest do
 
 
                """
-
-      assert File.stat!(prompt_result.path).access == :read_write
     end
 
     @tag vault_files: ["prompts/Foo-Prompt.md"]
