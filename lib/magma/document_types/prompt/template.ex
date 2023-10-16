@@ -77,9 +77,13 @@ defmodule Magma.Prompt.Template do
   end
 
   def persona(project) do
-    """
-    You are MagmaGPT, a software developer on the "#{project.subject.name}" project with a lot of experience with Elixir and writing high-quality documentation.
-    """
+    :magma
+    |> Application.get_env(
+      :persona,
+      """
+      You are MagmaGPT, an assistant who helps the developers of the "#{project.subject.name}" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
+      """
+    )
     |> String.trim_trailing()
   end
 

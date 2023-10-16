@@ -28,7 +28,7 @@ defmodule Magma.PromptTest do
 
              ## System prompt
 
-             You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
+             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
 
              ### Context knowledge
 

@@ -82,7 +82,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## System prompt
 
-               You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
+               You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
 
                Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
 
@@ -180,7 +180,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## System prompt
 
-               You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
+               You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
 
                Your task is to help write a user guide called "Some User Guide".
 
@@ -244,7 +244,7 @@ defmodule Magma.Artefact.PromptTest do
 
                ## System prompt
 
-               You are MagmaGPT, a software developer on the "Some" project with a lot of experience with Elixir and writing high-quality documentation.
+               You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
 
                Your task is to help write a user guide called "Some User Guide".
 
