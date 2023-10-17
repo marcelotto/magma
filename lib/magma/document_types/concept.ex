@@ -14,7 +14,11 @@ defmodule Magma.Concept do
   alias Magma.{Vault, Matter, DocumentStruct, Artefact, PromptResult}
   alias Magma.Concept.Template
 
+  import Magma.Utils
+
   @type t :: %__MODULE__{}
+
+  @default_artefacts :all
 
   @description_section_title "Description"
   def description_section_title, do: @description_section_title
@@ -55,13 +59,13 @@ defmodule Magma.Concept do
   def create(subject, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{subject: %matter_type{} = matter} = document, opts, []) do
-    {assigns, opts} = Keyword.pop(opts, :assigns, [])
-
     with {:ok, document} <-
            document
            |> Document.init(aliases: matter_type.default_concept_aliases(matter))
-           |> render(assigns) do
-      Document.create(document, opts)
+           |> render(opts),
+         {:ok, document} <- Document.create(document, opts),
+         {:ok, _prompts} <- create_prompts(document, opts) do
+      {:ok, document}
     end
   end
 
@@ -90,9 +94,13 @@ defmodule Magma.Concept do
     matter_type.render_front_matter(matter)
   end
 
-  def render(%__MODULE__{} = concept, assigns) do
-    %__MODULE__{concept | content: Template.render(concept, assigns)}
-    |> parse()
+  def render(%__MODULE__{} = concept, opts) do
+    with {:ok, artefact_types} <- artefacts(concept, opts) do
+      assigns = Keyword.get(opts, :assigns, [])
+
+      %__MODULE__{concept | content: Template.render(concept, artefact_types, assigns)}
+      |> parse()
+    end
   end
 
   defp parse(concept) do
@@ -128,4 +136,47 @@ defmodule Magma.Concept do
 
   def context_knowledge_section(%__MODULE__{} = concept),
     do: concept[@context_knowledge_section_title]
+
+  def create_prompts(%__MODULE__{} = concept, opts \\ []) do
+    opts =
+      if Keyword.has_key?(opts, :prompts) do
+        Keyword.put(opts, :artefacts, Keyword.get(opts, :prompts))
+      else
+        opts
+      end
+      |> Keyword.put_new(:force, true)
+
+    with {:ok, artefact_types} <- artefacts(concept, opts) do
+      map_while_ok(artefact_types, & &1.create_prompt(concept, [], opts))
+    end
+  end
+
+  defp artefacts(%__MODULE__{subject: %matter_type{}}, opts) when is_list(opts) do
+    artefacts(matter_type, Keyword.get(opts, :artefacts, @default_artefacts))
+  end
+
+  defp artefacts(matter_type, true), do: artefacts(matter_type, :all)
+  defp artefacts(matter_type, false), do: artefacts(matter_type, [])
+  defp artefacts(matter_type, nil), do: artefacts(matter_type, [])
+  defp artefacts(matter_type, :all), do: {:ok, matter_type.artefacts()}
+
+  defp artefacts(matter_type, artefacts) do
+    compatible_artefact_types = matter_type.artefacts()
+
+    artefacts
+    |> List.wrap()
+    |> map_while_ok(fn artefact_type ->
+      cond do
+        not Artefact.type?(artefact_type) ->
+          {:error, "invalid artefact type: #{inspect(artefact_type)}"}
+
+        artefact_type not in compatible_artefact_types ->
+          {:error,
+           "artefact type #{inspect(artefact_type)} is not compatible with matter type #{inspect(matter_type)}"}
+
+        true ->
+          {:ok, artefact_type}
+      end
+    end)
+  end
 end

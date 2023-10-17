@@ -6,8 +6,11 @@ defmodule Magma.DocumentTest do
   alias Magma.{Document, Concept, Artefact}
 
   describe "recreate/1" do
-    @tag vault_files: "concepts/modules/Nested/Nested.Example.md"
-    test "with concept", %{vault_files: concept_file} do
+    @tag vault_files: [
+           "concepts/modules/Nested/Nested.Example.md",
+           "concepts/Project.md"
+         ]
+    test "with concept", %{vault_files: [concept_file | _]} do
       original_concept =
         concept_file
         |> Vault.path()

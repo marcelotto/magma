@@ -3,7 +3,7 @@ defmodule Magma.ConceptTest do
 
   doctest Magma.Concept
 
-  alias Magma.{Concept, Matter, Artefact}
+  alias Magma.{Concept, Matter, Artefact, Artefacts}
 
   describe "new/1" do
     test "Project matter" do
@@ -67,6 +67,7 @@ defmodule Magma.ConceptTest do
   end
 
   describe "create/2 (and re-load/1)" do
+    @tag vault_files: ["concepts/Project.md"]
     test "Module matter" do
       expected_path = Vault.path("concepts/modules/Nested/Nested.Example.md")
 
@@ -92,6 +93,11 @@ defmodule Magma.ConceptTest do
       assert Concept.load(concept.path) == {:ok, concept}
 
       assert Vault.document_path(concept.name) == concept.path
+
+      assert {:ok, %Artefact.Prompt{}} =
+               concept
+               |> Artefacts.ModuleDoc.prompt!()
+               |> Artefact.Prompt.load()
     end
 
     test "Project matter" do
@@ -122,6 +128,7 @@ defmodule Magma.ConceptTest do
       assert Vault.document_path(concept.name) == concept.path
     end
 
+    @tag vault_files: ["concepts/Project.md"]
     test "Text matter" do
       title = "Some User Guide"
       expected_path = Vault.path("concepts/texts/#{title}/#{title}.md")
@@ -214,7 +221,10 @@ defmodule Magma.ConceptTest do
       assert Vault.document_path(concept.name) == concept.path
     end
 
-    @tag vault_files: "concepts/texts/Some User Guide/Some User Guide.md"
+    @tag vault_files: [
+           "concepts/texts/Some User Guide/Some User Guide.md",
+           "concepts/Project.md"
+         ]
     test "Section matter" do
       section_matter = user_guide_section_matter()
       text_title = section_matter.main_text.name

@@ -6,7 +6,7 @@ defmodule Magma.Text.Assembler do
   alias Magma.Artefacts.TableOfContents
   alias Magma.View
 
-  import Magma.Utils, only: [map_while_ok: 2, flat_map_while_ok: 2]
+  import Magma.Utils, only: [map_while_ok: 2]
 
   def assemble(%Artefact.Version{artefact: TableOfContents} = version, opts \\ []) do
     {artefacts_to_assemble, opts} = extract_assemble_artefacts(opts)
@@ -14,14 +14,12 @@ defmodule Magma.Text.Assembler do
     with {:ok, document_struct} <- DocumentStruct.parse(version.content),
          sections_with_abstracts =
            sections_with_abstracts(document_struct, version.concept.subject),
-         {:ok, section_concepts} <-
+         {:ok, _section_concepts} <-
            create_section_concepts(sections_with_abstracts, opts),
          {:ok, concept} <-
            update_concept(version.concept, sections_with_abstracts),
          {:ok, _updated_version} <-
            replace_assemble_button(version),
-         {:ok, _prompts} <-
-           create_section_artefact_prompts(section_concepts, artefacts_to_assemble, opts),
          {:ok, _previews} <-
            create_artefact_previews(concept, artefacts_to_assemble, opts) do
       {:ok, concept}
@@ -102,13 +100,5 @@ defmodule Magma.Text.Assembler do
   defp create_artefact_previews(concept, artefacts_to_assemble, opts) do
     opts = Keyword.put_new(opts, :force, true)
     map_while_ok(artefacts_to_assemble, &Preview.create(concept, &1, [], opts))
-  end
-
-  defp create_section_artefact_prompts(section_concepts, artefacts_to_assemble, opts) do
-    opts = Keyword.put_new(opts, :force, true)
-
-    flat_map_while_ok(section_concepts, fn section_concept ->
-      map_while_ok(artefacts_to_assemble, &Artefact.Prompt.create(section_concept, &1, [], opts))
-    end)
   end
 end

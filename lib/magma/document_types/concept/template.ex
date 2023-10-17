@@ -3,7 +3,7 @@ defmodule Magma.Concept.Template do
 
   import Magma.View
 
-  def render(%Concept{subject: %matter_type{} = matter} = concept, assigns) do
+  def render(%Concept{subject: %matter_type{} = matter} = concept, artefact_types, assigns) do
     """
     # #{Concept.title(concept)}
 
@@ -21,7 +21,7 @@ defmodule Magma.Concept.Template do
 
     # Artefacts
 
-    #{artefact_sections(concept)}
+    #{artefact_sections(concept, artefact_types)}
     """
   end
 
@@ -34,8 +34,8 @@ defmodule Magma.Concept.Template do
     |> comment()
   end
 
-  defp artefact_sections(%Concept{subject: %matter_type{}} = concept) do
-    Enum.map_join(matter_type.artefacts(), "\n", &artefact_section(concept, &1))
+  defp artefact_sections(%Concept{} = concept, artefact_types) do
+    Enum.map_join(artefact_types, "\n", &artefact_section(concept, &1))
   end
 
   defp artefact_section(concept, artefact_type) do
