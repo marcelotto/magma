@@ -8,7 +8,10 @@ defmodule Mix.Tasks.Magma.Vault.Sync.Code do
 
   alias Magma.Vault.CodeSync
 
-  @options []
+  @options [
+    force: :boolean,
+    all: :boolean
+  ]
 
   def run(args) do
     Mix.Task.run("app.start")
