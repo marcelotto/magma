@@ -51,7 +51,7 @@ defmodule Magma.View do
   def include(nil, _, _), do: nil
 
   def include(%Section{} = section, nil, opts) do
-    section |> Section.to_string(opts) |> String.trim()
+    section |> Section.to_markdown(opts) |> String.trim()
   end
 
   def include(%Section{} = section, subsection_path, opts) when is_list(subsection_path) do
@@ -92,8 +92,8 @@ defmodule Magma.View do
 
         cond do
           subsection == :all ->
-            # DocumentStruct.to_string() does not support opts yet
-            document_struct |> DocumentStruct.to_string() |> String.trim()
+            # DocumentStruct.to_markdown() does not support opts yet
+            document_struct |> DocumentStruct.to_markdown() |> String.trim()
 
           section = DocumentStruct.section_by_title(document_struct, subsection) ->
             include(section, nil, opts)

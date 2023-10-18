@@ -60,7 +60,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -83,7 +83,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -108,7 +108,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -143,7 +143,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -206,7 +206,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -230,7 +230,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -257,7 +257,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -290,7 +290,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -314,7 +314,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -341,7 +341,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -370,7 +370,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -392,7 +392,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              # Some project
 
@@ -408,7 +408,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Notes
 
@@ -432,7 +432,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -452,7 +452,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -469,7 +469,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -487,7 +487,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -507,7 +507,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -527,7 +527,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -545,7 +545,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -568,7 +568,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -590,7 +590,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -610,7 +610,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -633,7 +633,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -651,7 +651,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -671,7 +671,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -691,7 +691,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -709,7 +709,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -732,7 +732,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -754,7 +754,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -778,7 +778,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -802,7 +802,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -818,7 +818,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -843,7 +843,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -869,7 +869,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -886,7 +886,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 
@@ -910,7 +910,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
            """
            |> section()
            |> Section.resolve_transclusions()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              ## Example title
 

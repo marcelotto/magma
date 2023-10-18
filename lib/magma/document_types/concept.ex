@@ -116,7 +116,7 @@ defmodule Magma.Concept do
   end
 
   def update_content_from_ast(%__MODULE__{} = concept) do
-    %__MODULE__{concept | content: DocumentStruct.to_string(concept)}
+    %__MODULE__{concept | content: DocumentStruct.to_markdown(concept)}
   end
 
   @impl true

@@ -122,26 +122,26 @@ defmodule Magma.DocumentStruct.SectionTest do
     end
   end
 
-  describe "to_string/2" do
+  describe "to_markdown/2" do
     test "single section (without header)" do
-      assert Section.to_string(section(:without_subsections), header: false) == "Foo\n"
+      assert Section.to_markdown(section(:without_subsections), header: false) == "Foo\n"
     end
 
     test "single section (with header)" do
-      assert Section.to_string(section(:without_subsections)) ==
+      assert Section.to_markdown(section(:without_subsections)) ==
                content_without_subsections()
     end
 
     test "with subsections" do
-      assert Section.to_string(section(:with_subsections)) ==
+      assert Section.to_markdown(section(:with_subsections)) ==
                content_with_subsections()
 
-      assert Section.to_string(section(:with_subsections), header: false, subsections: false) ==
+      assert Section.to_markdown(section(:with_subsections), header: false, subsections: false) ==
                "Foo\n"
     end
 
     test "level option" do
-      assert Section.to_string(section(:with_subsections), level: 3) ==
+      assert Section.to_markdown(section(:with_subsections), level: 3) ==
                """
                ### Example title
 
@@ -160,7 +160,7 @@ defmodule Magma.DocumentStruct.SectionTest do
                Nisi do voluptate esse culpa sint.
                """
 
-      assert Section.to_string(section(:with_subsections), header: false, level: 1) ==
+      assert Section.to_markdown(section(:with_subsections), header: false, level: 1) ==
                """
                Foo
 
@@ -193,7 +193,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              Nisi do voluptate esse culpa sint.
              """
              |> section()
-             |> Section.to_string(level: 0, header: false) ==
+             |> Section.to_markdown(level: 0, header: false) ==
                """
                # Subsection 1
 
@@ -222,7 +222,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert content
              |> section()
-             |> Section.to_string() == content
+             |> Section.to_markdown() == content
     end
   end
 
@@ -230,14 +230,14 @@ defmodule Magma.DocumentStruct.SectionTest do
     test "zero shift" do
       assert section(:with_subsections)
              |> Section.shift_level(0)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                content_with_subsections()
     end
 
     test "valid shifts" do
       assert section(:with_subsections)
              |> Section.shift_level(+1)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                """
                ### Example title
 
@@ -258,7 +258,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert section(:with_subsections)
              |> Section.shift_level(+3)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                """
                ##### Example title
 
@@ -279,7 +279,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert section(:with_subsections)
              |> Section.shift_level(-1)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                """
                # Example title
 
@@ -310,14 +310,14 @@ defmodule Magma.DocumentStruct.SectionTest do
     test "when already at the given level" do
       assert section(:with_subsections)
              |> Section.set_level(2)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                content_with_subsections()
     end
 
     test "shifting" do
       assert section(:with_subsections)
              |> Section.set_level(3)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                """
                ### Example title
 
@@ -338,7 +338,7 @@ defmodule Magma.DocumentStruct.SectionTest do
 
       assert section(:with_subsections)
              |> Section.set_level(1)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                """
                # Example title
 
@@ -383,7 +383,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_links()
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                """
                # `Some.DocumentWithLinks`
 
@@ -416,7 +416,7 @@ defmodule Magma.DocumentStruct.SectionTest do
              """
              |> section()
              |> Section.resolve_links(style: :emph)
-             |> Section.to_string() ==
+             |> Section.to_markdown() ==
                """
                # `Some.DocumentWithLinks`
 
@@ -451,7 +451,7 @@ defmodule Magma.DocumentStruct.SectionTest do
            """
            |> section()
            |> Section.remove_comments()
-           |> Section.to_string() ==
+           |> Section.to_markdown() ==
              """
              # `Some.DocumentWithComments`
 

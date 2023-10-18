@@ -39,7 +39,7 @@ defmodule Magma.DocumentStruct do
     end
   end
 
-  def to_string(%{prologue: prologue} = document) do
+  def to_markdown(%{prologue: prologue} = document) do
     %Panpipe.Document{children: prologue ++ ast(document)}
     |> Panpipe.Pandoc.Conversion.convert(to: @pandoc_extension, wrap: "none")
   end

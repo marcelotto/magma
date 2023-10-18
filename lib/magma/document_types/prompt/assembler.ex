@@ -57,7 +57,7 @@ defmodule Magma.Prompt.Assembler do
     |> Section.resolve_transclusions()
     |> Section.resolve_links()
     |> Section.remove_comments()
-    |> Section.to_string(header: false, level: 0)
+    |> Section.to_markdown(header: false, level: 0)
   end
 
   def copy_to_clipboard(prompt) when is_prompt(prompt) do

@@ -78,7 +78,7 @@ defmodule Magma.DocumentStruct.Section do
       end
   end
 
-  def to_string(%__MODULE__{} = section, opts \\ []) do
+  def to_markdown(%__MODULE__{} = section, opts \\ []) do
     %Panpipe.Document{children: ast(section, opts)}
     |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension(), wrap: "none")
   end

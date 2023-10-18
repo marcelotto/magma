@@ -120,7 +120,7 @@ defmodule Magma.ViewTest do
       assert View.include(concept, "Context knowledge") ==
                concept
                |> Concept.context_knowledge_section()
-               |> Section.to_string()
+               |> Section.to_markdown()
                |> String.trim()
 
       assert View.include(concept, "Some background knowledge") ==

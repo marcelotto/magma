@@ -92,7 +92,7 @@ defmodule Magma.Artefacts.ModuleDoc do
         if section =
              DocumentStruct.section_by_title(document_struct, @prompt_result_section_title) do
           section
-          |> DocumentStruct.Section.to_string(header: false)
+          |> DocumentStruct.Section.to_markdown(header: false)
           |> String.trim()
         else
           raise "invalid ModuleDoc artefact version document at #{path}: no '#{@prompt_result_section_title}' section found"

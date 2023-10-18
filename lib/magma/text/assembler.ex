@@ -31,7 +31,7 @@ defmodule Magma.Text.Assembler do
       {
         Matter.Text.Section.new!(main_text, section.title),
         section
-        |> DocumentStruct.Section.to_string(header: false)
+        |> DocumentStruct.Section.to_markdown(header: false)
         |> String.trim()
       }
     end)

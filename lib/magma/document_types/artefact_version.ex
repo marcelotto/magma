@@ -120,7 +120,7 @@ defmodule Magma.Artefact.Version do
         |> DocumentStruct.main_section()
         |> Section.resolve_transclusions()
         |> Section.remove_comments()
-        |> Section.to_string()
+        |> Section.to_markdown()
 
       {:ok, %__MODULE__{document | content: prologue(document) <> content}}
     end
