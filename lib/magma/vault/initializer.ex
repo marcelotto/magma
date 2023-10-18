@@ -8,6 +8,8 @@ defmodule Magma.Vault.Initializer do
 
   import Magma.MixHelper
 
+  @spec initialize(binary, base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
+          :ok | {:error, any}
   def initialize(project_name, base_vault \\ nil, opts \\ []) do
     with :ok <- base_vault |> BaseVault.path!() |> create_vault(opts) do
       {:ok, project} = create_project(project_name)

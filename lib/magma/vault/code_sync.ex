@@ -6,6 +6,7 @@ defmodule Magma.Vault.CodeSync do
 
   import Magma.Utils
 
+  @spec sync(keyword) :: :ok | {:error, any}
   def sync(opts \\ []) do
     if File.exists?(Vault.path()) do
       # We must create all concepts first, since the moduledoc prompts require this to determine submodules (see Magma.Matter.Module.submodules/1)

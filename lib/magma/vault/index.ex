@@ -64,6 +64,8 @@ defmodule Magma.Vault.Index do
   @spec add(binary, Path.t()) :: :ok
   def add(name, path) do
     :ets.insert(@table_name, {name, path})
+
+    :ok
   end
 
   @spec rebuild :: :ok
