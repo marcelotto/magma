@@ -1,5 +1,17 @@
 defmodule Magma.DocumentStruct.Section do
-  defstruct [:title, :header, :level, :content, :sections]
+  @moduledoc """
+  Recursive structure for the nested sections of a `Magma.DocumentStruct`.
+  """
+
+  defstruct [:title, :level, :header, :content, :sections]
+
+  @type t :: %__MODULE__{
+          title: binary,
+          level: integer,
+          header: Panpipe.AST.Header.t(),
+          content: [Panpipe.AST.Node.t()],
+          sections: [t()]
+        }
 
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.TransclusionResolution
@@ -7,6 +19,10 @@ defmodule Magma.DocumentStruct.Section do
 
   @default_link_resolution_style :plain
 
+  @doc """
+  Creates a new section.
+  """
+  @spec new(Header.t(), [Panpipe.AST.Node.t()], [t()]) :: t()
   def new(%Header{} = header, content, sections) do
     %__MODULE__{
       content: content,
@@ -15,6 +31,9 @@ defmodule Magma.DocumentStruct.Section do
     |> set_header(header)
   end
 
+  @doc """
+  Sets a new `header` for the given `section`, updating the `:title` and `:level` fields accordingly.
+  """
   def set_header(%__MODULE__{} = section, %Header{} = header) do
     %__MODULE__{
       section
@@ -30,6 +49,19 @@ defmodule Magma.DocumentStruct.Section do
     |> String.trim()
   end
 
+  @doc """
+  Fetches the section with the given `title` and returns it in an ok tuple.
+
+  If no section with `section` exists, it returns `:error`.
+
+  This implements `Access.fetch/2` function, so that the `section[title]`
+  syntax and the `Kernel` macros for accessing nested data structures like
+  `get_in/2` are supported.
+
+  This function only searches sections directly under the given section.
+  For a recursive search, use `section_by_title/2`.
+  """
+  @spec fetch(t() | DocumentStruct.compatible(), binary) :: {:ok, t()} | :error
   def fetch(%_{sections: sections}, title) do
     Enum.find_value(sections, fn
       %{title: ^title} = section -> {:ok, section}
@@ -37,12 +69,29 @@ defmodule Magma.DocumentStruct.Section do
     end) || :error
   end
 
+  @doc """
+  Checks if the given `section` is empty, i.e. it has no `content` and nested `sections`.
+  """
+  @spec empty?(t()) :: boolean
   def empty?(%__MODULE__{content: [], sections: []}), do: true
   def empty?(%__MODULE__{}), do: false
 
+  @doc """
+  Checks if the given `section` consists solely of subsection headers.
+  """
+  @spec empty_content?(t()) :: boolean
   def empty_content?(%__MODULE__{} = section) do
     section.content == [] && Enum.all?(section.sections, &empty_content?/1)
   end
+
+  @doc """
+  Fetches the first section with the given `title`.
+
+  Other than accessing the sections with the `fetch/2`, this searches the
+  sections recursively.
+  """
+  @spec section_by_title(t(), binary) :: t() | nil
+  def section_by_title(section, title)
 
   def section_by_title(%__MODULE__{title: title} = section, title), do: section
 
@@ -78,10 +127,23 @@ defmodule Magma.DocumentStruct.Section do
       end
   end
 
+  @doc """
+  Converts a `Magma.DocumentStruct.Section` into a Markdown string.
+  """
+  @spec to_markdown(t(), keyword) :: binary
   def to_markdown(%__MODULE__{} = section, opts \\ []) do
     %Panpipe.Document{children: ast(section, opts)}
     |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension(), wrap: "none")
   end
+
+  @doc """
+  Changes the header level of `section` to the given `level`.
+
+  Computes the difference to the current level of `section` and shifts the
+  level recursively on all subsections using `shift_level/2`.
+  """
+  @spec set_level(t(), non_neg_integer()) :: t()
+  def set_level(section, level)
 
   def set_level(%__MODULE__{} = section, nil), do: section
 
@@ -90,6 +152,14 @@ defmodule Magma.DocumentStruct.Section do
 
   def set_level(%__MODULE__{level: level} = section, new_level),
     do: shift_level(section, new_level - level)
+
+  @doc """
+  Shifts the header level of `section` by the given `shift_level`.
+
+  All subsections are shifted recursively.
+  """
+  @spec shift_level(t(), integer()) :: t()
+  def shift_level(section, shift_level)
 
   def shift_level(%__MODULE__{level: level}, shift_level) when level + shift_level < 0 do
     raise "shifting to negative header level"
@@ -106,8 +176,49 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
+  @doc """
+  Processes and resolves transclusions within the given `section`.
+
+  Transclusion resolution in Magma is a procedure where an Obsidian transclusion,
+  such as `![[Some document]]`, is replaced with its actual content.
+  This mechanism forms the foundation for constructing LLM prompts in Magma.
+  The content from the referenced document or section undergoes several processing
+  steps before its insertion:
+
+  - Comments (`<!-- comment -->`) are removed.
+  - Internal links are replaced with the target as plain text.
+  - Transclusions within the transcluded content itself are resolved recursively
+    (unless it would result in an infinite recursion).
+  - If the transcluded content (after removing the comments), consists
+    exclusively of a heading with no content below it, the transclusion is
+    resolved with the empty string.
+  - The level of the transcluded sections is adjusted according to the current
+    level at the point of the transclusion.
+
+  Different types of transclusions are resolved in slightly varied ways,
+  particularly regarding the leading header of the transcluded content:
+
+  - _Inline transclusions_: Exclude the leading header.
+  - _Custom header transclusions_: Replace the leading header.
+  - _Empty header transclusions_: Retain the leading header.
+  """
+
   defdelegate resolve_transclusions(section), to: TransclusionResolution
 
+  @doc """
+  Resolves internal links in the provided `section` by replacing them with their content or display text.
+
+  The style of the resolved links can be specified with the `:style` option,
+  which accepts the following values:
+
+  - `:plain` (default) - no styling
+  - `:emph` - italic
+  - `:strong` - bold
+  - `:underline` - underlined
+  - a function accepting the children of the link AST and returning the
+    replacement AST node
+  """
+  @spec resolve_links(t(), keyword) :: t()
   def resolve_links(%__MODULE__{} = section, opts \\ []) do
     do_resolve_links(
       section,
@@ -143,6 +254,15 @@ defmodule Magma.DocumentStruct.Section do
     Application.get_env(:magma, :link_resolution_style, @default_link_resolution_style)
   end
 
+  @doc """
+  Removes all comment blocks from the given `section_or_content`.
+
+  This function cleans up the document by removing all comment blocks
+  (`<!-- comment -->`).
+  """
+  def remove_comments(section_or_content)
+
+  @spec remove_comments(t()) :: t()
   def remove_comments(%__MODULE__{} = section) do
     %__MODULE__{
       section
@@ -151,17 +271,18 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
+  @spec remove_comments([Panpipe.AST.Node.t()]) :: [Panpipe.AST.Node.t()]
   def remove_comments(content) when is_list(content) do
     Enum.flat_map(content, &List.wrap(do_remove_comments(&1)))
   end
 
-  def do_remove_comments(%Panpipe.AST.RawBlock{format: "html", string: "<!--" <> comment} = ast) do
+  defp do_remove_comments(%Panpipe.AST.RawBlock{format: "html", string: "<!--" <> comment} = ast) do
     unless String.ends_with?(comment, "-->") do
       ast
     end
   end
 
-  def do_remove_comments(ast) do
+  defp do_remove_comments(ast) do
     Panpipe.transform(ast, fn
       %Panpipe.AST.RawInline{format: "html", string: "<!--" <> comment} ->
         if String.ends_with?(comment, "-->"), do: []
