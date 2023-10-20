@@ -13,7 +13,14 @@ defmodule Magma.Generation do
   @callback execute(t(), Artefact.Prompt.t(), options) :: {:ok, result} | {:error, any}
 
   def default do
-    Application.get_env(:magma, :default_generation, Magma.Generation.OpenAI)
+    Application.get_env(
+      :magma,
+      :default_generation,
+      if(Code.ensure_loaded?(Magma.Generation.OpenAI),
+        do: Magma.Generation.OpenAI,
+        else: Magma.Generation.Manual
+      )
+    )
   end
 
   def execute(prompt) when is_prompt(prompt) do
