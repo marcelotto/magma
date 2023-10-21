@@ -41,10 +41,10 @@ defmodule Magma.Vault.Index do
     |> Enum.each(fn entry ->
       path = Path.join(path, entry)
 
-      if File.dir?(path) do
-        do_index(path)
-      else
-        add(path)
+      cond do
+        File.dir?(path) -> do_index(path)
+        Path.extname(path) == ".md" -> add(path)
+        true -> nil
       end
     end)
   end
