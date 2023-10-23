@@ -6,7 +6,7 @@ defmodule Magma.PromptTest do
   alias Magma.{Generation, Prompt}
 
   @tag vault_files: ["concepts/Project.md"]
-  test "create/1 (and re-load/1)" do
+  test "create/1 and re-load/1 of custom prompt" do
     assert {:ok,
             %Prompt{
               generation: %Generation.Mock{},
