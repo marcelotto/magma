@@ -112,15 +112,9 @@ defmodule Magma.Prompt.Template do
 
     #{matter_type.context_knowledge(concept)}
 
-    #{include_context_knowledge(concept)}
+    #{transclude(concept, Concept.context_knowledge_section_title())}
     """
     |> String.trim_trailing()
-  end
-
-  def include_context_knowledge(%Concept{} = concept) do
-    concept
-    |> Concept.context_knowledge_section()
-    |> include(nil, header: false, level: 3, remove_comments: true)
   end
 
   defp subject_knowledge(%Concept{subject: %matter_type{} = matter} = concept) do

@@ -147,11 +147,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              ##### `Nested.Example.Sub` ![[Nested.Example.Sub#Description|]]
 
-             #### Some background knowledge
-
-             Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
-
-             #### Transcluded background knowledge ![[Document#Title|]]
+             ![[Nested.Example#Context knowledge|]]
 
 
              ## Request

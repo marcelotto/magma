@@ -54,11 +54,7 @@ defmodule Magma.Artefacts.TableOfContentsTest do
 
 
 
-             #### Some background knowledge
-
-             Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
-
-             #### Transcluded background knowledge ![[Document#Title|]]
+             ![[Some User Guide#Context knowledge|]]
 
 
              ## Request

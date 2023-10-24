@@ -107,6 +107,12 @@ defmodule Magma.View do
     end
   end
 
+  def include_context_knowledge(%Concept{} = concept) do
+    concept
+    |> Concept.context_knowledge_section()
+    |> include(nil, header: false, level: 3, remove_comments: true)
+  end
+
   def comment(text) do
     """
     <!--

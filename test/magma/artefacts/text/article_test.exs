@@ -64,7 +64,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
              #### Transcluded background knowledge ![[Document#Title|]]
 
-             #### Section-specific background knowledge ![[DocumentWithMultipleMainSections#Section|]]
+             ![[Some User Guide - Introduction#Context knowledge|]]
 
 
              ## Request

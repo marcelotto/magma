@@ -1,7 +1,7 @@
 defmodule Magma.Matter.Text.Section do
   use Magma.Matter, fields: [:main_text]
 
-  alias Magma.{Concept, Prompt}
+  alias Magma.Concept
   alias Magma.Matter.Text
   alias Magma.Artefacts.TableOfContents
   alias Magma.View
@@ -44,7 +44,7 @@ defmodule Magma.Matter.Text.Section do
     """ <>
       case Concept.load(main_text.name) do
         {:ok, text_concept} ->
-          Prompt.Template.include_context_knowledge(text_concept)
+          View.include_context_knowledge(text_concept)
 
         {:error, error} ->
           Logger.warning("error on main text context knowledge extraction: #{inspect(error)}")
