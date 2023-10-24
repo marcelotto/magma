@@ -16,6 +16,8 @@ defmodule Magma.Artefact do
 
   @callback concept_prompt_task_section_title :: binary
 
+  @callback version_title(Artefact.Version.t()) :: binary
+
   @callback version_prologue(Artefact.Version.t()) :: binary | nil
 
   @callback trim_prompt_result_header? :: boolean
@@ -25,6 +27,9 @@ defmodule Magma.Artefact do
   @callback relative_prompt_path(Concept.t()) :: Path.t()
 
   @callback relative_version_path(Concept.t()) :: Path.t()
+
+  @callback create_version(Artefact.Version.t(), keyword) ::
+              {:ok, Path.t() | Artefact.Version.t()} | {:error, any} | nil
 
   defmacro __using__(opts) do
     matter_type = Keyword.fetch!(opts, :matter)
@@ -59,10 +64,16 @@ defmodule Magma.Artefact do
       end
 
       @impl true
+      def version_title(%Artefact.Version{artefact: __MODULE__} = version), do: version.name
+
+      @impl true
       def version_prologue(%Artefact.Version{artefact: __MODULE__}), do: nil
 
       @impl true
       def trim_prompt_result_header?, do: true
+
+      @impl true
+      def create_version(%Artefact.Version{artefact: __MODULE__}, opts), do: nil
 
       def prompt(%Concept{subject: %unquote(matter_type){}} = concept, attrs \\ []) do
         Artefact.Prompt.new(concept, __MODULE__, attrs)
@@ -97,7 +108,9 @@ defmodule Magma.Artefact do
                      version_prologue: 1,
                      trim_prompt_result_header?: 0,
                      relative_prompt_path: 1,
-                     relative_version_path: 1
+                     relative_version_path: 1,
+                     version_title: 1,
+                     create_version: 2
     end
   end
 

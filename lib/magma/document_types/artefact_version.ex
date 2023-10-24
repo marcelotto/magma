@@ -9,7 +9,7 @@ defmodule Magma.Artefact.Version do
   alias Magma.Text.Preview
 
   @impl true
-  def title(%__MODULE__{name: name}), do: name
+  def title(%__MODULE__{artefact: artefact} = version), do: artefact.version_title(version)
 
   @impl true
   def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
@@ -85,7 +85,7 @@ defmodule Magma.Artefact.Version do
            document
            |> Document.init()
            |> assemble() do
-      Document.create(document, opts)
+      do_create(document, opts)
     end
   end
 
@@ -102,13 +102,21 @@ defmodule Magma.Artefact.Version do
     end
   end
 
+  defp do_create(%__MODULE__{artefact: artefact_type} = document, opts) do
+    artefact_type.create_version(document, opts) ||
+      Document.create(document, opts)
+  end
+
   defp assemble(%__MODULE__{draft: %PromptResult{}} = document) do
+    title = if title = title(document), do: "# #{title}"
+
     content =
       """
-      # #{title(document)}
+      #{title}
 
       #{Document.content_without_prologue(document.draft)}
       """
+      |> String.trim_leading()
 
     {:ok, %__MODULE__{document | content: prologue(document) <> content}}
   end

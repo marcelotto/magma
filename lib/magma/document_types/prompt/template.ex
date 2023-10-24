@@ -1,5 +1,6 @@
 defmodule Magma.Prompt.Template do
   alias Magma.{Artefact, Prompt, Concept}
+  alias Magma.Matter.Project
 
   import Magma.View
 
@@ -87,11 +88,18 @@ defmodule Magma.Prompt.Template do
     |> String.trim_trailing()
   end
 
-  def context_knowledge(project) do
+  def context_knowledge(nil) do
     """
     ### Context knowledge
 
     The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+    """
+    |> String.trim_trailing()
+  end
+
+  def context_knowledge(project) do
+    """
+    #{context_knowledge(nil)}
 
     #### Description of the #{project.subject.name} project #{transclude("Project", "Description")}
     """
@@ -100,7 +108,7 @@ defmodule Magma.Prompt.Template do
 
   def context_knowledge(project, %Concept{subject: %matter_type{}} = concept) do
     """
-    #{context_knowledge(project)}
+    #{context_knowledge(unless matter_type == Project, do: project)}
 
     #{matter_type.context_knowledge(concept)}
 

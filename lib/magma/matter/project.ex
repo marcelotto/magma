@@ -20,7 +20,9 @@ defmodule Magma.Matter.Project do
 
   @concept_name "Project"
 
-  @artefacts []
+  @generated_artefacts_base_path "project"
+
+  @artefacts [Magma.Artefacts.Readme]
 
   @doc """
   Returns the list of `Magma.Artefact` types available for a project.
@@ -124,6 +126,9 @@ defmodule Magma.Matter.Project do
   """
   @impl true
   def relative_concept_path(%__MODULE__{} = project), do: "#{concept_name(project)}.md"
+
+  @doc false
+  def relative_generated_artefacts_path, do: @generated_artefacts_base_path
 
   @doc """
   Returns the name of the `Magma.Concept` document about the project.
