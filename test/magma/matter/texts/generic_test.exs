@@ -1,14 +1,14 @@
-defmodule Magma.Matter.Texts.UserGuideTest do
+defmodule Magma.Matter.Texts.GenericTest do
   use Magma.Vault.Case, async: false
 
-  doctest Magma.Matter.Texts.UserGuide
+  doctest Magma.Matter.Texts.Generic
 
-  alias Magma.Matter.Texts.UserGuide
+  alias Magma.Matter.Texts.Generic
   alias Magma.{Concept, Matter}
 
   @tag vault_files: ["concepts/Project.md"]
   test "Concept creation" do
-    title = "Some User Guide"
+    title = "Some Text"
     expected_path = Vault.path("concepts/texts/#{title}/#{title}.md")
 
     refute File.exists?(expected_path)
@@ -16,7 +16,7 @@ defmodule Magma.Matter.Texts.UserGuideTest do
     assert {:ok,
             %Concept{
               subject: %Matter.Text{
-                type: UserGuide,
+                type: Generic,
                 name: ^title
               },
               name: ^title,
@@ -27,7 +27,7 @@ defmodule Magma.Matter.Texts.UserGuideTest do
               prologue: []
             } = concept} =
              title
-             |> UserGuide.new()
+             |> Generic.new()
              |> Concept.create()
 
     assert is_just_now(concept.created_at)
@@ -59,15 +59,15 @@ defmodule Magma.Matter.Texts.UserGuideTest do
 
              # Artefact previews
 
-             - [[Some User Guide (article) Preview]]
+             - [[Some Text (article) Preview]]
 
 
              # Artefacts
 
              ## TableOfContents
 
-             - Prompt: [[Prompt for Some User Guide ToC]]
-             - Final version: [[Some User Guide ToC]]
+             - Prompt: [[Prompt for Some Text ToC]]
+             - Final version: [[Some Text ToC]]
 
              ### TableOfContents prompt task
 
@@ -97,40 +97,7 @@ defmodule Magma.Matter.Texts.UserGuideTest do
     assert Concept.load(concept.path) == {:ok, concept}
 
     assert Vault.document_path(concept.name) == concept.path
-  end
 
-  @tag vault_files: "concepts/texts/Some User Guide/Some User Guide.md"
-  test "Concept loading", %{vault_files: vault_file} do
-    document_path = Vault.path(vault_file)
-
-    assert {
-             :ok,
-             %Magma.Concept{
-               subject: %Matter.Text{
-                 type: UserGuide,
-                 name: "Some User Guide"
-               },
-               path: ^document_path,
-               name: "Some User Guide",
-               content: content,
-               custom_metadata: %{},
-               aliases: [],
-               tags: [],
-               created_at: ~N[2023-09-13 02:41:42],
-               title: "Some User Guide",
-               prologue: []
-             } = concept
-           } =
-             "Some User Guide"
-             |> UserGuide.new()
-             |> Concept.new!()
-             |> Concept.load()
-
-    assert document_path
-           |> File.read!()
-           |> String.trim()
-           |> String.ends_with?(String.trim(content))
-
-    assert Concept.load(document_path) == {:ok, concept}
+    assert Concept.load(concept.path) == {:ok, concept}
   end
 end

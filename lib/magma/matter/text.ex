@@ -118,6 +118,9 @@ defmodule Magma.Matter.Text do
       iex> Magma.Matter.Text.type_name(Magma.Matter.Texts.UserGuide)
       "UserGuide"
 
+      iex> Magma.Matter.Text.type_name(Magma.Matter.Texts.Generic)
+      "Generic"
+
       iex> Magma.Matter.Text.type_name(Magma.Vault)
       ** (RuntimeError) Invalid Magma.Matter.Text type: Magma.Vault
 
@@ -143,6 +146,9 @@ defmodule Magma.Matter.Text do
 
       iex> Magma.Matter.Text.type("UserGuide")
       Magma.Matter.Texts.UserGuide
+
+      iex> Magma.Matter.Text.type("Generic")
+      Magma.Matter.Texts.Generic
 
       iex> Magma.Matter.Text.type("Vault")
       nil
