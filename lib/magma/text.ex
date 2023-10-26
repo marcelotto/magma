@@ -1,8 +1,11 @@
 defmodule Magma.Text do
   alias Magma.Concept
   alias Magma.Matter
+  alias Magma.Matter.Texts.Generic
 
-  def create(text_name, text_type)
+  def create(text_name, text_type \\ nil)
+
+  def create(text_name, nil), do: create(text_name, Generic)
 
   def create(text_name, text_type_name) when is_binary(text_type_name) do
     if text_type = Matter.Text.type(text_type_name) do
