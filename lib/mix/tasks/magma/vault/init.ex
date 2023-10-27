@@ -11,7 +11,8 @@ defmodule Mix.Tasks.Magma.Vault.Init do
   @options [
     force: :boolean,
     base_vault: :string,
-    base_vault_path: :string
+    base_vault_path: :string,
+    code_sync: :boolean
   ]
 
   def run(args) do
