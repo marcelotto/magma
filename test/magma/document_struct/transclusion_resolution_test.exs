@@ -624,6 +624,55 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: ["plain/DocumentWithoutSections.md"]
+  test "plain Markdown document without sections" do
+    assert """
+           ## Example title
+
+           ![[DocumentWithoutSections]]
+           """
+           |> section()
+           |> Section.resolve_transclusions()
+           |> Section.to_markdown() ==
+             """
+             ## Example title
+
+             Deserunt amet velit consequat exercitation cillum nisi nisi.
+             """
+
+    assert """
+           ## Example title
+
+           ### Alt. title ![[DocumentWithoutSections]]
+           """
+           |> section()
+           |> Section.resolve_transclusions()
+           |> Section.to_markdown() ==
+             """
+             ## Example title
+
+             ### Alt. title
+
+             Deserunt amet velit consequat exercitation cillum nisi nisi.
+             """
+
+    assert """
+           ## Example title
+
+           ### ![[DocumentWithoutSections]]
+           """
+           |> section()
+           |> Section.resolve_transclusions()
+           |> Section.to_markdown() ==
+             """
+             ## Example title
+
+             ### DocumentWithoutSections
+
+             Deserunt amet velit consequat exercitation cillum nisi nisi.
+             """
+  end
+
   @tag vault_files: "plain/DocumentWithoutFrontmatter.md"
   test "plain Markdown documents without frontmatter" do
     assert """

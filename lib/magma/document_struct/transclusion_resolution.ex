@@ -150,6 +150,9 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
                   Enum.map(more_transcluded_sections, &Section.shift_level(&1, 1))
             )
 
+          %DocumentStruct{sections: [], prologue: content} ->
+            Section.new(new_header || {section.level, target}, content)
+
           resolved_section ->
             if new_header do
               Section.set_header(resolved_section, new_header)

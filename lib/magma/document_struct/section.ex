@@ -22,13 +22,26 @@ defmodule Magma.DocumentStruct.Section do
   @doc """
   Creates a new section.
   """
-  @spec new(Header.t(), [Panpipe.AST.Node.t()], [t()]) :: t()
+  @spec new(Header.t() | {pos_integer(), binary}, [Panpipe.AST.Node.t()], [t()]) :: t()
+  def new(header, content, sections \\ [])
+
   def new(%Header{} = header, content, sections) do
+    content
+    |> do_new(sections)
+    |> set_header(header)
+  end
+
+  def new({level, title}, content, sections) do
+    content
+    |> do_new(sections)
+    |> set_header(title, level)
+  end
+
+  defp do_new(content, sections) do
     %__MODULE__{
       content: content,
       sections: sections
     }
-    |> set_header(header)
   end
 
   @doc """
@@ -41,6 +54,26 @@ defmodule Magma.DocumentStruct.Section do
         title: header_title(header),
         level: header.level
     }
+  end
+
+  @doc """
+  Sets a new header with the given title and level for the given `section`, updating the `:title` and `:level` fields accordingly.
+  """
+  def set_header(%__MODULE__{} = section, title, level)
+      when is_binary(title) and is_integer(level) do
+    %__MODULE__{
+      section
+      | header: to_pandoc_header(title, level),
+        title: title,
+        level: level
+    }
+  end
+
+  defp to_pandoc_header(title, level) do
+    %Panpipe.Document{children: [header]} =
+      Panpipe.ast!("#{String.duplicate("#", level)} #{title}")
+
+    header
   end
 
   defp header_title(%Header{children: children}) do
