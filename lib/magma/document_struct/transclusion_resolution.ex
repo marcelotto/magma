@@ -182,6 +182,9 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
           |> resolve_transclusions([document_name | visited])
           |> Section.remove_comments()
           |> Section.set_level(level)
+
+        {:error, error} ->
+          raise error
       end
     else
       {:error, error} ->
