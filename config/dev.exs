@@ -7,4 +7,4 @@ config :magma, Magma.Generation.OpenAI,
 config :openai,
   api_key: {:system, "OPENAI_API_KEY"},
   organization_key: {:system, "OPENAI_ORGANIZATION_KEY"},
-  http_options: [recv_timeout: 60_000]
+  http_options: [recv_timeout: 300_000]
