@@ -174,6 +174,71 @@ defmodule Magma.Artefacts.ModuleDocTest do
   end
 
   @tag vault_files: [
+         "concepts/modules/Some/Some.DocumentWithoutSpecialSections.md",
+         "concepts/Project.md"
+       ]
+  test "Artefact.Prompt creation and loading when special sections are missing in concept" do
+    module_concept = Concept.load!("Some.DocumentWithoutSpecialSections")
+
+    assert {:ok,
+            %Artefact.Prompt{
+              artefact: ModuleDoc,
+              concept: ^module_concept,
+              generation: %Generation.Mock{},
+              tags: ["magma-vault"],
+              aliases: [],
+              custom_metadata: %{}
+            } = prompt} = ModuleDoc.create_prompt(module_concept)
+
+    assert prompt.name == "Prompt for ModuleDoc of Some.DocumentWithoutSpecialSections"
+
+    assert prompt.path ==
+             Vault.path(
+               "artefacts/generated/modules/Some/DocumentWithoutSpecialSections/#{prompt.name}.md"
+             )
+
+    assert prompt.content ==
+             """
+             #{Prompt.Template.controls(prompt)}
+
+             # #{prompt.name}
+
+             ## System prompt
+
+             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+
+             #{ModuleDoc.system_prompt_task()}
+
+             ### Context knowledge
+
+             The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+             #### Description of the Some project ![[Project#Description|]]
+
+             #### Peripherally relevant modules
+
+             ##### `Some` ![[Some#Description|]]
+
+             ![[Some.DocumentWithoutSpecialSections#Context knowledge|]]
+
+
+             ## Request
+
+             ![[Some.DocumentWithoutSpecialSections#ModuleDoc prompt task|]]
+
+             ### Description of the module `Some.DocumentWithoutSpecialSections` ![[Some.DocumentWithoutSpecialSections#Description|]]
+
+             ### Module code
+
+             This is the code of the module to be documented. Ignore commented out code.
+
+             ```elixir
+
+             ```
+             """
+  end
+
+  @tag vault_files: [
          "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
          "concepts/modules/Nested/Nested.Example.md"
        ]

@@ -13,7 +13,7 @@ defmodule Magma.Artefacts.ModuleDoc do
   def name(concept), do: "ModuleDoc of #{concept.name}"
 
   @impl true
-  def system_prompt_task(_concept) do
+  def system_prompt_task(_concept \\ nil) do
     """
     You have two tasks to do based on the given implementation of the module and your knowledge base:
 
