@@ -96,7 +96,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
+             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
 
              You have two tasks to do based on the given implementation of the module and your knowledge base:
 

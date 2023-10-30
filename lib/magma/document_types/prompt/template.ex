@@ -82,7 +82,7 @@ defmodule Magma.Prompt.Template do
     |> Application.get_env(
       :persona,
       """
-      You are MagmaGPT, an assistant who helps the developers of the "#{project.subject.name}" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
+      You are MagmaGPT, an assistant who helps the developers of the "#{project.subject.name}" project during documentation and development. Your responses are in plain and clear English.
       """
     )
     |> String.trim_trailing()

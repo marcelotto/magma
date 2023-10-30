@@ -40,7 +40,7 @@ defmodule Magma.Artefacts.TableOfContentsTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English, so even non-native speakers can easily understand you.
+             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
 
              Your task is to help write a user guide called "Some User Guide".
 
