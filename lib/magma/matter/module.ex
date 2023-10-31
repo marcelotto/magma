@@ -107,6 +107,8 @@ defmodule Magma.Matter.Module do
 
   @doc """
   Returns a list of the submodules defined under the given `module`.
+
+  Note: This function relies on the existence of concept documents for modules.
   """
   def submodules(module) do
     {:ok, path} = module |> Module.concat(X) |> new!() |> Concept.build_path()
@@ -165,13 +167,17 @@ defmodule Magma.Matter.Module do
 
   @impl true
   def context_knowledge(%Concept{subject: %__MODULE__{name: module}}) do
-    """
-    #### Peripherally relevant modules
+    if auto_module_context?() do
+      """
+      #### Peripherally relevant modules
 
-    #{context_modules_knowledge(module)}
-    """
-    |> String.trim_trailing()
+      #{context_modules_knowledge(module)}
+      """
+      |> String.trim_trailing()
+    end
   end
+
+  defp auto_module_context?, do: Application.get_env(:magma, :auto_module_context, true)
 
   defp context_modules_knowledge(module) do
     context_modules =
