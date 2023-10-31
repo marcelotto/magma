@@ -2,8 +2,8 @@
   "settings_version": "0.20.0",
   "debug": false,
   "obsidian_command_palette_prefix": "Execute: ",
-  "preview_variables_in_command_palette": true,
-  "show_autocomplete_menu": true,
+  "preview_variables_in_command_palette": false,
+  "show_autocomplete_menu": false,
   "working_directory": "..",
   "default_shells": {},
   "environment_variable_path_augmentations": {
