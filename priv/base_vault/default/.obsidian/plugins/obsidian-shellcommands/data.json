@@ -44,7 +44,7 @@
           "convert_ansi_code": true
         },
         "stderr": {
-          "handler": "notification",
+          "handler": "modal",
           "convert_ansi_code": true
         }
       },
@@ -79,7 +79,7 @@
           "convert_ansi_code": true
         },
         "stderr": {
-          "handler": "notification",
+          "handler": "modal",
           "convert_ansi_code": true
         }
       },
@@ -114,7 +114,7 @@
           "convert_ansi_code": true
         },
         "stderr": {
-          "handler": "notification",
+          "handler": "modal",
           "convert_ansi_code": true
         }
       },
@@ -149,7 +149,7 @@
           "convert_ansi_code": true
         },
         "stderr": {
-          "handler": "notification",
+          "handler": "modal",
           "convert_ansi_code": true
         }
       },
@@ -184,7 +184,7 @@
           "convert_ansi_code": true
         },
         "stderr": {
-          "handler": "notification",
+          "handler": "modal",
           "convert_ansi_code": true
         }
       },
@@ -219,7 +219,7 @@
           "convert_ansi_code": true
         },
         "stderr": {
-          "handler": "notification",
+          "handler": "modal",
           "convert_ansi_code": true
         }
       },
@@ -254,7 +254,7 @@
           "convert_ansi_code": true
         },
         "stderr": {
-          "handler": "notification",
+          "handler": "modal",
           "convert_ansi_code": true
         }
       },
