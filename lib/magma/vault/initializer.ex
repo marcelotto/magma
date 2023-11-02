@@ -8,6 +8,8 @@ defmodule Magma.Vault.Initializer do
 
   import Magma.MixHelper
 
+  @bin_dir :code.priv_dir(:magma) |> Path.join(".bin")
+
   @spec initialize(binary, base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
           :ok | {:error, any}
   def initialize(project_name, base_vault \\ nil, opts \\ []) do
@@ -39,6 +41,8 @@ defmodule Magma.Vault.Initializer do
       base_vault
       |> Path.join(".obsidian")
       |> copy_directory(vault_dest_dir)
+
+      copy_directory(@bin_dir, vault_dest_dir)
 
       :ok
     end
