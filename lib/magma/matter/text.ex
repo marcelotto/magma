@@ -61,7 +61,6 @@ defmodule Magma.Matter.Text do
       )
   end
 
-  @impl true
   def new(attrs) when is_list(attrs) do
     {:ok, struct(__MODULE__, attrs)}
   end

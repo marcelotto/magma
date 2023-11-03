@@ -57,7 +57,6 @@ defmodule Magma.Matter.Text.Section do
     "Description of the intended content of the '#{name}' section"
   end
 
-  @impl true
   def new(attrs) when is_list(attrs) do
     {:ok, struct(__MODULE__, attrs)}
   end
