@@ -3,6 +3,8 @@
 [![Total Download](https://img.shields.io/hexpm/dt/magma.svg)](https://hex.pm/packages/magma)
 [![License](https://img.shields.io/hexpm/l/magma.svg)](https://github.com/marcelotto/magma/blob/main/LICENSE.txt)
 
+[![ExUnit Tests](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml)
+[![Quality Checks](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml)
 
 
 <br />
