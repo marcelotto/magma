@@ -4,8 +4,8 @@ if Code.ensure_loaded?(OpenAI) do
 
     alias Magma.Prompt.Assembler
 
-    defstruct model: "gpt-3.5-turbo",
-              temperature: 0.2
+    defstruct model: "gpt-4",
+              temperature: 0.6
 
     import Magma.Utils.Guards
 
