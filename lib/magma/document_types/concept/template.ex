@@ -1,4 +1,6 @@
 defmodule Magma.Concept.Template do
+  @moduledoc false
+
   alias Magma.Concept
 
   import Magma.View

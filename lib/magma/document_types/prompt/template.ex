@@ -1,4 +1,6 @@
 defmodule Magma.Prompt.Template do
+  @moduledoc false
+
   alias Magma.{Artefact, Prompt, Concept}
   alias Magma.Matter.Project
 
