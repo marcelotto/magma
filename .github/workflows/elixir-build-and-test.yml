@@ -36,6 +36,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install xclip
+        run: sudo apt-get install xclip
+
       - name: Setup Pandoc
         uses: nikeee/setup-pandoc@v1
 
