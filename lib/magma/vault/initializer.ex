@@ -42,10 +42,20 @@ defmodule Magma.Vault.Initializer do
       |> Path.join(".obsidian")
       |> copy_directory(vault_dest_dir)
 
+      create_gitignore_file(vault_dest_dir)
+
       copy_directory(@bin_dir, vault_dest_dir)
 
       :ok
     end
+  end
+
+  defp create_gitignore_file(vault_dest_dir) do
+    vault_dest_dir
+    |> Path.join(".gitignore")
+    |> create_file("""
+    __prompt_results__/
+    """)
   end
 
   defp create_project(project_name) do

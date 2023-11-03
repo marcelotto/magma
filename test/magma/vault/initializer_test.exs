@@ -15,6 +15,7 @@ defmodule Magma.Vault.InitializerTest do
       assert Initializer.initialize(project_name) == :ok
 
       assert File.exists?(Vault.path())
+      assert File.exists?(Vault.path(".gitignore"))
       assert File.exists?(Vault.path(".obsidian"))
       assert File.exists?(Vault.path([".obsidian", "plugins"]))
       assert File.exists?(Vault.path([".obsidian", "community-plugins.json"]))
