@@ -1,4 +1,31 @@
 defmodule Magma.Generation do
+  @moduledoc """
+  Generic adapter-based `Magma.Prompt` execution.
+
+  The `Magma.Generation` module is primarily responsible for handling the
+  execution of prompts. It is designed to be adaptable and flexible,
+  supporting different LLMs via specific adapters.
+  The module defines a behaviour that each adapter should implement,
+  ensuring a consistent interface for executing prompts.
+
+  The currently implemented adapters are:
+
+  - `Magma.Generation.OpenAI` for the OpenAI API
+  - `Magma.Generation.Manual` for manual prompt execution
+
+  The default values for the generation specification embedded within a prompt
+  document (the `magma_generation_type` and `magma_generation_params` properties
+  in its YAML frontmatter) can be configured for your application in `config.exs`
+  like this:
+
+      config :magma,
+        default_generation: Magma.Generation.OpenAI
+
+      config :magma, Magma.Generation.OpenAI,
+        model: "gpt-4",
+        temperature: 0.6
+  """
+
   alias Magma.Artefact
 
   import Magma.Utils.Guards
@@ -83,6 +110,13 @@ defmodule Magma.Generation do
     end
   end
 
+  @doc """
+  Extracts generation information from YAML frontmatter metadata.
+
+  The function attempts to retrieve the `magma_generation_type` and
+  `magma_generation_params` from the metadata. It returns a tuple containing
+  the generation (if found and valid), and the remaining metadata.
+  """
   def extract_from_metadata(metadata) do
     {generation_type, custom_metadata} = Map.pop(metadata, :magma_generation_type)
     {generation_params, custom_metadata} = Map.pop(custom_metadata, :magma_generation_params)
