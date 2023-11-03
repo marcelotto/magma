@@ -45,7 +45,7 @@ defmodule Magma.Artefacts.Readme do
   @impl true
   def system_prompt_task(_concept \\ nil) do
     """
-    Your task is to generate a project README using the following template, replacing the content between {{ ... }} accordingly:
+    Your task is to generate a project README using the following template (without the surrounding Markdown block), replacing the content between {{ ... }} accordingly:
 
     ```markdown
     #{File.read!(@template)}
