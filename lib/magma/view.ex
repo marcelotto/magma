@@ -2,12 +2,10 @@ defmodule Magma.View do
   alias Magma.{Concept, PromptResult, Artefact, Text, DocumentStruct}
   alias Magma.DocumentStruct.Section
 
-  def link_to(document_or_target, section \\ nil)
-  def link_to(%_{name: name}, title), do: link_to(name, title)
-  def link_to(:title, :title), do: raise("invalid title")
-  def link_to(target, :title), do: link_to(target, target)
+  def link_to(document_or_target, label \\ nil)
+  def link_to(%_{name: name}, label), do: link_to(name, label)
   def link_to(target, nil) when is_binary(target), do: "[[#{target}]]"
-  def link_to(target, section) when is_binary(target), do: "[[#{target}|#{section}]]"
+  def link_to(target, label) when is_binary(target), do: "[[#{target}|#{label}]]"
 
   def link_to_concept(document, section \\ nil),
     do: document |> Concept.from() |> link_to(section)
