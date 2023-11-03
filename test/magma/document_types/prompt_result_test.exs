@@ -32,7 +32,6 @@ defmodule Magma.PromptResultTest do
       assert result.path ==
                Vault.path("custom_prompts/__prompt_results__/#{result.name}.md")
     end
-
   end
 
   describe "create/1 (and re-load/1)" do
