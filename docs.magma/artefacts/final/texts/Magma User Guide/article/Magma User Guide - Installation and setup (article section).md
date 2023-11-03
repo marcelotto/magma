@@ -34,6 +34,10 @@ def deps do
 end
 ```
 
+> #### warning {: .warning}
+>
+> If you're running on Apple Silicon you might experience problems with Rambo. You'll have to switch to the Github master version until the next version is released. See this issue: https://github.com/jayjun/rambo/pull/13#issuecomment-1193371511
+
 Magma relies on Pandoc, which needs to be installed separately. Make sure you have at least version 3.1.7. Refer to the [Pandoc installation guide](https://pandoc.org/installing.html) for more details.
 
 To open the Magma Vault in Obsidian, you must have Obsidian is installed of course. We recommend using version 1.4 or above as links in the YAML frontmatter are properly supported from this version onward.
