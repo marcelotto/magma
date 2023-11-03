@@ -1,4 +1,17 @@
 defmodule Magma.Concept do
+  @moduledoc """
+  The basic Magma document type used for generating concrete artefacts.
+
+  It contains all user-contributed content necessary for artefact generation,
+  such as descriptions of the subject matter, background knowledge, and task
+  descriptions for various artefacts.
+
+  This module provides functions for creating, loading and updating these
+  concept documents, as well as functions for accessing specific sections
+  of the document such as the description and context knowledge sections.
+  It also allows for the creation of prompts based on a concept.
+  """
+
   use Magma.Document,
     fields: [
       # the thing the concept is about
@@ -44,6 +57,12 @@ defmodule Magma.Concept do
   def from(%PromptResult{prompt: %Artefact.Prompt{}} = result), do: result.prompt.concept
   def from(%Artefact.Version{} = version), do: version.concept
 
+  @doc """
+  Creates a new concept document struct for a given subject matter.
+
+  Note, this function doesn't create the document in the `Magma.Vault`.
+  Use `create/3` for this purpose.
+  """
   def new(subject, attrs \\ []) do
     struct(__MODULE__, [{:subject, subject} | attrs])
     |> Document.init_path()
@@ -56,6 +75,9 @@ defmodule Magma.Concept do
     end
   end
 
+  @doc """
+  Creates a new concept document for a given subject matter in the `Magma.Vault`.
+  """
   def create(subject, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{subject: %matter_type{} = matter} = document, opts, []) do
@@ -82,6 +104,11 @@ defmodule Magma.Concept do
     end
   end
 
+  @doc """
+  Creates a new concept document for a given subject matter in the `Magma.Vault`.
+
+  Fails in error cases.
+  """
   def create!(subject, attrs \\ [], opts \\ []) do
     case create(subject, attrs, opts) do
       {:ok, document} -> document
@@ -94,7 +121,7 @@ defmodule Magma.Concept do
     matter_type.render_front_matter(matter)
   end
 
-  def render(%__MODULE__{} = concept, opts) do
+  defp render(%__MODULE__{} = concept, opts) do
     with {:ok, artefact_types} <- artefacts(concept, opts) do
       assigns = Keyword.get(opts, :assigns, [])
 
@@ -115,6 +142,7 @@ defmodule Magma.Concept do
     end
   end
 
+  @spec update_content_from_ast(t()) :: t()
   def update_content_from_ast(%__MODULE__{} = concept) do
     %__MODULE__{concept | content: DocumentStruct.to_markdown(concept)}
   end
