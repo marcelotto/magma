@@ -4,6 +4,7 @@ defmodule Magma.Matter.Text do
   alias Magma.{Matter, Concept}
 
   @type t :: %__MODULE__{}
+  @type type :: module
 
   @impl true
   def artefacts, do: [Magma.Artefacts.TableOfContents]
@@ -61,10 +62,12 @@ defmodule Magma.Matter.Text do
       )
   end
 
+  @spec new(keyword) :: {:ok, t()} | {:error, any}
   def new(attrs) when is_list(attrs) do
     {:ok, struct(__MODULE__, attrs)}
   end
 
+  @spec new(type(), binary) :: {:ok, t()} | {:error, any}
   def new(type, name) do
     new(name: name, type: type)
   end
