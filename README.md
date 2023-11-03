@@ -16,7 +16,7 @@
 <h3 align="center">Magma</h3>
 
   <p align="center">
-    An environment for writing and executing complex prompts
+    An environment for writing and executing prompts for documentation and more
     <br />
     <a href="https://hexdocs.pm/magma/"><strong>Explore the docs »</strong></a>
     <br />
