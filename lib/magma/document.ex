@@ -1,38 +1,82 @@
 defmodule Magma.Document do
-  alias Magma.Vault
-  alias Magma.View
+  @moduledoc """
+  A behavior for the different kinds of document types in Magma.
+
+  Besides the callback definition, it provides shared fields and logic between
+  all document types. Each document type defines additional fields for its
+  specific tasks and a path scheme that determines where instances of this type
+  are stored.
+
+  Note, that in general the content under the YAML frontmatter of a document
+  is not further interpreted (except `Magma.Concept`).
+  `Magma.DocumentStruct` allows to get the AST of a Markdown document.
+  """
+
+  alias Magma.{Vault, View, Concept, Artefact, Prompt, PromptResult, Text}
 
   import Magma.Utils, only: [init_fields: 2]
 
   @type t ::
-          Magma.Concept.t()
-          | Magma.Prompt.t()
-          | Magma.Artefact.Prompt.t()
-          | Magma.PromptResult.t()
-          | Magma.Artefact.Version.t()
-          | Magma.Text.Preview.t()
+          Concept.t()
+          | Prompt.t()
+          | Artefact.Prompt.t()
+          | PromptResult.t()
+          | Artefact.Version.t()
+          | Text.Preview.t()
 
+  @type type :: module
+
+  @doc """
+  Fetches a document from a related document.
+
+  For example, `Concept.from(prompt)` will return the `Magma.Concept` document from the given `prompt`.
+
+  Implementation should implement clauses for all document types for which it is possible.
+
+  For `Magma.Artefact`-specific documents from a `Magma.Concept`, the concept must be given in a
+  `{Concept.t(), Artefact.t()}` tuple.
+  """
   @callback from(t() | {Concept.t(), Artefact.t()}) :: t() | binary
 
-  @callback from!(t() | {Concept.t(), Artefact.t()}) :: t()
+  @doc """
+  Builds the path of a new document during its creation.
 
+  The function will receive a struct created with the respective `new` function, which should
+  have initialized all parts required for this path building step.
+  """
   @callback build_path(t()) :: {:ok, Path.t()}
 
+  @doc """
+  The title of the document used in the initial top-level header of a document.
+  """
   @callback title(t()) :: binary
 
+  @doc """
+  Document type specific logic when loading a document.
+
+  Usually the document type specific fields of the YAML front matter of the document
+  are extracted and interpreted here.
+  """
   @callback load_document(t()) :: {:ok, t()} | {:error, any}
 
+  @doc """
+  Renders the document type specific fields as YAML front matter lines.
+  """
   @callback render_front_matter(t()) :: binary
 
+  # The fields every document type implementing this behaviour gets.
   @fields [
-    # the path of this document
+    # the path of the document
     path: nil,
     # the name of the file (used for links)
     name: nil,
     # the raw text of the document without the YAML front matter
     content: nil,
+    # the list of tags in `tags` field of the YAML front matter
     tags: nil,
+    # the list of aliases in `aliases` field of the YAML front matter
     aliases: nil,
+    # the list of aliases in `aliases` field of the YAML front matter
     created_at: nil,
     # additional YAML front matter
     custom_metadata: %{}
@@ -48,7 +92,9 @@ defmodule Magma.Document do
 
       defstruct Magma.Document.fields() ++ unquote(additional_fields)
 
-      @impl true
+      @doc """
+      Fetches a document from a related document and immediately loads it with `load!/1`
+      """
       def from!(document) do
         case from(document) do
           %_{} = result -> result
@@ -57,20 +103,39 @@ defmodule Magma.Document do
         end
       end
 
+      @doc """
+      Loads a document from the given `path` or `document`.
+
+      If the loaded document is not of the proper document type an `Magma.InvalidDocumentType`
+      exception is returned in an `:error` tuple.
+      """
       def load(%__MODULE__{} = document), do: Document.Loader.load(document)
       def load(path), do: Document.Loader.load(__MODULE__, path)
-      def load_linked(name), do: Document.Loader.load_linked(__MODULE__, name)
 
+      @doc """
+      Loads a document from the given `path` or `document` and raises an exception in error cases.
+      """
       def load!(document_or_path) do
         case load(document_or_path) do
           {:ok, document} -> document
           {:error, error} -> raise error
         end
       end
+
+      @doc """
+      Loads a document from the given Obsidian `link`, i.e. a string of the form `"[[name]]"`.
+
+      If the referenced document is not of the proper document type an `Magma.InvalidDocumentType`
+      exception is returned in an `:error` tuple.
+      """
+      def load_linked(link), do: Document.Loader.load_linked(__MODULE__, link)
     end
   end
 
-  @doc false
+  @doc !"""
+       This function should be used by `create` implementations of a document type
+       to initialize the fields of the document which aren't set already.
+       """
   def init(%_document_type{} = document, fields \\ []) do
     init_fields(
       document,
@@ -83,7 +148,10 @@ defmodule Magma.Document do
     )
   end
 
-  @doc false
+  @doc !"""
+       This function should be called by `new` implementations of a document type
+       to initialize its `:path` and `:name` (using the `build_path/1` callback).
+       """
   def init_path(%document_type{} = document) do
     case apply(document_type, :build_path, [document]) do
       {:ok, path} -> {:ok, %{document | path: path, name: name_from_path(path)}}
@@ -97,6 +165,12 @@ defmodule Magma.Document do
     Path.basename(path, Path.extname(path))
   end
 
+  @doc !"""
+       Creates the file for new document.
+
+       Note that the preferred way of creating a document is to use the respective
+       `create` function on the document type module, which will call this function.
+       """
   def create(%_document_type{} = document, opts \\ []) do
     cond do
       Magma.MixHelper.create_file(document.path, full_content(document), opts) ->
@@ -112,6 +186,9 @@ defmodule Magma.Document do
     end
   end
 
+  @doc """
+  Saves the changes on a document.
+  """
   def save(%_document_type{} = document, opts \\ []) do
     with :ok <- Magma.MixHelper.save_file(document.path, full_content(document), opts) do
       {:ok, document}
@@ -122,6 +199,7 @@ defmodule Magma.Document do
     render_front_matter(document) <> document.content
   end
 
+  @doc !"Renders the document metadata fields as YAML front matter."
   def render_front_matter(%document_type{} = document) do
     """
     ---
@@ -134,12 +212,22 @@ defmodule Magma.Document do
     """
   end
 
+  @doc """
+  Creates the file for document, overwriting the existing one.
+
+  This function is used by the `Mix.Tasks.Magma.Prompt.Update` Mix task.
+  """
   def recreate(%document_type{} = document) do
     document
     |> reset_document()
     |> document_type.create(force: true)
   end
 
+  @doc """
+  Creates the file for document, overwriting the existing one.
+
+  This function is used by the `Mix.Tasks.Magma.Prompt.Update` Mix task.
+  """
   def recreate!(document) do
     case recreate(document) do
       {:ok, document} -> document
@@ -151,10 +239,14 @@ defmodule Magma.Document do
     %{document | content: nil, created_at: nil}
   end
 
-  # an AST transformation would be better, but does an implicit normalization
+  @doc !"""
+       Returns the content of the document with any content before the initial header
+       (which is usually used for document controls) stripped off.
+       """
   def content_without_prologue(document) do
     content = document.content
 
+    # an AST transformation would be better, but does an implicit normalization
     case String.split(content, ~r{^\#.*\n}m, parts: 2) do
       [_, stripped_content] -> String.trim(stripped_content)
       _ -> raise "invalid document #{document.path}: no title header found"
@@ -206,7 +298,7 @@ defmodule Magma.Document do
   end
 
   @doc """
-  Returns the document module for the given string.
+  Returns the document type module for the given string.
 
   ## Example
 
@@ -231,6 +323,9 @@ defmodule Magma.Document do
     end
   end
 
+  @doc """
+  Returns if the given module is a document type module.
+  """
   def type?(module) do
     Code.ensure_loaded?(module) and function_exported?(module, :build_path, 1)
   end
