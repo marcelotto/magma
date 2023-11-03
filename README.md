@@ -1,7 +1,7 @@
 [![Hex.pm](https://img.shields.io/hexpm/v/magma.svg?style=flat-square)](https://hex.pm/packages/magma)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/magma/)
 [![Total Download](https://img.shields.io/hexpm/dt/magma.svg)](https://hex.pm/packages/magma)
-[![License](https://img.shields.io/hexpm/l/magma.svg)](https://github.com/marcelotto/magma/blob/main/LICENSE.txt)
+[![License](https://img.shields.io/hexpm/l/magma.svg)](https://github.com/marcelotto/magma/blob/main/LICENSE.md)
 
 [![ExUnit Tests](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml)
 [![Quality Checks](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml)
@@ -82,4 +82,4 @@ A huge thanks to the [NLnet Foundation](https://nlnet.nl/) for funding this proj
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License. See `LICENSE.md` for more information.
