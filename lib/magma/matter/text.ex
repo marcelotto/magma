@@ -38,8 +38,8 @@ defmodule Magma.Matter.Text do
   end
 
   @impl true
-  def prompt_concept_description_title(%__MODULE__{name: name, type: text_type}) do
-    "Description of the content to be covered by the '#{name}' #{text_type.label}"
+  def prompt_concept_description_title(%__MODULE__{name: name}) do
+    "Description of the content to be covered by '#{name}'"
   end
 
   @impl true
