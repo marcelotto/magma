@@ -22,9 +22,31 @@ defmodule Magma.MixProject do
         "vcr.show": :test
       ],
 
+      # Hex
+      package: package(),
+      description: description(),
+
       # Docs
       name: "Magma",
       docs: docs()
+    ]
+  end
+
+  defp description do
+    """
+    An IDE for documentation and prompt development.
+    """
+  end
+
+  defp package do
+    [
+      maintainers: ["Marcel Otto"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => @scm_url,
+        "Changelog" => @scm_url <> "/blob/main/CHANGELOG.md"
+      },
+      files: ~w[lib priv mix.exs .formatter.exs VERSION *.md]
     ]
   end
 
