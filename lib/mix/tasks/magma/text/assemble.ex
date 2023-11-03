@@ -1,7 +1,4 @@
 defmodule Mix.Tasks.Magma.Text.Assemble do
-  @shortdoc "Generates the section concepts from the final table of contents"
-  @moduledoc @shortdoc
-
   use Mix.Task
 
   import Magma.MixHelper
@@ -11,15 +8,17 @@ defmodule Mix.Tasks.Magma.Text.Assemble do
   alias Magma.Artefacts.TableOfContents
   alias Magma.Text.Assembler
 
+  @shortdoc "Generates the documents for the sections of a text"
+
   @options [
     force: :boolean
   ]
 
-  def run(args) do
-    Mix.Task.run("app.start")
+  @requirements ["app.start"]
 
+  def run(args) do
     with_valid_options(args, @options, fn
-      _opts, [] -> Mix.shell().error("concept or toc name missing")
+      _opts, [] -> error("concept or toc name missing")
       opts, [concept_or_toc_name] -> assemble_toc!(concept_or_toc_name, opts)
     end)
   end
@@ -29,25 +28,28 @@ defmodule Mix.Tasks.Magma.Text.Assemble do
          {:ok, _} <- assemble_toc(document, opts) do
       :ok
     else
-      {:error, error} -> raise error
+      error -> handle_error(error)
     end
   end
 
-  def assemble_toc(%Concept{} = concept, opts) do
+  defp assemble_toc(%Concept{} = concept, opts) do
     concept
     |> TableOfContents.load_version!()
     |> assemble_toc(opts)
   end
 
-  def assemble_toc(%Artefact.Version{} = version, opts) do
+  defp assemble_toc(%Artefact.Version{} = version, opts) do
     Assembler.assemble(version, opts)
   end
 
-  def assemble_toc(%invalid_document_type{path: path}, _) do
-    raise Magma.InvalidDocumentType.exception(
-            document: path,
-            expected: [Concept, Artefact.Version],
-            actual: invalid_document_type
-          )
+  defp assemble_toc(%invalid_document_type{path: path}, _) do
+    {:error,
+     raise(
+       Magma.InvalidDocumentType.exception(
+         document: path,
+         expected: [Concept, Artefact.Version],
+         actual: invalid_document_type
+       )
+     )}
   end
 end

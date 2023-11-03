@@ -90,14 +90,15 @@ defmodule Magma.Document.Loader do
         fun.(prompt)
 
       {:ok, invalid_document} ->
-        raise InvalidDocumentType.exception(
-                document: invalid_document.path,
-                expected: [Magma.Prompt, Magma.Artefact.Prompt],
-                actual: invalid_document.__struct__
-              )
+        {:error,
+         InvalidDocumentType.exception(
+           document: invalid_document.path,
+           expected: [Magma.Prompt, Magma.Artefact.Prompt],
+           actual: invalid_document.__struct__
+         )}
 
-      {:error, error} ->
-        raise error
+      {:error, _} = error ->
+        error
     end
   end
 

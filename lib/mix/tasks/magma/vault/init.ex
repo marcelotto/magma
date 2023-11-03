@@ -1,12 +1,11 @@
 defmodule Mix.Tasks.Magma.Vault.Init do
-  @shortdoc "Initializes the Magma vault directory"
-  @moduledoc @shortdoc
-
   use Mix.Task
 
   import Magma.MixHelper
 
   alias Magma.Vault.Initializer
+
+  @shortdoc "Initializes the Magma vault directory"
 
   @options [
     force: :boolean,
@@ -15,18 +14,17 @@ defmodule Mix.Tasks.Magma.Vault.Init do
     code_sync: :boolean
   ]
 
-  def run(args) do
-    Mix.Task.run("app.start")
+  @requirements ["app.start"]
 
+  def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        Mix.shell().error("project name missing")
+        error("project name missing")
 
       opts, [project_name] ->
-        case Initializer.initialize(project_name, base_vault(opts), opts) do
-          :ok -> :ok
-          {:error, error} -> raise inspect(error)
-        end
+        project_name
+        |> Initializer.initialize(base_vault(opts), opts)
+        |> handle_error()
     end)
   end
 

@@ -1,26 +1,28 @@
 defmodule Mix.Tasks.Magma.Prompt.Update do
-  @shortdoc "Regenerates a prompt"
-  @moduledoc @shortdoc
-
   use Mix.Task
 
   import Magma.MixHelper
 
   alias Magma.{Artefact, Document}
 
+  @shortdoc "Regenerates a artefact prompt"
+
   @options []
 
-  def run(args) do
-    Mix.Task.run("app.start")
+  @requirements ["app.start"]
 
+  def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        Mix.shell().error("prompt name or path missing")
+        error("prompt name or path missing")
 
       _opts, [prompt_name] ->
-        prompt_name
-        |> Artefact.Prompt.load!()
-        |> Document.recreate!()
+        with {:ok, prompt} <- Artefact.Prompt.load(prompt_name),
+             {:ok, _} <- Document.recreate(prompt) do
+          :ok
+        else
+          error -> handle_error(error)
+        end
     end)
   end
 end

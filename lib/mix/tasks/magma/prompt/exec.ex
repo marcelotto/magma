@@ -1,6 +1,4 @@
 defmodule Mix.Tasks.Magma.Prompt.Exec do
-  @shortdoc "Executes a prompt"
-  @moduledoc @shortdoc
 
   use Mix.Task
 
@@ -9,19 +7,21 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
   alias Magma.{Generation, PromptResult}
   alias Magma.Document.Loader
 
+  @shortdoc "Executes a prompt"
+
   # TODO: add Magma.Generation options
   @options [
-    trim_header: :boolean,
     manual: :boolean,
-    interactive: :boolean
+    interactive: :boolean,
+    trim_header: :boolean
   ]
 
-  def run(args) do
-    Mix.Task.run("app.start")
+  @requirements ["app.start"]
 
+  def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        Mix.shell().error("prompt name or path missing")
+        error("prompt name or path missing")
 
       opts, [prompt_name] ->
         {attrs, opts} =
@@ -30,8 +30,9 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
             {_, opts} -> {[], opts}
           end
 
-        {:ok, _} =
-          Loader.with_prompt(prompt_name, &PromptResult.create(&1, attrs, opts))
+        prompt_name
+        |> Loader.with_prompt(&PromptResult.create(&1, attrs, opts))
+        |> handle_error()
     end)
   end
 end

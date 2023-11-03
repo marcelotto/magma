@@ -1,6 +1,4 @@
 defmodule Mix.Tasks.Magma.Prompt.Gen do
-  @shortdoc "Generates a prompt"
-  @moduledoc @shortdoc
 
   use Mix.Task
 
@@ -8,33 +6,34 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
 
   alias Magma.{Artefact, Prompt, Concept}
 
-  @options []
+  @shortdoc "Generates a custom prompt or artefact prompt document"
+
+  @options [
+    force: :boolean
+  ]
+
+  @requirements ["app.start"]
 
   def run(args) do
-    Mix.Task.run("app.start")
-
     with_valid_options(args, @options, fn
       _opts, [] ->
-        Mix.shell().error("artefact type missing")
+        error("artefact type missing")
 
       _opts, [concept_name, artefact_type] ->
         if artefact_module = Artefact.type(artefact_type) do
-          with {:ok, concept} <- Concept.load(concept_name) do
-            Artefact.Prompt.create(concept, artefact_module)
-            |> ok_or_fail!()
+          with {:ok, concept} <- Concept.load(concept_name),
+               {:ok, _} <- Artefact.Prompt.create(concept, artefact_module) do
+            :ok
           else
-            {:error, error} -> raise error
+            error -> handle_error(error)
           end
         else
-          raise "unknown artefact type: #{artefact_type}"
+          error("unknown artefact type: #{artefact_type}")
         end
 
       _opts, [prompt_name] ->
         Prompt.create(prompt_name)
-        |> ok_or_fail!()
+        |> handle_error()
     end)
   end
-
-  defp ok_or_fail!({:ok, _}), do: :ok
-  defp ok_or_fail!({:error, error}), do: raise(error)
 end

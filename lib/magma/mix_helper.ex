@@ -14,7 +14,7 @@ defmodule Magma.MixHelper do
 
         #{Enum.map(options_spec, fn {opt, type} -> "- #{opt} : #{type}\n" end)}
         """
-        |> Mix.shell().error()
+        |> error()
 
       undefined ->
         raise "Undefined result: #{inspect(undefined)}"
@@ -39,5 +39,17 @@ defmodule Magma.MixHelper do
     Mix.shell().info([:green, "* saving ", :reset, Path.relative_to_cwd(target)])
     File.mkdir_p!(Path.dirname(target))
     File.write(target, content, opts)
+  end
+
+  def handle_error({:ok, _}), do: :ok
+  def handle_error(:ok), do: :ok
+
+  def handle_error({:error, error}) do
+    error |> to_string() |> error()
+  end
+
+  def error(message) do
+    Mix.shell().error(message)
+    exit({:shutdown, 1})
   end
 end
