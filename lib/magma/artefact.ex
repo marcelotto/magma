@@ -1,4 +1,13 @@
 defmodule Magma.Artefact do
+  @moduledoc """
+  `Magma.Artefact` is a behaviour for defining different types of artefacts.
+
+  A Magma artefact represents a specific type of output that can be generated
+  for some Magma matter. The module provides a set of callbacks for specifying
+  various aspects of the artefacts such as naming, path definitions, and
+  document generation details.
+  """
+
   alias Magma.Concept
   alias __MODULE__
 
