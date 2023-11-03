@@ -3,8 +3,8 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Artefact]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
-created_at: 2023-10-06 16:03:17
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
+created_at: 2023-11-03 04:39:55
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,27 +52,39 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
+You have two tasks to do based on the given implementation of the module and your knowledge base:
+
+1. generate the content of the `@doc` strings of the public functions
+2. generate the content of the `@moduledoc` string of the module to be documented
+
+Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
+
+After this summary sentence, the following sections and paragraphs should cover:
+
+- What's the purpose of this module/function?
+- For moduledocs: What are the main function(s) of this module?
+- If possible, an example usage in an "Example" section using an indented code block
+- configuration options (if there are any)
+- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
+
+The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
 
 ```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
 ## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
 
 ### `function/1`
 
-The first line should be a very short one-sentence summary of the main purpose of this function.
+Summary sentence
 
-Then follows the main body of the function documentation.
+Body
+
+## Moduledoc
+
+Summary sentence
+
+Body
 ```
 
 <!--
@@ -93,10 +105,12 @@ The following sections contain background knowledge you need to be aware of, but
 
 ##### `Magma.Artefact.Version` ![[Magma.Artefact.Version#Description|]]
 
+![[Magma.Artefact#Context knowledge|]]
+
 
 ## Request
 
-### ![[Magma.Artefact#ModuleDoc prompt task|]]
+![[Magma.Artefact#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.Artefact` ![[Magma.Artefact#Description|]]
 
@@ -111,27 +125,101 @@ defmodule Magma.Artefact do
 
   @type t :: module
 
+  @doc """
+  A callback that return the name of an artefact.
+  """
   @callback name(Concept.t()) :: binary
 
+  @doc """
+  A callback that returns the name of the `Magma.Artefact.Prompt` document for this type of matter.
+  """
   @callback prompt_name(Concept.t()) :: binary
 
+  @doc """
+  A callback that returns the system prompt text of the `Magma.Artefact.Prompt` document for this type of matter that describes what to generate.
+
+  As opposed to the `c:request_prompt_task/1` this is a general, static text
+  used by artefacts of this type.
+  """
   @callback system_prompt_task(Concept.t()) :: binary
 
+  @doc """
+  A callback that returns the request prompt text of the `Magma.Artefact.Concept` document for this type of matter that describes what to generate.
+
+  Despite returning also a general text like the `c:system_prompt_task/1`, this
+  one is included in the "Artefacts" section of the `Magma.Concept` document
+  (and only transcluded in `Magma.Artefact.Prompt` document), so that the user
+  has a chance to adapt it for a specific instance of this artefact type.
+  """
   @callback request_prompt_task(Concept.t()) :: binary
 
+  @doc """
+  A callback that returns the title of the "Artefacts" subsection for this type of matter in the `Magma.Concept` document.
+
+  This section consists of links to the `Magma.Artefact.Prompt` and the
+  `Magma.Artefact.Version` of this document and another subsection for the
+  text returned by the `c:request_prompt_task/1` callback.
+  """
   @callback concept_section_title :: binary
 
+  @doc """
+  A callback that returns the title of the "Artefacts" subsection for this type of matter in the `Magma.Concept` document where for the text returned by the `c:request_prompt_task/1` callback is rendered.
+
+  By default, this is just the `concept_section_title/0` with `"prompt task"` appended.
+  """
   @callback concept_prompt_task_section_title :: binary
 
+  @doc """
+  A callback that returns the title to be used for the `Magma.Artefact.Version` document.
+  """
+  @callback version_title(Artefact.Version.t()) :: binary
+
+  @doc """
+  A callback that allows to specify a text which should be included in the prologue of the `Magma.Artefact.Version` document of this artefact type.
+  """
   @callback version_prologue(Artefact.Version.t()) :: binary | nil
 
+  @doc """
+  A callback that returns if the initial header of a generated `Magma.PromptResult` for this type artefact should be stripped.
+
+  Since the title for the `Magma.PromptResult` is already defined,
+  the title generated by an LLM should be ignored usually.
+  For some types of artefacts, however, this should not be the case.
+  These artefact types, the default implementation returning `true`,
+  can be overwritten.
+  """
   @callback trim_prompt_result_header? :: boolean
 
+  @doc """
+  A callback that returns the general path segment to be used for documents for this type of artefact.
+  """
   @callback relative_base_path(Concept.t()) :: Path.t()
 
+  @doc """
+  A callback that returns the path for `Magma.Artefact.Prompt` documents about this type of artefact.
+
+  Since the `Magma.PromptResult` document are always stored in the subdirectory
+  where the prompt are stored, this function also determines their path.
+
+  This path is relative to the `Magma.Vault.artefact_generation_path/0`.
+  """
   @callback relative_prompt_path(Concept.t()) :: Path.t()
 
+  @doc """
+  A callback that returns the path for `Magma.Artefact.Version` documents about this type of artefact.
+
+  This path is relative to the `Magma.Vault.artefact_version_path/0`.
+  """
   @callback relative_version_path(Concept.t()) :: Path.t()
+
+  @doc """
+  A callback that allows to implement a custom `Magma.Artefact.Version` document creation function.
+
+  This function should return `nil` if the default `Magma.Artefact.Version.create/2`
+  should be used (which the default implementation does automatically).
+  """
+  @callback create_version(Artefact.Version.t(), keyword) ::
+              {:ok, Path.t() | Artefact.Version.t()} | {:error, any} | nil
 
   defmacro __using__(opts) do
     matter_type = Keyword.fetch!(opts, :matter)
@@ -166,10 +254,16 @@ defmodule Magma.Artefact do
       end
 
       @impl true
+      def version_title(%Artefact.Version{artefact: __MODULE__} = version), do: version.name
+
+      @impl true
       def version_prologue(%Artefact.Version{artefact: __MODULE__}), do: nil
 
       @impl true
       def trim_prompt_result_header?, do: true
+
+      @impl true
+      def create_version(%Artefact.Version{artefact: __MODULE__}, opts), do: nil
 
       def prompt(%Concept{subject: %unquote(matter_type){}} = concept, attrs \\ []) do
         Artefact.Prompt.new(concept, __MODULE__, attrs)
@@ -204,12 +298,14 @@ defmodule Magma.Artefact do
                      version_prologue: 1,
                      trim_prompt_result_header?: 0,
                      relative_prompt_path: 1,
-                     relative_version_path: 1
+                     relative_version_path: 1,
+                     version_title: 1,
+                     create_version: 2
     end
   end
 
   @doc """
-  Returns the artefact type name for the given artefact module.
+  Returns the artefact type name for the given artefact type module.
 
   ## Example
 
@@ -238,7 +334,7 @@ defmodule Magma.Artefact do
   end
 
   @doc """
-  Returns the artefact module for the given string.
+  Returns the artefact type module for the given string.
 
   ## Example
 
@@ -263,6 +359,9 @@ defmodule Magma.Artefact do
     end
   end
 
+  @doc """
+  Checks if the given `module` is a `Magma.Artefact` type module.
+  """
   def type?(module) do
     Code.ensure_loaded?(module) and function_exported?(module, :relative_prompt_path, 1)
   end

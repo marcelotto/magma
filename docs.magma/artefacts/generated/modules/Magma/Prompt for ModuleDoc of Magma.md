@@ -3,8 +3,8 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
-created_at: 2023-10-06 16:03:17
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
+created_at: 2023-11-03 04:34:45
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,27 +52,39 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
+You have two tasks to do based on the given implementation of the module and your knowledge base:
+
+1. generate the content of the `@doc` strings of the public functions
+2. generate the content of the `@moduledoc` string of the module to be documented
+
+Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
+
+After this summary sentence, the following sections and paragraphs should cover:
+
+- What's the purpose of this module/function?
+- For moduledocs: What are the main function(s) of this module?
+- If possible, an example usage in an "Example" section using an indented code block
+- configuration options (if there are any)
+- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
+
+The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
 
 ```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
 ## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
 
 ### `function/1`
 
-The first line should be a very short one-sentence summary of the main purpose of this function.
+Summary sentence
 
-Then follows the main body of the function documentation.
+Body
+
+## Moduledoc
+
+Summary sentence
+
+Body
 ```
 
 <!--
@@ -85,38 +97,13 @@ The following sections contain background knowledge you need to be aware of, but
 
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
 
-##### `Magma.DocumentNotFound` ![[Magma.DocumentNotFound#Description|]]
-
-##### `Magma.Prompt` ![[Magma.Prompt#Description|]]
-
-##### `Magma.Matter` ![[Magma.Matter#Description|]]
-
-##### `Magma.Artefact` ![[Magma.Artefact#Description|]]
-
-##### `Magma.PromptResult` ![[Magma.PromptResult#Description|]]
-
-##### `Magma.Concept` ![[Magma.Concept#Description|]]
-
-##### `Magma.InvalidDocumentType` ![[Magma.InvalidDocumentType#Description|]]
-
-##### `Magma.Generation` ![[Magma.Generation#Description|]]
-
-##### `Magma.Document` ![[Magma.Document#Description|]]
-
-##### `Magma.TopLevelEmptyHeaderTransclusionError` ![[Magma.TopLevelEmptyHeaderTransclusionError#Description|]]
-
-##### `Magma.DocumentStruct` ![[Magma.DocumentStruct#Description|]]
-
-##### `Magma.View` ![[Magma.View#Description|]]
-
-##### `Magma.Vault` ![[Magma.Vault#Description|]]
+![[Magma#Context knowledge|]]
 
 
 ## Request
 
-### ![[Magma#ModuleDoc prompt task|]]
+![[Magma#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma` ![[Magma#Description|]]
 
@@ -134,6 +121,11 @@ defmodule Magma do
     end
   end
 
+  @doc """
+  Adds the contents of the final version of the `Magma.Artefacts.ModuleDoc` as the `@moduledoc`.
+
+  Usually this done via `use Magma`.
+  """
   defmacro defmoduledoc do
     quote do
       magma_moduledoc_path = Magma.Artefacts.ModuleDoc.version_path(__MODULE__)

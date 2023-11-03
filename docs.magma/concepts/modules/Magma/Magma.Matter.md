@@ -9,22 +9,30 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.Matter`?
+Magma matter are the elements of the [[Magma artefact model]] that represent the subject of the concept documents and by that, the subject of the artefact generated from the concept. 
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
+`Magma.Matter` is a behaviour for the different types of such subject matter.
+
+Each matter type: 
+
+- is defined under the namespace `Magma.Matter`
+- defines a struct with additional fields besides the mandatory `:name`  field of every matter type
+- defines which kinds of Magma artefacts are available for this matter type (`artefacts/0` callback)
+- defines functions for the matter-specific parts of the path of concept and prompt documents, e.g. some subfolders in which all documents about this type of matter should be grouped
+- defines various functions specifying texts for different parts of the concept and prompt documents
+
+Magma comes with the following implemented `Magma.Matter` types:
+
+- `Magma.Matter.Module`
+- `Magma.Matter.Project`
+- `Magma.Matter.Text` which is a complex matter consisting of multiple `Magma.Matter.Text.Section`s
+
 
 
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
-
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
-
-
+### Magma artefact model ![[Magma artefact model#Description]]
+![[Magma artefact model#Sequence diagram]]
 
 
 # Artefacts
@@ -37,3 +45,4 @@ Write it down right here in a subsection or use a transclusion. If applicable, s
 ### ModuleDoc prompt task
 
 Generate documentation for module `Magma.Matter` according to its description and code in the knowledge base below.
+

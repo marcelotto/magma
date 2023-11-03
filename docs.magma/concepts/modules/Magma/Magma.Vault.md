@@ -9,22 +9,28 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.Vault`?
+A Magma vault is a special kind of Obsidian vault. It is stored by default inside of the `docs.magma` directory of an Elixir project.  With the `magma.dir` application configuration key it can be configured to be stored in another directory. Usually the Magma vault is kept under version control along with code.
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
+Besides normal Obsidian Markdown documents with knowledge snippets about the project, it consists of some more specialized kinds of Markdown documents, called Magma documents (which are nevertheless still normal Markdown documents), each which specify a path scheme for instances of these document types within the vault.
+
+To be able to access the documents within the vault just by name (independent of their directory), the documents are indexed with the `index/1` function. At application start all files in the vault directory are indexed automatically. 
+
+<!--
+TODO:
+
+- Directory structure should be documented in document types
+	- for document type ...
+	- for custom files ...
+	- templates ...
 -->
 
 
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
-
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
-
-
+## `Magma.Document` ![[Magma.Document#Description]]
+## `Magma.Vault.BaseVault`![[Magma.Vault.BaseVault#Description]]
+## Vault initialization  ![[Magma vault creation#Vault initialization]]
+## `Magma.Vault.CodeSync` ![[Mix.Tasks.Magma.Vault.Sync.Code#Description]]
 
 
 # Artefacts

@@ -9,20 +9,14 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.Prompt`?
-
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
-
+A Magma prompt is a  [[Magma.Document|Magma document]] for prompts without a predefined task, as opposed to [[Magma.Artefact.Prompt|Magma artefact prompts]] which contain predefined text for the generation of a specific artefact. More importantly, they don't have an associated [[Magma.Concept|concept document]] for the user defined content. In Magma prompt documents, you provide all your content or transclusions directly.
 
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
+### Magma documents ![[Magma.Document#Description]]
+### Magma concept documents ![[Magma.Concept#Description]]
 
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
+### Magma artefact prompt documents ![[Magma.Artefact.Prompt#Description]]
 
 
 

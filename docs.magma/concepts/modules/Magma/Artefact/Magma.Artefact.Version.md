@@ -9,22 +9,21 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.Artefact.Version`?
-
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
-
-
+A Magma artefact version document is a concrete realization of a Magma artefact. It is created when the user selects one of the Magma prompt result documents (created by executing a Magma artefact prompt). This selection by the user results in a new Magma artefact version document being created and the contents of the selected Prompt result being copied for it. The user can then edit and finalize this draft version. Depending on the artefact type, further operations can then be performed on the completed version.  
+  
+  
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
+### Magma artefact model ![[Magma artefact model#Description]]
+ ![[Magma artefact model#Sequence diagram]]
+### `Magma.Matter` ![[Magma.Matter#Description]]
 
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
+### `Magma.Artefact` ![[Magma.Artefact#Description]]
 
+### `Magma.Concept` ![[Magma.Concept#Description]]
 
+### `Magma.Artefact.Prompt` ![[Magma.Artefact.Prompt#Description]]
+### `Magma.PromptResult` ![[Magma.PromptResult#Description]]
 
 
 # Artefacts

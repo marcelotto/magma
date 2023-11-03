@@ -3,8 +3,8 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Mix.Tasks.Magma.Prompt.Gen]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
-created_at: 2023-10-06 16:03:22
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
+created_at: 2023-11-02 16:18:29
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,27 +52,39 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
+You have two tasks to do based on the given implementation of the module and your knowledge base:
+
+1. generate the content of the `@doc` strings of the public functions
+2. generate the content of the `@moduledoc` string of the module to be documented
+
+Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
+
+After this summary sentence, the following sections and paragraphs should cover:
+
+- What's the purpose of this module/function?
+- For moduledocs: What are the main function(s) of this module?
+- If possible, an example usage in an "Example" section using an indented code block
+- configuration options (if there are any)
+- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
+
+The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
 
 ```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
 ## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
 
 ### `function/1`
 
-The first line should be a very short one-sentence summary of the main purpose of this function.
+Summary sentence
 
-Then follows the main body of the function documentation.
+Body
+
+## Moduledoc
+
+Summary sentence
+
+Body
 ```
 
 <!--
@@ -87,10 +99,12 @@ The following sections contain background knowledge you need to be aware of, but
 
 #### Peripherally relevant modules
 
+![[Mix.Tasks.Magma.Prompt.Gen#Context knowledge|]]
+
 
 ## Request
 
-### ![[Mix.Tasks.Magma.Prompt.Gen#ModuleDoc prompt task|]]
+![[Mix.Tasks.Magma.Prompt.Gen#ModuleDoc prompt task|]]
 
 ### Description of the module `Mix.Tasks.Magma.Prompt.Gen` ![[Mix.Tasks.Magma.Prompt.Gen#Description|]]
 
@@ -100,8 +114,9 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Mix.Tasks.Magma.Prompt.Gen do
-  @shortdoc "Generates a prompt"
-  @moduledoc @shortdoc
+  use Magma
+
+  @shortdoc "Generates a custom prompt or artefact prompt document"
 
   use Mix.Task
 
@@ -109,7 +124,9 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
 
   alias Magma.{Artefact, Prompt, Concept}
 
-  @options []
+  @options [
+    force: :boolean
+  ]
 
   def run(args) do
     Mix.Task.run("app.start")
@@ -122,7 +139,7 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
         if artefact_module = Artefact.type(artefact_type) do
           with {:ok, concept} <- Concept.load(concept_name) do
             Artefact.Prompt.create(concept, artefact_module)
-            |> ok_or_fail!()
+            |> report_error()
           else
             {:error, error} -> raise error
           end
@@ -132,12 +149,9 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
 
       _opts, [prompt_name] ->
         Prompt.create(prompt_name)
-        |> ok_or_fail!()
+        |> report_error()
     end)
   end
-
-  defp ok_or_fail!({:ok, _}), do: :ok
-  defp ok_or_fail!({:error, error}), do: raise(error)
 end
 
 ```

@@ -3,8 +3,8 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Mix.Tasks.Magma.Text.New]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
-created_at: 2023-10-06 16:03:23
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
+created_at: 2023-11-02 20:16:34
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,27 +52,39 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
+You have two tasks to do based on the given implementation of the module and your knowledge base:
+
+1. generate the content of the `@doc` strings of the public functions
+2. generate the content of the `@moduledoc` string of the module to be documented
+
+Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
+
+After this summary sentence, the following sections and paragraphs should cover:
+
+- What's the purpose of this module/function?
+- For moduledocs: What are the main function(s) of this module?
+- If possible, an example usage in an "Example" section using an indented code block
+- configuration options (if there are any)
+- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
+
+The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
 
 ```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
 ## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
 
 ### `function/1`
 
-The first line should be a very short one-sentence summary of the main purpose of this function.
+Summary sentence
 
-Then follows the main body of the function documentation.
+Body
+
+## Moduledoc
+
+Summary sentence
+
+Body
 ```
 
 <!--
@@ -87,10 +99,12 @@ The following sections contain background knowledge you need to be aware of, but
 
 #### Peripherally relevant modules
 
+![[Mix.Tasks.Magma.Text.New#Context knowledge|]]
+
 
 ## Request
 
-### ![[Mix.Tasks.Magma.Text.New#ModuleDoc prompt task|]]
+![[Mix.Tasks.Magma.Text.New#ModuleDoc prompt task|]]
 
 ### Description of the module `Mix.Tasks.Magma.Text.New` ![[Mix.Tasks.Magma.Text.New#Description|]]
 
@@ -100,30 +114,31 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Mix.Tasks.Magma.Text.New do
-  @shortdoc "Generates a new text concept"
-  @moduledoc @shortdoc
-
+  use Magma
   use Mix.Task
 
   import Magma.MixHelper
 
-  alias Magma.Vault.Initializer
+  alias Magma.Text
+
+  @shortdoc "Generates a new text concept"
 
   @options []
 
+  @requirements ["app.start"]
+
   def run(args) do
-    Mix.Task.run("app.start")
-
     with_valid_options(args, @options, fn
-      _opts, [] ->
-        Mix.shell().error("text_type and/or name missing")
-
-      _opts, [text_type_name, text_name] ->
-        case Initializer.create_text(text_name, text_type_name) do
-          {:ok, _} -> :ok
-          {:error, error} -> raise error
-        end
+      _opts, [] -> Mix.shell().error("text name missing")
+      _opts, [text_name] -> create(text_name)
+      _opts, [text_name, text_type_name] -> create(text_name, text_type_name)
     end)
+  end
+
+  defp create(text_name, text_type \\ nil) do
+    text_name
+    |> Text.create(text_type)
+    |> handle_error()
   end
 end
 

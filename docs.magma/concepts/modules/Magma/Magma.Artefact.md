@@ -9,22 +9,34 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.Artefact`?
+Magma artefacts are the elements of the [[Magma artefact model]] that represent the things we want to generate for some Magma matter. 
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
+`Magma.Artefact` is a behaviour for the different types of such artefacts.
+
+Each artefact type: 
+
+- is defined under the namespace `Magma.Artefacts`
+- defines functions for the artefact-specific parts of the paths of concept and prompt documents, e.g. some subfolders in which all documents about this type of artefact should be grouped
+- defines various functions specifying texts for different parts of the concept and prompt documents
+
+<!-- 
+TODO: when artefact becomes a struct again
+defines a struct with additional fields besides the mandatory `:name`  field of every artefact type
 -->
+
+Magma comes with the following implemented `Magma.Artefact` types:
+
+- `Magma.Artefacts.ModuleDoc`
+- `Magma.Artefacts.README`
+- `Magma.Artefacts.Article`
+- `Magma.Artefacts.TableOfContents` 
+
 
 
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
-
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
-
-
+### Magma artefact model ![[Magma artefact model#Description]]
+ ![[Magma artefact model#Sequence diagram]]
 
 
 # Artefacts
@@ -37,3 +49,5 @@ Write it down right here in a subsection or use a transclusion. If applicable, s
 ### ModuleDoc prompt task
 
 Generate documentation for module `Magma.Artefact` according to its description and code in the knowledge base below.
+
+Conclude with a list of the `Magma.Artefact` types implemented in Magma.

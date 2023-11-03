@@ -9,20 +9,10 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.DocumentStruct.Section`?
+A `Magma.DocumentStruct.Section` is the recursive structure for the nested sections of the `Magma.DocumentStruct`.
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
-
-
+### Transclusion-Resolution ![[Magma-Transclusion-Resolution#Description]]
 # Context knowledge
-
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
-
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
 
 
 
@@ -37,3 +27,5 @@ Write it down right here in a subsection or use a transclusion. If applicable, s
 ### ModuleDoc prompt task
 
 Generate documentation for module `Magma.DocumentStruct.Section` according to its description and code in the knowledge base below.
+
+In the documentation of the `resolve_transclusions/1` function include a description of the transclusion resolution mechanism.

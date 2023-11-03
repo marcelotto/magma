@@ -9,20 +9,16 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.DocumentStruct`?
+A `Magma.DocumentStruct` is an Elixir struct for the contents of a Markdown document as an AST based on the Pandoc AST. However, unlike the normal Pandoc AST the content is structured according to the section nesting, i.e. a DocumentStruct consists of:
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
+- the prologue, i.e. the header-less text before the first section 
+- all sections of level 1 (which consist of section of level 2 and so on)
 
+It has this structure in order to be able to realize the "transclusion resolution" feature, which is essential for the prompt generation in Magma. The actual implementation of the core functions of the DocumentStruct takes place, however, in `Magma.DocumentStruct.Section`, while here, as outer wrapper around the recursive `Section` structure, essentially only to their functions is delegated.  
+
+### Transclusion resolution ![[Magma-Transclusion-Resolution#Description]]
 
 # Context knowledge
-
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
-
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
 
 
 
@@ -37,3 +33,5 @@ Write it down right here in a subsection or use a transclusion. If applicable, s
 ### ModuleDoc prompt task
 
 Generate documentation for module `Magma.DocumentStruct` according to its description and code in the knowledge base below.
+
+In the documentation of the `resolve_transclusions/1` function include a description of the transclusion resolution mechanism.

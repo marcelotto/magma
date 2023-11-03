@@ -9,20 +9,26 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma`?
+`Magma` consists of the following elements and subsystems:
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
-
+- `Magma.Vault` 
+- `Magma.Document`
+- `Magma.Matter` 
+- `Magma.Artefact` 
+- `Magma.DocumentStruct`
+- `Magma.Generation`
+- `Magma.View`
 
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
+## `Magma.Vault` ![[Magma.Vault#Description]]
+## `Magma.Document` ![[Magma.Document#Description]]
+## `Magma.Matter` ![[Magma.Matter#Description]]
+## `Magma.Artefact` ![[Magma.Artefact#Description]]
+## `Magma.DocumentStruct` ![[Magma.DocumentStruct#Description]]
+## `Magma.Generation` ![[Magma.Generation#Description]]
 
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
+## `Magma.View` ![[Magma.View#Description|]]
 
 
 
@@ -37,3 +43,5 @@ Write it down right here in a subsection or use a transclusion. If applicable, s
 ### ModuleDoc prompt task
 
 Generate documentation for module `Magma` according to its description and code in the knowledge base below.
+
+Since it doesn't provide that much functionality on its own (besides the macro for the integration of the Moduledoc artefacts as `@moduledoc` of the modules) it should just provide just a compact introduction of the system and overview of its subsystems.

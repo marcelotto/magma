@@ -8,23 +8,28 @@ aliases: []
 # `Magma.Concept`
 
 ## Description
-
-<!--
-What is a `Magma.Concept`?
-
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
+  
+A Magma concept document is the basic Magma document for the generation of concrete Magma artefact versions. It contains all the content contributed by the user to the generation, i.e.  
+  
+- the descriptions of the subject matter (e.g. a module or the project) in a "Description" section
+- the background knowledge necessary for the understanding of the subject matter or the generation of the artefacts in a "Context knowledge" section by an LLM
+- the task description to be used for the LLM prompt to generate the various artefacts for the corresponding matter, in appropriate sections for the artefacts.
+  
+Although the basic structure of any concept document is given Matter-independently, a Magma matter type may define further predefined content and sections for the concept document.  
 
 
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
+### Magma artefact model ![[Magma artefact model#Description]]
+ ![[Magma artefact model#Sequence diagram]]
 
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
+### `Magma.Matter` ![[Magma.Matter#Description]]
+### `Magma.Document` ![[Magma.Document#Description]]
 
 
+### `Magma.Artefact` ![[Magma.Artefact#Description]]
+
+### `Magma.Artefact.Prompt` ![[Magma.Artefact.Prompt#Description]]
 
 
 # Artefacts

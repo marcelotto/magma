@@ -9,21 +9,20 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Mix.Tasks.Magma.Text.Assemble`?
+Generates the section documents from the final table of contents of a text.
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
+When the final artefact version document for the `Magma.Artefacts.TableOfContents` of a text was created, this task will create the concept and artefact prompt documents of the sections of the text and assemble the preview document.
+
+```sh
+mix magma.text.assemble "Name of ToC document"
+```
+
+Options:
+
+- `--force` - When set, this option allows the task to overwrite existing documents without asking for permission first.
 
 
 # Context knowledge
-
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
-
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
-
 
 
 
@@ -37,3 +36,5 @@ Write it down right here in a subsection or use a transclusion. If applicable, s
 ### ModuleDoc prompt task
 
 Generate documentation for module `Mix.Tasks.Magma.Text.Assemble` according to its description and code in the knowledge base below.
+
+![[Prompt snippets#Mix task moduledoc]]

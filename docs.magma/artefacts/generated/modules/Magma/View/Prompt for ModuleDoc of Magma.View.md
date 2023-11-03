@@ -3,8 +3,8 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma.View]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
-created_at: 2023-10-06 16:03:21
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
+created_at: 2023-11-02 22:02:10
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,27 +52,39 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
+You have two tasks to do based on the given implementation of the module and your knowledge base:
+
+1. generate the content of the `@doc` strings of the public functions
+2. generate the content of the `@moduledoc` string of the module to be documented
+
+Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
+
+After this summary sentence, the following sections and paragraphs should cover:
+
+- What's the purpose of this module/function?
+- For moduledocs: What are the main function(s) of this module?
+- If possible, an example usage in an "Example" section using an indented code block
+- configuration options (if there are any)
+- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
+
+The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
 
 ```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
 ## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
 
 ### `function/1`
 
-The first line should be a very short one-sentence summary of the main purpose of this function.
+Summary sentence
 
-Then follows the main body of the function documentation.
+Body
+
+## Moduledoc
+
+Summary sentence
+
+Body
 ```
 
 <!--
@@ -89,10 +101,12 @@ The following sections contain background knowledge you need to be aware of, but
 
 ##### `Magma` ![[Magma#Description|]]
 
+![[Magma.View#Context knowledge|]]
+
 
 ## Request
 
-### ![[Magma.View#ModuleDoc prompt task|]]
+![[Magma.View#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.View` ![[Magma.View#Description|]]
 
@@ -154,7 +168,7 @@ defmodule Magma.View do
   def include(nil, _, _), do: nil
 
   def include(%Section{} = section, nil, opts) do
-    section |> Section.to_string(opts) |> String.trim()
+    section |> Section.to_markdown(opts) |> String.trim()
   end
 
   def include(%Section{} = section, subsection_path, opts) when is_list(subsection_path) do
@@ -195,8 +209,8 @@ defmodule Magma.View do
 
         cond do
           subsection == :all ->
-            # DocumentStruct.to_string() does not support opts yet
-            document_struct |> DocumentStruct.to_string() |> String.trim()
+            # DocumentStruct.to_markdown() does not support opts yet
+            document_struct |> DocumentStruct.to_markdown() |> String.trim()
 
           section = DocumentStruct.section_by_title(document_struct, subsection) ->
             include(section, nil, opts)
@@ -210,10 +224,16 @@ defmodule Magma.View do
     end
   end
 
+  def include_context_knowledge(%Concept{} = concept) do
+    concept
+    |> Concept.context_knowledge_section()
+    |> include(nil, header: false, level: 3, remove_comments: true)
+  end
+
   def comment(text) do
     """
     <!--
-    #{text}
+    #{String.trim_trailing(text)}
     -->
     """
     |> String.trim_trailing()
@@ -260,6 +280,7 @@ defmodule Magma.View do
   end
 
   def prompt_results_table do
+    # TODO: add SORT created_at DESC ?
     """
     ```dataview
     TABLE

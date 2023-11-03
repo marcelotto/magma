@@ -3,8 +3,8 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Concept]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
-created_at: 2023-10-06 16:03:18
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
+created_at: 2023-11-02 22:24:22
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,27 +52,39 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
+You have two tasks to do based on the given implementation of the module and your knowledge base:
+
+1. generate the content of the `@doc` strings of the public functions
+2. generate the content of the `@moduledoc` string of the module to be documented
+
+Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
+
+After this summary sentence, the following sections and paragraphs should cover:
+
+- What's the purpose of this module/function?
+- For moduledocs: What are the main function(s) of this module?
+- If possible, an example usage in an "Example" section using an indented code block
+- configuration options (if there are any)
+- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
+
+The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
 
 ```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
 ## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
 
 ### `function/1`
 
-The first line should be a very short one-sentence summary of the main purpose of this function.
+Summary sentence
 
-Then follows the main body of the function documentation.
+Body
+
+## Moduledoc
+
+Summary sentence
+
+Body
 ```
 
 <!--
@@ -91,10 +103,12 @@ The following sections contain background knowledge you need to be aware of, but
 
 ##### `Magma.Concept.Template` ![[Magma.Concept.Template#Description|]]
 
+![[Magma.Concept#Context knowledge|]]
+
 
 ## Request
 
-### ![[Magma.Concept#ModuleDoc prompt task|]]
+![[Magma.Concept#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.Concept` ![[Magma.Concept#Description|]]
 
@@ -119,7 +133,11 @@ defmodule Magma.Concept do
   alias Magma.{Vault, Matter, DocumentStruct, Artefact, PromptResult}
   alias Magma.Concept.Template
 
+  import Magma.Utils
+
   @type t :: %__MODULE__{}
+
+  @default_artefacts :all
 
   @description_section_title "Description"
   def description_section_title, do: @description_section_title
@@ -160,13 +178,13 @@ defmodule Magma.Concept do
   def create(subject, attrs \\ [], opts \\ [])
 
   def create(%__MODULE__{subject: %matter_type{} = matter} = document, opts, []) do
-    {assigns, opts} = Keyword.pop(opts, :assigns, [])
-
     with {:ok, document} <-
            document
            |> Document.init(aliases: matter_type.default_concept_aliases(matter))
-           |> render(assigns) do
-      Document.create(document, opts)
+           |> render(opts),
+         {:ok, document} <- Document.create(document, opts),
+         {:ok, _prompts} <- create_prompts(document, opts) do
+      {:ok, document}
     end
   end
 
@@ -195,9 +213,13 @@ defmodule Magma.Concept do
     matter_type.render_front_matter(matter)
   end
 
-  def render(%__MODULE__{} = concept, assigns) do
-    %__MODULE__{concept | content: Template.render(concept, assigns)}
-    |> parse()
+  def render(%__MODULE__{} = concept, opts) do
+    with {:ok, artefact_types} <- artefacts(concept, opts) do
+      assigns = Keyword.get(opts, :assigns, [])
+
+      %__MODULE__{concept | content: Template.render(concept, artefact_types, assigns)}
+      |> parse()
+    end
   end
 
   defp parse(concept) do
@@ -212,8 +234,9 @@ defmodule Magma.Concept do
     end
   end
 
+  @spec update_content_from_ast(t()) :: t()
   def update_content_from_ast(%__MODULE__{} = concept) do
-    %__MODULE__{concept | content: DocumentStruct.to_string(concept)}
+    %__MODULE__{concept | content: DocumentStruct.to_markdown(concept)}
   end
 
   @impl true
@@ -233,6 +256,49 @@ defmodule Magma.Concept do
 
   def context_knowledge_section(%__MODULE__{} = concept),
     do: concept[@context_knowledge_section_title]
+
+  def create_prompts(%__MODULE__{} = concept, opts \\ []) do
+    opts =
+      if Keyword.has_key?(opts, :prompts) do
+        Keyword.put(opts, :artefacts, Keyword.get(opts, :prompts))
+      else
+        opts
+      end
+      |> Keyword.put_new(:force, true)
+
+    with {:ok, artefact_types} <- artefacts(concept, opts) do
+      map_while_ok(artefact_types, & &1.create_prompt(concept, [], opts))
+    end
+  end
+
+  defp artefacts(%__MODULE__{subject: %matter_type{}}, opts) when is_list(opts) do
+    artefacts(matter_type, Keyword.get(opts, :artefacts, @default_artefacts))
+  end
+
+  defp artefacts(matter_type, true), do: artefacts(matter_type, :all)
+  defp artefacts(matter_type, false), do: artefacts(matter_type, [])
+  defp artefacts(matter_type, nil), do: artefacts(matter_type, [])
+  defp artefacts(matter_type, :all), do: {:ok, matter_type.artefacts()}
+
+  defp artefacts(matter_type, artefacts) do
+    compatible_artefact_types = matter_type.artefacts()
+
+    artefacts
+    |> List.wrap()
+    |> map_while_ok(fn artefact_type ->
+      cond do
+        not Artefact.type?(artefact_type) ->
+          {:error, "invalid artefact type: #{inspect(artefact_type)}"}
+
+        artefact_type not in compatible_artefact_types ->
+          {:error,
+           "artefact type #{inspect(artefact_type)} is not compatible with matter type #{inspect(matter_type)}"}
+
+        true ->
+          {:ok, artefact_type}
+      end
+    end)
+  end
 end
 
 ```

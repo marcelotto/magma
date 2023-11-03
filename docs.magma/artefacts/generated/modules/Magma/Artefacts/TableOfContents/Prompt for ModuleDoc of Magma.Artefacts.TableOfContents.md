@@ -3,7 +3,7 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Artefacts.TableOfContents]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
 created_at: 2023-10-06 16:03:18
 tags: [magma-vault]
 aliases: []

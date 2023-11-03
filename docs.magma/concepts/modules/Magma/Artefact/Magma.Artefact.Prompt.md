@@ -9,21 +9,25 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Magma.Artefact.Prompt`?
+A Magma artefact prompt is a special form of a [[Magma.Prompt|Magma prompt]] document. Unlike these documents used for custom prompts, the Magma artefact prompt document does not contain any content contributed by the user directly. Instead, it is a composition of transclusions of the contents of the Magma concept document defined by the Magma artefact type. 
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
-
+The execution of the Magma prompt document, however, is otherwise done in the same way as for any `Magma.Prompt` document, in particular a `Magma.PromptResult` is also created for this purpose. However, this provides the option of selecting the result as the basis for the final Magma artefact version by means of an additional button in the prologue.
 
 # Context knowledge
 
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
+### Magma artefact model ![[Magma artefact model#Description]]
+ ![[Magma artefact model#Sequence diagram]]
 
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
+### `Magma.Matter` ![[Magma.Matter#Description]]
 
+### `Magma.Artefact` ![[Magma.Artefact#Description]]
+
+### Magma-Transclusion-Resolution ![[Magma-Transclusion-Resolution#Description]]
+### `Magma.Concept` ![[Magma.Concept#Description]]
+
+
+### `Magma.Prompt` ![[Magma.Prompt#Description]]
+### `Magma.PromptResult` ![[Magma.Prompt#Description]]
 
 
 

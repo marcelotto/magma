@@ -3,8 +3,8 @@ magma_type: Artefact.Prompt
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma.DocumentStruct.Section]]"
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.2}
-created_at: 2023-10-06 16:03:19
+magma_generation_params: {"model":"gpt-4","temperature":0.6}
+created_at: 2023-10-18 17:14:21
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,27 +52,39 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
+You have two tasks to do based on the given implementation of the module and your knowledge base:
+
+1. generate the content of the `@doc` strings of the public functions
+2. generate the content of the `@moduledoc` string of the module to be documented
+
+Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
+
+After this summary sentence, the following sections and paragraphs should cover:
+
+- What's the purpose of this module/function?
+- For moduledocs: What are the main function(s) of this module?
+- If possible, an example usage in an "Example" section using an indented code block
+- configuration options (if there are any)
+- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
+
+The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
 
 ```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
 ## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
 
 ### `function/1`
 
-The first line should be a very short one-sentence summary of the main purpose of this function.
+Summary sentence
 
-Then follows the main body of the function documentation.
+Body
+
+## Moduledoc
+
+Summary sentence
+
+Body
 ```
 
 <!--
@@ -81,7 +93,7 @@ You can edit this prompt, as long you ensure the moduledoc is generated in a sec
 
 ### Context knowledge
 
-The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response (unless its explicitly requested to include some parts of it) as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
 #### Description of the Magma project ![[Project#Description|]]
 
@@ -94,7 +106,7 @@ The following sections contain background knowledge you need to be aware of, but
 
 ## Request
 
-### ![[Magma.DocumentStruct.Section#ModuleDoc prompt task|]]
+![[Magma.DocumentStruct.Section#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.DocumentStruct.Section` ![[Magma.DocumentStruct.Section#Description|]]
 
@@ -104,30 +116,63 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.DocumentStruct.Section do
-  defstruct [:title, :header, :level, :content, :sections]
+  defstruct [:title, :level, :header, :content, :sections]
 
-  alias Magma.{DocumentStruct, Document, Concept, Vault}
-  alias Magma.TopLevelEmptyHeaderTransclusionError
+  @type t :: %__MODULE__{
+          title: binary,
+          level: integer,
+          header: Panpipe.AST.Header.t(),
+          content: [Panpipe.AST.Node.t()],
+          sections: [t()]
+        }
+
+  alias Magma.DocumentStruct
+  alias Magma.DocumentStruct.TransclusionResolution
   alias Panpipe.AST.Header
 
-  require Logger
+  @default_link_resolution_style :plain
 
-  def new(%Header{level: level} = header, content, sections) do
+  @doc """
+  Creates a section.
+  """
+  @spec new(Header.t(), [Panpipe.AST.Node.t()], [t()]) :: t()
+  def new(%Header{} = header, content, sections) do
     %__MODULE__{
-      title: header_title(header),
-      header: header,
-      level: level,
       content: content,
       sections: sections
+    }
+    |> set_header(header)
+  end
+
+  def set_header(%__MODULE__{} = section, %Header{} = header) do
+    %__MODULE__{
+      section
+      | header: header,
+        title: header_title(header),
+        level: header.level
     }
   end
 
   defp header_title(%Header{children: children}) do
     %Panpipe.Document{children: [%Panpipe.AST.Para{children: children}]}
+    # TODO: use new way to enabling and disabling extensions on format functions
+    #      |> Panpipe.to_markdown()
     |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension())
     |> String.trim()
   end
 
+  @doc """
+  Fetches the section with the given `title` and returns it in an ok tuple.
+
+  If no section with `section` exists, it returns `:error`.
+
+  This implements `Access.fetch/2` function, so that the `section[title]`
+  syntax is supported.
+
+  Note that only sections directly under the given section is searched.
+  If a recursive search is needed, `section_by_title/2` should be used.
+  """
+  @spec fetch(t(), binary) :: {:ok, t()} | :error
   def fetch(%_{sections: sections}, title) do
     Enum.find_value(sections, fn
       %{title: ^title} = section -> {:ok, section}
@@ -135,12 +180,29 @@ defmodule Magma.DocumentStruct.Section do
     end) || :error
   end
 
+  @doc """
+  Returns if the given section is empty, i.e. it has no `content` and nested `sections`.
+  """
+  @spec empty?(t()) :: boolean
   def empty?(%__MODULE__{content: [], sections: []}), do: true
   def empty?(%__MODULE__{}), do: false
 
+  @doc """
+  Return if given section consists solely of subsection headers.
+  """
+  @spec empty_content?(t()) :: boolean
   def empty_content?(%__MODULE__{} = section) do
     section.content == [] && Enum.all?(section.sections, &empty_content?/1)
   end
+
+  @doc """
+  Fetches the first section with the given `title`.
+
+  Other than accessing the sections with the `fetch/2`, this searches the
+  sections recursively.
+  """
+  @spec section_by_title(t(), binary) :: t() | nil
+  def section_by_title(section, title)
 
   def section_by_title(%__MODULE__{title: title} = section, title), do: section
 
@@ -176,10 +238,24 @@ defmodule Magma.DocumentStruct.Section do
       end
   end
 
+  @doc """
+  Returns the section as
+  """
   def to_string(%__MODULE__{} = section, opts \\ []) do
     %Panpipe.Document{children: ast(section, opts)}
+    # TODO: use new way to enabling and disabling extensions on format functions
+    #      |> Panpipe.to_markdown()
     |> Panpipe.Pandoc.Conversion.convert(to: DocumentStruct.pandoc_extension(), wrap: "none")
   end
+
+  @doc """
+  Changes the header level of `section` to the given `level`.
+
+  Computes the difference to the current level of `section` and shifts the
+  level recursively on all subsections using `shift_level/2`.
+  """
+  @spec set_level(t(), non_neg_integer()) :: t()
+  def set_level(section, level)
 
   def set_level(%__MODULE__{} = section, nil), do: section
 
@@ -188,6 +264,14 @@ defmodule Magma.DocumentStruct.Section do
 
   def set_level(%__MODULE__{level: level} = section, new_level),
     do: shift_level(section, new_level - level)
+
+  @doc """
+  Shifts the header level of `section` by the given `shift_level`.
+
+  All subsections are shifted recursively.
+  """
+  @spec shift_level(t(), integer()) :: t()
+  def shift_level(section, shift_level)
 
   def shift_level(%__MODULE__{level: level}, shift_level) when level + shift_level < 0 do
     raise "shifting to negative header level"
@@ -204,251 +288,53 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
-  def resolve_transclusions(%__MODULE__{} = section) do
-    case do_resolve_transclusions(section, []) do
-      {:transclusion_expansion, _, _} -> raise TopLevelEmptyHeaderTransclusionError
-      %__MODULE__{} = resolved -> resolved
-    end
+  defdelegate resolve_transclusions(section), to: TransclusionResolution
+
+  def resolve_links(%__MODULE__{} = section, opts \\ []) do
+    do_resolve_links(
+      section,
+      opts
+      |> Keyword.get(:style)
+      |> link_resolution_style()
+    )
   end
 
-  defp do_resolve_transclusions(section, visited) do
-    {resolved_content, new_sections} =
-      resolve_content_transclusions(section.content, section.level, visited)
-
-    {resolved_sections, resolved_content} =
-      Enum.reduce(section.sections, {[], resolved_content}, fn
-        section, {resolved_sections, resolved_content} ->
-          case do_resolve_transclusions(section, visited) do
-            {:transclusion_expansion, [], expanded_sections} ->
-              {Enum.reverse(expanded_sections) ++ resolved_sections, resolved_content}
-
-            {:transclusion_expansion, expanded_content, expanded_sections} ->
-              case resolved_sections do
-                [] ->
-                  {
-                    Enum.reverse(expanded_sections) ++ resolved_sections,
-                    resolved_content ++ expanded_content
-                  }
-
-                [last | rest] ->
-                  {
-                    Enum.reverse(expanded_sections) ++ [append(last, expanded_content) | rest],
-                    resolved_content
-                  }
-              end
-
-            resolved_section ->
-              {List.wrap(resolved_section) ++ resolved_sections, resolved_content}
-          end
-      end)
-
-    resolved_sections = new_sections ++ Enum.reverse(resolved_sections)
-
-    case resolve_transclusion_header(section, visited) do
-      {:transclusion_expansion, expanded_content, []} ->
-        {:transclusion_expansion, expanded_content ++ resolved_content, resolved_sections}
-
-      {:transclusion_expansion, expanded_content, expanded_sections} ->
-        {
-          :transclusion_expansion,
-          expanded_content,
-          List.update_at(expanded_sections, -1, &append(&1, resolved_content, resolved_sections))
-        }
-
-      nil ->
-        %__MODULE__{
-          section
-          | content: resolved_content,
-            sections: resolved_sections
-        }
-
-      resolved_section ->
-        resolved_section = append(resolved_section, resolved_content, resolved_sections)
-
-        unless(empty_content?(resolved_section), do: resolved_section)
-    end
+  defp do_resolve_links(section, style) do
+    %__MODULE__{
+      section
+      | content: Enum.map(section.content, &transform_links(&1, style)),
+        sections: Enum.map(section.sections, &do_resolve_links(&1, style))
+    }
   end
 
-  defp resolve_content_transclusions(content, level, visited) do
-    {new_content, new_sections} =
-      Enum.reduce(content, {[], []}, fn
-        %Panpipe.AST.Figure{
-          children: [
-            %Panpipe.AST.Plain{
-              children: [
-                %Panpipe.AST.Image{title: "wikilink", target: target}
-              ]
-            }
-          ]
-        } = transclusion,
-        {new_content, new_sections} = acc ->
-          if extract_document_name(target) in visited do
-            raise "recursive cycle during transclusion resolution of #{target}"
-          end
-
-          if resolved_transclusion = transcluded_content(target, level + 1, visited) do
-            {new_content, [resolved_transclusion | new_sections]}
-          else
-            acc_append(transclusion, acc)
-          end
-
-        content, acc ->
-          acc_append(content, acc)
-      end)
-
-    {Enum.reverse(new_content), Enum.reverse(new_sections)}
+  defp transform_links(ast, style) do
+    Panpipe.transform(ast, fn
+      %Panpipe.AST.Link{title: "wikilink", children: children} -> style.(children)
+      _ -> nil
+    end)
   end
 
-  defp acc_append(content, {new_content, []}),
-    do: {[content | new_content], []}
+  defp link_resolution_style(nil), do: default_link_resolution_style() |> link_resolution_style()
+  defp link_resolution_style(:plain), do: & &1
+  defp link_resolution_style(:emph), do: &%Panpipe.AST.Emph{children: &1}
+  defp link_resolution_style(:strong), do: &%Panpipe.AST.Strong{children: &1}
+  defp link_resolution_style(:underline), do: &%Panpipe.AST.Underline{children: &1}
+  defp link_resolution_style(fun) when is_function(fun), do: fun
 
-  defp acc_append(content, {new_content, [current | rest]}),
-    do: {new_content, [append(current, content) | rest]}
-
-  defp append(section, new_content, new_sections \\ [])
-
-  defp append(%__MODULE__{} = section, [], []), do: section
-
-  defp append(%__MODULE__{sections: []} = section, ast, []) do
-    %__MODULE__{section | content: section.content ++ List.wrap(ast)}
+  defp default_link_resolution_style do
+    Application.get_env(:magma, :link_resolution_style, @default_link_resolution_style)
   end
-
-  defp append(%__MODULE__{} = section, ast, []) do
-    %__MODULE__{section | sections: List.update_at(section.sections, -1, &append(&1, ast))}
-  end
-
-  defp append(%__MODULE__{} = section, ast, new_sections) do
-    with_new_content = append(section, ast)
-    %__MODULE__{with_new_content | sections: with_new_content.sections ++ new_sections}
-  end
-
-  defp resolve_transclusion_header(%__MODULE__{header: header} = section, visited) do
-    case Enum.reverse(header.children) do
-      [%Panpipe.AST.Image{title: "wikilink", target: target} | rest] ->
-        if extract_document_name(target) in visited do
-          raise "recursive cycle during transclusion resolution of #{target}"
-        end
-
-        empty_header? = rest == []
-
-        level =
-          cond do
-            not empty_header? -> section.level
-            section.level > 1 -> section.level - 1
-            true -> raise TopLevelEmptyHeaderTransclusionError
-          end
-
-        if resolved_transclusion = transcluded_content(target, level, visited) do
-          if empty_header? do
-            {:transclusion_expansion, resolved_transclusion.content,
-             resolved_transclusion.sections}
-          else
-            new_header = %Panpipe.AST.Header{
-              header
-              | children: rest |> trim_leading_ast() |> Enum.reverse(),
-                attr: nil
-            }
-
-            %__MODULE__{
-              resolved_transclusion
-              | header: new_header,
-                title: header_title(new_header)
-            }
-          end
-        end
-
-      _ ->
-        nil
-    end
-  end
-
-  defp transcluded_content(target, level, visited) do
-    {document_name, section_title} = parse_document_name(target)
-
-    with {:ok, document_struct} <- transcluded_document_struct(document_name),
-         {:ok, section} <- fetch_transcluded_content(document_struct, section_title) do
-      case do_resolve_transclusions(section, [document_name | visited]) do
-        {:transclusion_expansion, _, _} ->
-          raise "transclusion of transclusion sections are not allowed"
-
-        resolved_section ->
-          resolved_section
-          |> remove_comments()
-          |> set_level(level)
-      end
-    else
-      {:error, error} ->
-        Logger.warning("failed to load [[#{document_name}]] during resolution: #{inspect(error)}")
-        nil
-    end
-  end
-
-  defp transcluded_document_struct(document_name) do
-    case Document.Loader.load(document_name) do
-      {:ok, %{sections: _} = document} ->
-        {:ok, document}
-
-      {:ok, document} ->
-        DocumentStruct.parse(document.content)
-
-      {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->
-        with {:ok, _metadata, body} <-
-               document_name
-               # We can assume here that the file exists, because the initial loader has found the file already
-               |> Vault.document_path()
-               |> YamlFrontMatter.parse_file() do
-          DocumentStruct.parse(body)
-        end
-
-      {:error, _} = error ->
-        error
-    end
-  end
-
-  defp fetch_transcluded_content(%Concept{} = concept, nil) do
-    {:ok, DocumentStruct.main_section(concept)}
-  end
-
-  defp fetch_transcluded_content(%DocumentStruct{sections: [section]}, nil) do
-    {:ok, section}
-  end
-
-  defp fetch_transcluded_content(%DocumentStruct{sections: [first | rest]}, nil) do
-    {:ok,
-     %__MODULE__{
-       first
-       | sections:
-           Enum.map(first.sections, &shift_level(&1, 1)) ++
-             Enum.map(rest, &shift_level(&1, 1))
-     }}
-  end
-
-  defp fetch_transcluded_content(%{sections: _} = document_struct, section_title) do
-    if section = DocumentStruct.section_by_title(document_struct, section_title) do
-      {:ok, section}
-    else
-      {:error, "No section #{section_title} found"}
-    end
-  end
-
-  defp parse_document_name(name) do
-    case String.split(name, "#") do
-      [document_name] -> {document_name, nil}
-      [document_name, section] -> {document_name, section}
-    end
-  end
-
-  def extract_document_name(name), do: name |> parse_document_name() |> elem(0)
-
-  defp trim_leading_ast([%Panpipe.AST.Space{} | rest]), do: trim_leading_ast(rest)
-  defp trim_leading_ast(ast), do: ast
 
   def remove_comments(%__MODULE__{} = section) do
     %__MODULE__{
       section
-      | content: Enum.flat_map(section.content, &List.wrap(do_remove_comments(&1))),
+      | content: remove_comments(section.content),
         sections: Enum.map(section.sections, &remove_comments/1)
     }
+  end
+
+  def remove_comments(content) when is_list(content) do
+    Enum.flat_map(content, &List.wrap(do_remove_comments(&1)))
   end
 
   def do_remove_comments(%Panpipe.AST.RawBlock{format: "html", string: "<!--" <> comment} = ast) do

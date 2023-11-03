@@ -9,21 +9,21 @@ aliases: []
 
 ## Description
 
-<!--
-What is a `Mix.Tasks.Magma.Text.New`?
+Generates a new text concept and artefact prompts.
 
-Your knowledge about the module, i.e. facts, problems and properties etc.
--->
+The initial documents for a new text are created with this Mix task where the first argument is the title of your text, followed by an optional text type:
 
+```sh
+$ mix magma.text.new "Example User Guide" UserGuide
+```
+
+where the text types the last part of text type modules of the form `Magma.Matter.Texts.X`. The text type determines the details of the system prompt of the artefact prompts. Currently, there is only one text implemented in this early stage of development, the `UserGuide` type. 
+
+If no text type is given a minimal generic system prompt is used which can be refined for the users needs. 
+
+When the `--force` switch is set, existing documents are overwritten without asking for permission first.
 
 # Context knowledge
-
-<!--
-This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
-
-Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
--->
-
 
 
 
@@ -37,3 +37,5 @@ Write it down right here in a subsection or use a transclusion. If applicable, s
 ### ModuleDoc prompt task
 
 Generate documentation for module `Mix.Tasks.Magma.Text.New` according to its description and code in the knowledge base below.
+
+![[Prompt snippets#Mix task moduledoc]]
