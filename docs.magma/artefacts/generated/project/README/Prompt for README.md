@@ -60,7 +60,7 @@ Your task is to generate a project README using the following template (without 
 [![Hex.pm](https://img.shields.io/hexpm/v/{{Hex package name}}.svg?style=flat-square)](https://hex.pm/packages/{{Hex package name}})
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/{{Hex package name}}/)
 [![Total Download](https://img.shields.io/hexpm/dt/{{Hex package name}}.svg)](https://hex.pm/packages/{{Hex package name}})
-[![License](https://img.shields.io/hexpm/l/{{Hex package name}}.svg)]({{Repo URL}}/blob/main/LICENSE.txt)
+[![License](https://img.shields.io/hexpm/l/{{Hex package name}}.svg)]({{Repo URL}}/blob/main/LICENSE.md)
 
 
 
@@ -138,7 +138,7 @@ Don't forget to give the project a star! Thanks!
 
 ## License
 
-Distributed under the {{License}}. See `LICENSE.txt` for more information.
+Distributed under the {{License}}. See `LICENSE.md` for more information.
 
 
 
