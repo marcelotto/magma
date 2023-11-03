@@ -18,7 +18,7 @@
   <p align="center">
     An environment for writing and executing prompts for documentation and more
     <br />
-    <a href="https://hexdocs.pm/magma/"><strong>Explore the docs »</strong></a>
+    <a href="https://hexdocs.pm/magma/magma-user-guide-introduction-to-magma-article-section.html"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/marcelotto/magma/blob/main/CHANGELOG.md">Changelog</a>
@@ -39,7 +39,7 @@
 
 Magma is an environment for writing and executing complex prompts. It is designed primarily to support developers, especially those using Elixir, in collecting project knowledge, generating documentation, and solving problems through LLM prompts. However, it can also be useful outside this context for generating longer texts.
 
-_Read on in the [User Guide](https://hexdocs.pm/magma/)_
+_Read on in the [User Guide](https://hexdocs.pm/magma/magma-user-guide-introduction-to-magma-article-section.html)_
 
 
 ## Features
