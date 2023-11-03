@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Magma.Prompt.Gen do
-
+  use Magma
   use Mix.Task
 
   import Magma.MixHelper

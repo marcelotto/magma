@@ -1,4 +1,5 @@
 defmodule Mix.Tasks.Magma.Prompt.Copy do
+  use Magma
   use Mix.Task
 
   import Magma.MixHelper

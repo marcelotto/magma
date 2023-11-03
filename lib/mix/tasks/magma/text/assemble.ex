@@ -1,4 +1,5 @@
 defmodule Mix.Tasks.Magma.Text.Assemble do
+  use Magma
   use Mix.Task
 
   import Magma.MixHelper

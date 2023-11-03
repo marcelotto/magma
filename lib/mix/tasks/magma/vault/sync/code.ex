@@ -1,4 +1,5 @@
 defmodule Mix.Tasks.Magma.Vault.Sync.Code do
+  use Magma
   use Mix.Task
 
   import Magma.MixHelper
