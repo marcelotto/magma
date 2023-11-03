@@ -2,4 +2,4 @@
 # process to avoid polluting tests.
 Mix.shell(Mix.Shell.Process)
 
-ExUnit.start()
+ExUnit.start(exclude: System.get_env("CI") && [skip_in_ci: true])

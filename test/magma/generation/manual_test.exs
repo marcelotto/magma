@@ -35,6 +35,7 @@ defmodule Magma.Generation.ManualTest do
              {:ok, ""}
   end
 
+  @tag skip_in_ci: true
   test "prompt content is copied to clipboard" do
     system_prompt = "Elixir is ..."
 
