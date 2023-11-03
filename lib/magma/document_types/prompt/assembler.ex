@@ -61,9 +61,9 @@ defmodule Magma.Prompt.Assembler do
   end
 
   def copy_to_clipboard(prompt) when is_prompt(prompt) do
-    case assemble_all(prompt) do
-      {:ok, content} -> Clipboard.copy(content)
-      {:error, error} -> raise error
+    with {:ok, content} <- assemble_all(prompt),
+         content when is_binary(content) <- Clipboard.copy(content) do
+      {:ok, content}
     end
   end
 end

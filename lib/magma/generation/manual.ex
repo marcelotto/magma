@@ -22,12 +22,12 @@ defmodule Magma.Generation.Manual do
 
   @impl true
   def execute(%__MODULE__{}, prompt, opts \\ []) when is_prompt(prompt) do
-    Assembler.copy_to_clipboard(prompt)
-
-    if Keyword.get(opts, :interactive, true) do
-      {:ok, result_from_user()}
-    else
-      {:ok, ""}
+    with {:ok, _} <- Assembler.copy_to_clipboard(prompt) do
+      if Keyword.get(opts, :interactive, true) do
+        {:ok, result_from_user()}
+      else
+        {:ok, ""}
+      end
     end
   end
 
