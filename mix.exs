@@ -138,7 +138,6 @@ defmodule Magma.MixProject do
       user_guide_page("Creating and Understanding Magma Artefacts"),
       user_guide_page("Generating Complex Artefacts"),
       user_guide_page("Current Limitations and Roadmap"),
-      "LICENSE.md",
       "CHANGELOG.md"
     ]
   end
