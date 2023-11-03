@@ -7,6 +7,11 @@ defmodule Magma do
     end
   end
 
+  @doc """
+  Adds the contents of the final version of the `Magma.Artefacts.ModuleDoc` as the `@moduledoc`.
+
+  Usually this done via `use Magma`.
+  """
   defmacro defmoduledoc do
     quote do
       magma_moduledoc_path = Magma.Artefacts.ModuleDoc.version_path(__MODULE__)
