@@ -276,9 +276,9 @@ defmodule Magma.Matter.Module do
 
   A module is ignored
 
-  - if it has a `# Magma pragma: ignore` comment at the beginning of its source code, or
+  - if it has a #{@ignore_pragma} comment at the beginning of its source code, or
   - if it is marked as hidden (e.g. with `@moduledoc false`) and does not have a
-    `# Magma pragma: ignore` comment at the beginning of its source code.
+    #{@include_pragma} comment at the beginning of its source code.
 
   """
   def ignore?(module) do
