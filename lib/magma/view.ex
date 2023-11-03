@@ -1,7 +1,28 @@
 defmodule Magma.View do
+  @moduledoc """
+  Utility module with helper functions for creating the content of Magma documents.
+  """
+
   alias Magma.{Concept, PromptResult, Artefact, Text, DocumentStruct}
   alias Magma.DocumentStruct.Section
 
+  @doc """
+  Creates an internal Obsidian link to the given document.
+
+  The document can be given by name or as a `Magma.Document` struct.
+
+  The optional second argument allows set an alternative label.
+
+
+  ## Examples
+
+      iex> Magma.View.link_to("Document")
+      "[[Document]]"
+
+      iex> Magma.View.link_to("Document", "Alt")
+      "[[Document|Alt]]"
+
+  """
   def link_to(document_or_target, label \\ nil)
   def link_to(%_{name: name}, label), do: link_to(name, label)
   def link_to(target, nil) when is_binary(target), do: "[[#{target}]]"
@@ -22,6 +43,23 @@ defmodule Magma.View do
   def link_to_preview(document, section \\ nil),
     do: document |> Text.Preview.from() |> link_to(section)
 
+  @doc """
+  Creates an Obsidian transclusion of the given document or section.
+
+  The document can be given by name or as a `Magma.Document` struct.
+
+  The optional second argument can be used to specify a specific
+  section to be transcluded.
+
+  ## Examples
+
+      iex> Magma.View.transclude("Document")
+      "![[Document|]]"
+
+      iex> Magma.View.transclude("Document", "Section")
+      "![[Document#Section|]]"
+
+  """
   def transclude(document_or_target, section \\ nil)
   def transclude(%_{name: name}, title), do: transclude(name, title)
   def transclude(:title, :title), do: raise("invalid title")
