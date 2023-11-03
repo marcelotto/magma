@@ -1,4 +1,14 @@
 defmodule Magma do
+  @moduledoc """
+  Magma is an environment for writing and executing complex prompts.
+
+  It is primarily designed to support developers in documenting their projects.
+  It provides a system of documents for predefined workflows, to generate
+  various documentation artefacts.
+
+  Read the [User Guide](Magma User Guide - Introduction to Magma (article section).md) to learn more.
+  """
+
   defmacro __using__(_opts) do
     quote do
       import unquote(__MODULE__), only: [defmoduledoc: 0]
