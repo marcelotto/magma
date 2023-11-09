@@ -82,7 +82,8 @@ defmodule Magma.Matter.ModuleTest do
     # prompts are created
     assert {:ok, %Artefact.Prompt{}} =
              concept
-             |> Artefacts.ModuleDoc.prompt!()
+             |> Artefacts.ModuleDoc.new!()
+             |> Artefact.Prompt.new!()
              |> Artefact.Prompt.load()
   end
 

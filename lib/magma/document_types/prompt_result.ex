@@ -16,8 +16,8 @@ defmodule Magma.PromptResult do
   end
 
   @impl true
-  def title(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact, concept: concept}}) do
-    "Generated #{artefact.name(concept)}"
+  def title(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact}}) do
+    "Generated #{artefact.name}"
   end
 
   def build_name(%__MODULE__{prompt: %Prompt{} = prompt} = result) do
@@ -36,12 +36,10 @@ defmodule Magma.PromptResult do
   end
 
   @impl true
-  def build_path(
-        %__MODULE__{prompt: %Artefact.Prompt{artefact: artefact, concept: concept}} = result
-      ) do
+  def build_path(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact}} = result) do
     {:ok,
      [
-       concept |> artefact.relative_prompt_path() |> Path.dirname(),
+       artefact |> Artefact.relative_prompt_path() |> Path.dirname(),
        "__prompt_results__",
        "#{build_name(result)}.md"
      ]
@@ -121,7 +119,7 @@ defmodule Magma.PromptResult do
 
   defp trim_header(result, _), do: result
 
-  defp trim_header?(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact_type}}) do
+  defp trim_header?(%__MODULE__{prompt: %Artefact.Prompt{artefact: %artefact_type{}}}) do
     artefact_type.trim_prompt_result_header?()
   end
 

@@ -14,16 +14,17 @@ defmodule Magma.Artefacts.TableOfContentsTest do
        ]
   test "Artefact.Prompt creation and loading" do
     text_concept = Concept.load!("Some User Guide")
+    toc_artefact = TableOfContents.new!(text_concept)
 
     assert {:ok,
             %Artefact.Prompt{
-              artefact: TableOfContents,
-              concept: ^text_concept,
+              artefact: ^toc_artefact,
               generation: %Generation.Mock{},
               tags: ["magma-vault"],
               aliases: [],
               custom_metadata: %{}
-            } = prompt} = TableOfContents.create_prompt(text_concept)
+            } = prompt} =
+             Artefact.Prompt.create(toc_artefact)
 
     assert is_just_now(prompt.created_at)
 
@@ -120,12 +121,12 @@ defmodule Magma.Artefacts.TableOfContentsTest do
        ]
   test "Artefact.Version creation and loading" do
     concept = Concept.load!("Some User Guide")
+    toc_artefact = TableOfContents.new!(concept)
     prompt_result = PromptResult.load!("Generated Some User Guide ToC (2023-09-18T12:56:00)")
 
     assert {:ok,
             %Artefact.Version{
-              artefact: TableOfContents,
-              concept: ^concept,
+              artefact: ^toc_artefact,
               draft: ^prompt_result,
               tags: ["magma-vault"],
               aliases: [],

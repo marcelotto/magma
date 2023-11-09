@@ -8,16 +8,16 @@ defmodule Magma.Text.Assembler do
 
   import Magma.Utils, only: [map_while_ok: 2]
 
-  def assemble(%Artefact.Version{artefact: TableOfContents} = version, opts \\ []) do
+  def assemble(%Artefact.Version{artefact: %TableOfContents{}} = version, opts \\ []) do
     {artefacts_to_assemble, opts} = extract_assemble_artefacts(opts)
 
     with {:ok, document_struct} <- DocumentStruct.parse(version.content),
          sections_with_abstracts =
-           sections_with_abstracts(document_struct, version.concept.subject),
+           sections_with_abstracts(document_struct, version.artefact.concept.subject),
          {:ok, _section_concepts} <-
            create_section_concepts(sections_with_abstracts, opts),
          {:ok, concept} <-
-           update_concept(version.concept, sections_with_abstracts),
+           update_concept(version.artefact.concept, sections_with_abstracts),
          {:ok, _updated_version} <-
            replace_assemble_button(version),
          {:ok, _previews} <-
@@ -99,6 +99,11 @@ defmodule Magma.Text.Assembler do
 
   defp create_artefact_previews(concept, artefacts_to_assemble, opts) do
     opts = Keyword.put_new(opts, :force, true)
-    map_while_ok(artefacts_to_assemble, &Preview.create(concept, &1, [], opts))
+
+    map_while_ok(artefacts_to_assemble, fn artefact_type ->
+      with {:ok, artefact} <- artefact_type.new(concept) do
+        Preview.create(artefact, [], opts)
+      end
+    end)
   end
 end

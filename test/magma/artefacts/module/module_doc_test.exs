@@ -8,24 +8,6 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
   import Magma.View
 
-  describe "prompt/1" do
-    test "with matching matter type" do
-      module_concept = module_concept()
-
-      assert {:ok,
-              %Artefact.Prompt{
-                artefact: ModuleDoc,
-                concept: ^module_concept
-              }} = ModuleDoc.prompt(module_concept)
-    end
-
-    test "with non-matching matter type" do
-      assert_raise FunctionClauseError, fn ->
-        ModuleDoc.prompt(project_concept())
-      end
-    end
-  end
-
   test "version_path/1" do
     assert ModuleDoc.version_path(TopLevelExample) ==
              abs_path(
@@ -70,16 +52,17 @@ defmodule Magma.Artefacts.ModuleDocTest do
        ]
   test "Artefact.Prompt creation and loading" do
     module_concept = Concept.load!("Nested.Example")
+    module_doc_artefact = ModuleDoc.new!(module_concept)
 
     assert {:ok,
             %Artefact.Prompt{
-              artefact: ModuleDoc,
-              concept: ^module_concept,
+              artefact: ^module_doc_artefact,
               generation: %Generation.Mock{},
               tags: ["magma-vault"],
               aliases: [],
               custom_metadata: %{}
-            } = prompt} = ModuleDoc.create_prompt(module_concept)
+            } = prompt} =
+             Artefact.Prompt.create(module_doc_artefact)
 
     assert is_just_now(prompt.created_at)
 
@@ -179,16 +162,17 @@ defmodule Magma.Artefacts.ModuleDocTest do
        ]
   test "Artefact.Prompt creation and loading when special sections are missing in concept" do
     module_concept = Concept.load!("Some.DocumentWithoutSpecialSections")
+    module_doc_artefact = ModuleDoc.new!(module_concept)
 
     assert {:ok,
             %Artefact.Prompt{
-              artefact: ModuleDoc,
-              concept: ^module_concept,
+              artefact: ^module_doc_artefact,
               generation: %Generation.Mock{},
               tags: ["magma-vault"],
               aliases: [],
               custom_metadata: %{}
-            } = prompt} = ModuleDoc.create_prompt(module_concept)
+            } = prompt} =
+             Artefact.Prompt.create(module_doc_artefact)
 
     assert prompt.name == "Prompt for ModuleDoc of Some.DocumentWithoutSpecialSections"
 
@@ -316,14 +300,14 @@ defmodule Magma.Artefacts.ModuleDocTest do
        ]
   test "Artefact.Version creation and loading" do
     concept = Concept.load!("Nested.Example")
+    module_doc_artefact = ModuleDoc.new!(concept)
 
     prompt_result =
       PromptResult.load!("Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)")
 
     assert {:ok,
             %Artefact.Version{
-              artefact: ModuleDoc,
-              concept: ^concept,
+              artefact: ^module_doc_artefact,
               draft: ^prompt_result,
               tags: ["magma-vault"],
               aliases: [],

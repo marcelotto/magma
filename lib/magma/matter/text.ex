@@ -58,7 +58,7 @@ defmodule Magma.Matter.Text do
       Enum.map_join(
         Matter.Text.Section.artefacts(),
         "\n",
-        &"- #{View.link_to_preview({concept, &1})}"
+        &"- #{concept |> &1.new!() |> View.link_to_preview()}"
       )
   end
 

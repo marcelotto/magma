@@ -6,10 +6,13 @@ defmodule Magma.Artefacts.TableOfContents do
   import Magma.View
 
   @impl true
-  def name(concept), do: "#{concept.name} ToC"
+  def default_name(%Concept{subject: %Matter.Text{name: name}}), do: "#{name} ToC"
+
+  def default_name(%Concept{subject: %Matter.Text.Section{main_text: main_text}}),
+    do: "#{main_text.name} ToC"
 
   @impl true
-  def version_prologue(%Artefact.Version{artefact: __MODULE__}) do
+  def version_prologue(%Artefact.Version{artefact: %__MODULE__{}}) do
     assemble_button()
   end
 
@@ -63,7 +66,7 @@ defmodule Magma.Artefacts.TableOfContents do
   end
 
   @impl true
-  def relative_base_path(%Concept{subject: matter}) do
+  def relative_base_path(%__MODULE__{concept: %Concept{subject: matter}}) do
     Matter.Text.relative_base_path(matter)
   end
 end

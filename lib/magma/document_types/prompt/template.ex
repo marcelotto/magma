@@ -54,8 +54,8 @@ defmodule Magma.Prompt.Template do
     """
   end
 
-  def render(%Artefact.Prompt{artefact: artefact_type} = prompt, project) do
-    concept = prompt.concept
+  def render(%Artefact.Prompt{artefact: %artefact_type{} = artefact} = prompt, project) do
+    concept = artefact.concept
 
     """
     #{controls(prompt)}

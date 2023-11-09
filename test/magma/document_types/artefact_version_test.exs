@@ -11,7 +11,7 @@ defmodule Magma.Artefact.VersionTest do
 
   describe "new/1" do
     test "with missing prompt result" do
-      concept = module_concept()
+      artefact = module_doc_artefact()
 
       missing_prompt_result =
         %Magma.DocumentNotFound{
@@ -22,14 +22,16 @@ defmodule Magma.Artefact.VersionTest do
       assert {:ok,
               %Artefact.Version{
                 draft: ^missing_prompt_result,
-                concept: ^concept,
-                artefact: ModuleDoc,
+                artefact: ^artefact,
                 tags: nil,
                 aliases: nil,
                 created_at: nil,
                 content: nil
               } = version} =
-               Artefact.Version.new(missing_prompt_result, concept: concept, artefact: ModuleDoc)
+               Artefact.Version.new(missing_prompt_result,
+                 concept: artefact.concept,
+                 artefact: artefact
+               )
 
       assert version.name == "ModuleDoc of Nested.Example"
 
@@ -46,7 +48,7 @@ defmodule Magma.Artefact.VersionTest do
     test "without PromptResult" do
       assert {:ok,
               %Artefact.Version{
-                artefact: ModuleDoc,
+                artefact: %ModuleDoc{name: "ModuleDoc of Nested.Example"},
                 draft: %Magma.DocumentNotFound{
                   name: "Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)"
                 }

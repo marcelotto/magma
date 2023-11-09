@@ -6,11 +6,15 @@ defmodule Magma.TestFactories do
   alias Magma.{
     Concept,
     Matter,
+    Artefact,
     Artefacts,
     Prompt,
     PromptResult,
     DocumentStruct
   }
+
+  @default_project "Some"
+  @default_module Nested.Example
 
   def datetime, do: ~U[2023-08-09 15:16:02.255559Z]
 
@@ -22,11 +26,11 @@ defmodule Magma.TestFactories do
   def native_datetime(amount_to_add, unit \\ :second),
     do: naive_datetime() |> NaiveDateTime.add(amount_to_add, unit)
 
-  def project_matter(name \\ "Some") do
+  def project_matter(name \\ @default_project) do
     Matter.Project.new!(name)
   end
 
-  def module_matter(mod \\ Nested.Example) do
+  def module_matter(mod \\ @default_module) do
     Matter.Module.new!(mod)
   end
 
@@ -39,13 +43,13 @@ defmodule Magma.TestFactories do
     |> Matter.Text.Section.new!(section_name)
   end
 
-  def project_concept(name \\ "Some") do
+  def project_concept(name \\ @default_project) do
     name
     |> project_matter()
     |> Concept.new!()
   end
 
-  def module_concept(mod \\ Nested.Example) do
+  def module_concept(mod \\ @default_module) do
     mod
     |> module_matter()
     |> Concept.new!()
@@ -63,23 +67,37 @@ defmodule Magma.TestFactories do
     |> Concept.new!()
   end
 
+  def module_doc_artefact(mod \\ @default_module) do
+    mod
+    |> module_concept()
+    |> Artefacts.ModuleDoc.new!()
+  end
+
+  def readme_artefact(name \\ @default_project) do
+    name
+    |> project_concept()
+    |> Artefacts.Readme.new!()
+  end
+
   def prompt(name \\ "Foo-Prompt") do
     Prompt.new!(name)
   end
 
-  def module_doc_artefact_prompt(mod \\ Nested.Example) do
+  def module_doc_artefact_prompt(mod \\ @default_module) do
     mod
     |> module_concept()
-    |> Artefacts.ModuleDoc.prompt!()
+    |> Artefacts.ModuleDoc.new!()
+    |> Artefact.Prompt.new!()
   end
 
   def user_guide_toc_prompt(name \\ "Some User Guide") do
     name
     |> user_guide_concept()
-    |> Artefacts.TableOfContents.prompt!()
+    |> Artefacts.TableOfContents.new!()
+    |> Artefact.Prompt.new!()
   end
 
-  def module_doc_artefact_prompt_result(mod \\ Nested.Example) do
+  def module_doc_artefact_prompt_result(mod \\ @default_module) do
     mod
     |> module_doc_artefact_prompt()
     |> PromptResult.new!()

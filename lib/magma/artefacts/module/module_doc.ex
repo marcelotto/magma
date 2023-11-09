@@ -10,7 +10,7 @@ defmodule Magma.Artefacts.ModuleDoc do
   def prompt_result_section_title, do: @prompt_result_section_title
 
   @impl true
-  def name(concept), do: "ModuleDoc of #{concept.name}"
+  def default_name(concept), do: "ModuleDoc of #{concept.name}"
 
   @impl true
   def system_prompt_task(_concept \\ nil) do
@@ -62,7 +62,7 @@ defmodule Magma.Artefacts.ModuleDoc do
   end
 
   @impl true
-  def version_prologue(%Artefact.Version{artefact: __MODULE__}) do
+  def version_prologue(%Artefact.Version{artefact: %__MODULE__{}}) do
     """
     Ensure that the module documentation is under a "#{@prompt_result_section_title}" section, as the contents of this section is used for the `@moduledoc`.
 
@@ -76,7 +76,9 @@ defmodule Magma.Artefacts.ModuleDoc do
   def trim_prompt_result_header?, do: false
 
   @impl true
-  def relative_base_path(%Concept{subject: %Matter.Module{name: module} = matter}) do
+  def relative_base_path(%__MODULE__{
+        concept: %Concept{subject: %Matter.Module{name: module} = matter}
+      }) do
     Path.join([Matter.Module.relative_base_path(matter) | Module.split(module)])
   end
 
@@ -85,7 +87,8 @@ defmodule Magma.Artefacts.ModuleDoc do
     mod
     |> Matter.Module.new!()
     |> Concept.new!()
-    |> Artefact.Version.build_path(__MODULE__)
+    |> new!()
+    |> Artefact.Version.build_path()
     |> case do
       {:ok, path} -> path
       _ -> nil

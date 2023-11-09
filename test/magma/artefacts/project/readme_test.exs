@@ -10,17 +10,18 @@ defmodule Magma.Artefacts.ReadmeTest do
 
   @tag vault_files: ["concepts/Project.md"]
   test "Artefact.Prompt creation and loading" do
-    module_concept = Concept.load!("Project")
+    project_concept = Concept.load!("Project")
+    readme_artefact = Readme.new!(project_concept)
 
     assert {:ok,
             %Artefact.Prompt{
-              artefact: Readme,
-              concept: ^module_concept,
+              artefact: ^readme_artefact,
               generation: %Generation.Mock{},
               tags: ["magma-vault"],
               aliases: [],
               custom_metadata: %{}
-            } = prompt} = Readme.create_prompt(module_concept)
+            } = prompt} =
+             Artefact.Prompt.create(readme_artefact)
 
     assert is_just_now(prompt.created_at)
 

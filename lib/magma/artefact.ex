@@ -8,20 +8,25 @@ defmodule Magma.Artefact do
   document generation details.
   """
 
-  alias Magma.Concept
+  alias Magma.{Concept, View}
   alias __MODULE__
 
-  @type t :: module
+  @fields [:name, :concept]
+  def fields, do: @fields
+
+  @type t :: struct
+
+  @type type :: module
 
   @doc """
-  A callback that return the name of an artefact.
+  A callback that returns the name of an artefact to be used as default for the `:name` field.
   """
-  @callback name(Concept.t()) :: binary
+  @callback default_name(Concept.t()) :: binary | nil
 
   @doc """
   A callback that returns the name of the `Magma.Artefact.Prompt` document for this type of matter.
   """
-  @callback prompt_name(Concept.t()) :: binary
+  @callback prompt_name(t()) :: binary
 
   @doc """
   A callback that returns the system prompt text of the `Magma.Artefact.Prompt` document for this type of matter that describes what to generate.
@@ -29,7 +34,7 @@ defmodule Magma.Artefact do
   As opposed to the `c:request_prompt_task/1` this is a general, static text
   used by artefacts of this type.
   """
-  @callback system_prompt_task(Concept.t()) :: binary
+  @callback system_prompt_task(t()) :: binary
 
   @doc """
   A callback that returns the request prompt text of the `Magma.Artefact.Concept` document for this type of matter that describes what to generate.
@@ -39,7 +44,7 @@ defmodule Magma.Artefact do
   (and only transcluded in `Magma.Artefact.Prompt` document), so that the user
   has a chance to adapt it for a specific instance of this artefact type.
   """
-  @callback request_prompt_task(Concept.t()) :: binary
+  @callback request_prompt_task(t()) :: binary
 
   @doc """
   A callback that returns the title of the "Artefacts" subsection for this type of matter in the `Magma.Concept` document.
@@ -81,7 +86,7 @@ defmodule Magma.Artefact do
   @doc """
   A callback that returns the general path segment to be used for documents for this type of artefact.
   """
-  @callback relative_base_path(Concept.t()) :: Path.t()
+  @callback relative_base_path(t()) :: Path.t()
 
   @doc """
   A callback that returns the path for `Magma.Artefact.Prompt` documents about this type of artefact.
@@ -91,14 +96,24 @@ defmodule Magma.Artefact do
 
   This path is relative to the `Magma.Vault.artefact_generation_path/0`.
   """
-  @callback relative_prompt_path(Concept.t()) :: Path.t()
+  @callback relative_prompt_path(t()) :: Path.t()
 
   @doc """
   A callback that returns the path for `Magma.Artefact.Version` documents about this type of artefact.
 
   This path is relative to the `Magma.Vault.artefact_version_path/0`.
   """
-  @callback relative_version_path(Concept.t()) :: Path.t()
+  @callback relative_version_path(t()) :: Path.t()
+
+  @doc """
+  A callback that creates a new instance of a type of artefact with the default name.
+  """
+  @callback new(Concept.t()) :: {:ok, t()} | {:error, any}
+
+  @doc """
+  A callback that creates a new instance of a type of artefact.
+  """
+  @callback new(Concept.t(), keyword) :: {:ok, t()} | {:error, any}
 
   @doc """
   A callback that allows to implement a custom `Magma.Artefact.Version` document creation function.
@@ -111,10 +126,13 @@ defmodule Magma.Artefact do
 
   defmacro __using__(opts) do
     matter_type = Keyword.fetch!(opts, :matter)
+    additional_fields = Keyword.get(opts, :fields, [])
 
     quote do
       @behaviour Magma.Artefact
       alias Magma.Artefact
+
+      defstruct Artefact.fields() ++ unquote(additional_fields)
 
       def matter_type, do: unquote(matter_type)
 
@@ -125,62 +143,58 @@ defmodule Magma.Artefact do
       def concept_prompt_task_section_title, do: "#{concept_section_title()} prompt task"
 
       @impl true
-      def prompt_name(%Concept{} = concept), do: "Prompt for #{name(concept)}"
+      def prompt_name(%__MODULE__{name: name}), do: "Prompt for #{name}"
 
       @impl true
-      def relative_prompt_path(%Concept{} = concept) do
-        concept
+      def relative_prompt_path(%__MODULE__{} = artefact) do
+        artefact
         |> relative_base_path()
-        |> Path.join("#{prompt_name(concept)}.md")
+        |> Path.join("#{prompt_name(artefact)}.md")
       end
 
       @impl true
-      def relative_version_path(%Concept{} = concept) do
-        concept
+      def relative_version_path(%__MODULE__{name: name} = artefact) do
+        artefact
         |> relative_base_path()
-        |> Path.join("#{name(concept)}.md")
+        |> Path.join("#{name}.md")
       end
 
       @impl true
-      def version_title(%Artefact.Version{artefact: __MODULE__} = version), do: version.name
+      def version_title(%Artefact.Version{artefact: %__MODULE__{}} = version), do: version.name
 
       @impl true
-      def version_prologue(%Artefact.Version{artefact: __MODULE__}), do: nil
+      def version_prologue(%Artefact.Version{artefact: %__MODULE__{}}), do: nil
 
       @impl true
       def trim_prompt_result_header?, do: true
 
       @impl true
-      def create_version(%Artefact.Version{artefact: __MODULE__}, opts), do: nil
-
-      def prompt(%Concept{subject: %unquote(matter_type){}} = concept, attrs \\ []) do
-        Artefact.Prompt.new(concept, __MODULE__, attrs)
+      def new(concept, attrs \\ []) do
+        with {:ok, attrs} <- attrs |> Keyword.get(:name) |> set_name_attr(concept, attrs) do
+          {:ok, struct(__MODULE__, Keyword.put(attrs, :concept, concept))}
+        end
       end
 
-      def prompt!(%Concept{subject: %unquote(matter_type){}} = concept, attrs \\ []) do
-        Artefact.Prompt.new!(concept, __MODULE__, attrs)
-      end
-
-      def create_prompt(
-            %Concept{subject: %unquote(matter_type){}} = concept,
-            attrs \\ [],
-            opts \\ []
-          ) do
-        Artefact.Prompt.create(concept, __MODULE__, attrs, opts)
-      end
-
-      def load_version(%Concept{} = concept) do
-        concept
-        |> name()
-        |> Artefact.Version.load()
-      end
-
-      def load_version!(concept) do
-        case load_version(concept) do
-          {:ok, version} -> version
+      def new!(concept, attrs \\ []) do
+        case new(concept, attrs) do
+          {:ok, artefact} -> artefact
           {:error, error} -> raise error
         end
       end
+
+      defp set_name_attr(nil, concept, attrs) do
+        if default_name = default_name(concept) do
+          {:ok, Keyword.put(attrs, :name, default_name)}
+        else
+          {:error, "name missing on #{inspect(__MODULE__)}"}
+        end
+      end
+
+      defp set_name_attr(name, _, attrs) when is_binary(name), do: {:ok, attrs}
+      defp set_name_attr(name, _, _), do: {:error, "invalid name type: #{inspect(name)}"}
+
+      @impl true
+      def create_version(%Artefact.Version{artefact: %__MODULE__{}}, opts), do: nil
 
       defoverridable prompt_name: 1,
                      version_prologue: 1,
@@ -188,6 +202,8 @@ defmodule Magma.Artefact do
                      relative_prompt_path: 1,
                      relative_version_path: 1,
                      version_title: 1,
+                     new: 1,
+                     new: 2,
                      create_version: 2
     end
   end
@@ -252,5 +268,54 @@ defmodule Magma.Artefact do
   """
   def type?(module) do
     Code.ensure_loaded?(module) and function_exported?(module, :relative_prompt_path, 1)
+  end
+
+  def relative_prompt_path(%artefact_type{} = artefact) do
+    artefact_type.relative_prompt_path(artefact)
+  end
+
+  def relative_version_path(%artefact_type{} = artefact) do
+    artefact_type.relative_version_path(artefact)
+  end
+
+  @doc """
+  Extracts an `Magma.Artefact` instance from YAML frontmatter metadata.
+
+  The function attempts to retrieve the `magma_artefact` and
+  `magma_concept` from the metadata. It returns a tuple containing
+  the artefact (if found and valid), and the remaining metadata.
+  """
+  def extract_from_metadata(metadata) do
+    {artefact_type_name, metadata} = Map.pop(metadata, :magma_artefact)
+    {artefact_name, metadata} = Map.pop(metadata, :magma_artefact_name)
+    {concept_link, metadata} = Map.pop(metadata, :magma_concept)
+
+    cond do
+      !artefact_type_name ->
+        {:error, "magma_artefact missing"}
+
+      !concept_link ->
+        {:error, "magma_concept missing"}
+
+      artefact_type = type(artefact_type_name) ->
+        with {:ok, concept} <- Concept.load_linked(concept_link),
+             {:ok, artefact} <- artefact_type.new(concept, name: artefact_name) do
+          {:ok, artefact, metadata}
+        end
+
+      true ->
+        {:error, "invalid magma_artefact type: #{artefact_type_name}"}
+    end
+  end
+
+  def render_front_matter(%artefact_type{concept: concept, name: name}) do
+    """
+    magma_artefact: #{type_name(artefact_type)}
+    magma_concept: "#{View.link_to(concept)}"
+    #{if name && name != artefact_type.default_name(concept) do
+      "magma_artefact_name: #{name}"
+    end}
+    """
+    |> String.trim_trailing()
   end
 end

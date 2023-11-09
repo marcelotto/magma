@@ -1,5 +1,5 @@
 defmodule Magma.Text.Preview do
-  use Magma.Document, fields: [:artefact, :concept]
+  use Magma.Document, fields: [:artefact]
 
   @type t :: %__MODULE__{}
 
@@ -12,44 +12,40 @@ defmodule Magma.Text.Preview do
   @impl true
   def title(%__MODULE__{} = preview), do: build_name(preview)
 
-  def build_name(%__MODULE__{} = preview) do
-    build_name(preview.artefact, preview.concept)
-  end
-
-  def build_name(artefact, %Concept{} = concept) do
-    "#{artefact.name(concept)} Preview"
-  end
+  def build_name(%__MODULE__{} = preview), do: build_name(preview.artefact)
+  def build_name(%_artefact_type{name: name}), do: "#{name} Preview"
 
   @impl true
-  def from({%Concept{} = concept, artefact}), do: build_name(artefact, concept)
   def from(%__MODULE__{} = preview), do: preview
+  def from(%_artefact_type{concept: _, name: _} = artefact), do: build_name(artefact)
 
   @impl true
-  def build_path(%__MODULE__{concept: text_concept} = preview) do
+  def build_path(%__MODULE__{artefact: artefact} = preview) do
     {:ok,
      [
-       Matter.Text.relative_base_path(text_concept.subject),
+       Matter.Text.relative_base_path(artefact.concept.subject),
        "__previews__",
        "#{title(preview)}.md"
      ]
      |> Vault.artefact_generation_path()}
   end
 
-  def new(%Concept{subject: %Matter.Text{}} = concept, artefact, attrs \\ []) do
-    struct(__MODULE__, [{:artefact, artefact}, {:concept, concept} | attrs])
+  def new(artefact, attrs \\ []) do
+    __MODULE__
+    |> struct(Keyword.put(attrs, :artefact, artefact))
     |> Document.init_path()
   end
 
-  def new!(concept, artefact, attrs \\ []) do
-    case new(concept, artefact, attrs) do
+  def new!(artefact, attrs \\ []) do
+    case new(artefact, attrs) do
       {:ok, document} -> document
       {:error, error} -> raise error
     end
   end
 
-  def create(concept, artefact, attrs \\ [], opts \\ [])
+  def create(artefact, attrs \\ [], opts \\ [])
 
-  def create(%__MODULE__{} = document, opts, [], []) do
+  def create(%__MODULE__{} = document, opts, []) do
     with {:ok, document} <-
            document
            |> Document.init()
@@ -59,26 +55,22 @@ defmodule Magma.Text.Preview do
     end
   end
 
-  def create(%__MODULE__{}, _, _, _),
+  def create(%__MODULE__{}, _, _),
     do:
       raise(
         ArgumentError,
-        "Magma.Preview.create/4 is available only with an initialized document"
+        "Magma.Preview.create/3 is not available with an initialized document"
       )
 
-  def create(concept, artefact, attrs, opts) do
-    with {:ok, document} <- new(concept, artefact, attrs) do
+  def create(artefact, attrs, opts) do
+    with {:ok, document} <- new(artefact, attrs) do
       create(document, opts)
     end
   end
 
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
-    """
-    magma_artefact: #{Artefact.type_name(document.artefact)}
-    magma_concept: "#{View.link_to(document.concept)}"
-    """
-    |> String.trim_trailing()
+    Artefact.render_front_matter(document.artefact)
   end
 
   def render(%__MODULE__{} = preview) do
@@ -88,7 +80,7 @@ defmodule Magma.Text.Preview do
   end
 
   defp render_from_toc(preview) do
-    if section = preview.concept[Matter.Text.sections_section_title()] do
+    if section = preview.artefact.concept[Matter.Text.sections_section_title()] do
       with {:ok, toc} <-
              section
              |> extract_concept_toc()
@@ -106,7 +98,7 @@ defmodule Magma.Text.Preview do
       end
     else
       {:error,
-       "No '#{Matter.Text.sections_section_title()}' section found in #{preview.concept.path}"}
+       "No '#{Matter.Text.sections_section_title()}' section found in #{preview.artefact.concept.path}"}
     end
   end
 
@@ -136,38 +128,22 @@ defmodule Magma.Text.Preview do
   end
 
   defp version_section_transclusion(preview, concept_name) do
-    with {:ok, concept} <- Concept.load(concept_name) do
-      {:ok,
-       "## #{Concept.title(concept)} #{View.transclude_version({concept, preview.artefact}, :title)}"}
+    with {:ok, concept} <- Concept.load(concept_name),
+         {:ok, section_artefact} <- preview.artefact.__struct__.new(concept) do
+      {:ok, "## #{Concept.title(concept)} #{View.transclude_version(section_artefact, :title)}"}
     end
   end
 
   @impl true
   @doc false
   def load_document(%__MODULE__{} = preview) do
-    {artefact_type, metadata} = Map.pop(preview.custom_metadata, :magma_artefact)
-    {concept_link, metadata} = Map.pop(metadata, :magma_concept)
-
-    cond do
-      !artefact_type ->
-        {:error, "artefact_type missing"}
-
-      !concept_link ->
-        {:error, "magma_concept missing"}
-
-      artefact_module = Artefact.type(artefact_type) ->
-        with {:ok, concept} <- Concept.load_linked(concept_link) do
-          {:ok,
-           %__MODULE__{
-             preview
-             | artefact: artefact_module,
-               concept: concept,
-               custom_metadata: metadata
-           }}
-        end
-
-      true ->
-        {:error, "invalid magma_artefact type: #{artefact_type}"}
+    with {:ok, artefact, metadata} <- Artefact.extract_from_metadata(preview.custom_metadata) do
+      {:ok,
+       %__MODULE__{
+         preview
+         | artefact: artefact,
+           custom_metadata: metadata
+       }}
     end
   end
 end

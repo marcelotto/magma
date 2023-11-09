@@ -37,15 +37,15 @@ defmodule Magma.Concept.Template do
   end
 
   defp artefact_sections(%Concept{} = concept, artefact_types) do
-    Enum.map_join(artefact_types, "\n", &artefact_section(concept, &1))
+    Enum.map_join(artefact_types, "\n", &(concept |> &1.new!() |> artefact_section()))
   end
 
-  defp artefact_section(concept, artefact_type) do
+  defp artefact_section(%artefact_type{concept: concept} = artefact) do
     """
     ## #{artefact_type.concept_section_title()}
 
-    - Prompt: #{link_to_prompt({concept, artefact_type})}
-    - Final version: #{link_to_version({concept, artefact_type})}
+    - Prompt: #{link_to_prompt(artefact)}
+    - Final version: #{link_to_version(artefact)}
 
     ### #{artefact_type.concept_prompt_task_section_title()}
 

@@ -1,55 +1,56 @@
 defmodule Magma.Artefact.Prompt do
-  use Magma.Document, fields: [:artefact, :concept, :generation]
+  use Magma.Document, fields: [:artefact, :generation]
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, Matter, Generation, Prompt, PromptResult, View}
+  alias Magma.{Vault, Artefact, Matter, Generation, Prompt, PromptResult}
   alias Magma.Prompt.Template
 
   @impl true
   def title(%__MODULE__{name: name}), do: name
 
   @impl true
-  def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
-    {:ok, concept |> artefact.relative_prompt_path() |> Vault.artefact_generation_path()}
+  def build_path(%__MODULE__{artefact: artefact}) do
+    {:ok, artefact |> Artefact.relative_prompt_path() |> Vault.artefact_generation_path()}
   end
 
   @impl true
   def from(%__MODULE__{} = prompt), do: prompt
-  def from({%Concept{} = concept, artefact}), do: artefact.prompt!(concept).name
   def from(%PromptResult{prompt: %__MODULE__{}} = result), do: result.prompt
   def from(%Artefact.Version{} = version), do: from(version.draft)
+  def from(%_artefact_type{concept: _, name: _} = artefact), do: new!(artefact).name
 
-  def new(concept, artefact, attrs \\ []) do
-    struct(__MODULE__, [{:artefact, artefact}, {:concept, concept} | attrs])
+  def new(%_artefact_type{concept: _, name: _} = artefact, attrs \\ []) do
+    __MODULE__
+    |> struct(Keyword.put(attrs, :artefact, artefact))
     |> Document.init_path()
   end
 
-  def new!(concept, artefact, attrs \\ []) do
-    case new(concept, artefact, attrs) do
+  def new!(artefact, attrs \\ []) do
+    case new(artefact, attrs) do
       {:ok, document} -> document
       {:error, error} -> raise error
     end
   end
 
-  def create(concept, artefact, attrs \\ [], opts \\ [])
+  def create(prompt_or_artefact, attrs \\ [], opts \\ [])
 
-  def create(%__MODULE__{} = document, opts, [], []) do
+  def create(%__MODULE__{} = document, opts, []) do
     document
     |> Document.init(generation: Generation.default().new!())
     |> render()
     |> Document.create(opts)
   end
 
-  def create(%__MODULE__{}, _, _, _),
+  def create(%__MODULE__{}, _, _),
     do:
       raise(
         ArgumentError,
-        "Magma.Artefact.Prompt.create/4 is available only with an initialized document"
+        "Magma.Artefact.Prompt.create/3 is not available with an initialized document"
       )
 
-  def create(concept, artefact, attrs, opts) do
-    with {:ok, document} <- new(concept, artefact, attrs) do
+  def create(artefact, attrs, opts) do
+    with {:ok, document} <- new(artefact, attrs) do
       create(document, opts)
     end
   end
@@ -57,8 +58,7 @@ defmodule Magma.Artefact.Prompt do
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
     """
-    magma_artefact: #{Artefact.type_name(document.artefact)}
-    magma_concept: "#{View.link_to(document.concept)}"
+    #{Artefact.render_front_matter(document.artefact)}
     #{Prompt.render_front_matter(document)}
     """
     |> String.trim_trailing()
@@ -71,31 +71,15 @@ defmodule Magma.Artefact.Prompt do
   @impl true
   @doc false
   def load_document(%__MODULE__{} = prompt) do
-    {artefact_type, metadata} = Map.pop(prompt.custom_metadata, :magma_artefact)
-    {concept_link, metadata} = Map.pop(metadata, :magma_concept)
-
-    cond do
-      !artefact_type ->
-        {:error, "artefact_type missing"}
-
-      !concept_link ->
-        {:error, "magma_concept missing"}
-
-      artefact_module = Artefact.type(artefact_type) ->
-        with {:ok, concept} <- Concept.load_linked(concept_link),
-             {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
-          {:ok,
-           %__MODULE__{
-             prompt
-             | artefact: artefact_module,
-               concept: concept,
-               generation: generation,
-               custom_metadata: metadata
-           }}
-        end
-
-      true ->
-        {:error, "invalid magma_artefact type: #{artefact_type}"}
+    with {:ok, artefact, metadata} <- Artefact.extract_from_metadata(prompt.custom_metadata),
+         {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
+      {:ok,
+       %__MODULE__{
+         prompt
+         | artefact: artefact,
+           generation: generation,
+           custom_metadata: metadata
+       }}
     end
   end
 end

@@ -53,9 +53,9 @@ defmodule Magma.Concept do
 
   @impl true
   def from(%__MODULE__{} = concept), do: concept
-  def from(%Artefact.Prompt{} = prompt), do: prompt.concept
-  def from(%PromptResult{prompt: %Artefact.Prompt{}} = result), do: result.prompt.concept
-  def from(%Artefact.Version{} = version), do: version.concept
+  def from(%Artefact.Prompt{} = prompt), do: prompt.artefact.concept
+  def from(%PromptResult{prompt: %Artefact.Prompt{}} = result), do: result.prompt.artefact.concept
+  def from(%Artefact.Version{} = version), do: version.artefact.concept
 
   @doc """
   Creates a new concept document struct for a given subject matter.
@@ -175,7 +175,11 @@ defmodule Magma.Concept do
       |> Keyword.put_new(:force, true)
 
     with {:ok, artefact_types} <- artefacts(concept, opts) do
-      map_while_ok(artefact_types, & &1.create_prompt(concept, [], opts))
+      map_while_ok(artefact_types, fn artefact_type ->
+        with {:ok, artefact} <- artefact_type.new(concept) do
+          Artefact.Prompt.create(artefact, [], opts)
+        end
+      end)
     end
   end
 

@@ -18,16 +18,17 @@ defmodule Magma.Artefacts.ArticleTest do
        ]
   test "Artefact.Prompt creation and loading" do
     section_concept = "Introduction" |> user_guide_section_concept() |> Concept.load!()
+    article_artefact = Article.new!(section_concept)
 
     assert {:ok,
             %Artefact.Prompt{
-              artefact: Article,
-              concept: ^section_concept,
+              artefact: ^article_artefact,
               generation: %Generation.Mock{},
               tags: ["magma-vault"],
               aliases: [],
               custom_metadata: %{}
-            } = prompt} = Article.create_prompt(section_concept)
+            } = prompt} =
+             Artefact.Prompt.create(article_artefact)
 
     assert is_just_now(prompt.created_at)
 
@@ -132,6 +133,7 @@ defmodule Magma.Artefacts.ArticleTest do
        ]
   test "Artefact.Version creation and loading (section)" do
     concept = Concept.load!("Some User Guide - Introduction")
+    article_artefact = Article.new!(concept)
 
     prompt_result =
       PromptResult.load!(
@@ -140,8 +142,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
     assert {:ok,
             %Artefact.Version{
-              artefact: Article,
-              concept: ^concept,
+              artefact: ^article_artefact,
               draft: ^prompt_result,
               tags: ["magma-vault"],
               aliases: [],
@@ -178,15 +179,15 @@ defmodule Magma.Artefacts.ArticleTest do
     |> Magma.Text.Assembler.assemble(force: true, artefacts: false)
 
     concept = Concept.load!("Some User Guide")
+    article_artefact = Article.new!(concept)
 
     assert {:ok,
             %Preview{
-              artefact: Article,
-              concept: ^concept,
+              artefact: ^article_artefact,
               tags: ["magma-vault"],
               aliases: [],
               custom_metadata: %{}
-            } = preview} = Preview.create(concept, Article)
+            } = preview} = Preview.create(article_artefact)
 
     assert is_just_now(preview.created_at)
 
@@ -229,11 +230,11 @@ defmodule Magma.Artefacts.ArticleTest do
 
     preview = Preview.load!("Some User Guide (article) Preview")
     concept = Concept.load!("Some User Guide")
+    article_artefact = Article.new!(concept)
 
     assert {:ok,
             %Artefact.Version{
-              artefact: Article,
-              concept: ^concept,
+              artefact: ^article_artefact,
               draft: ^preview,
               tags: ["magma-vault"],
               aliases: [],

@@ -9,13 +9,13 @@ defmodule Magma.Artefacts.Readme do
   @template :code.priv_dir(:magma) |> Path.join("README_TEMPLATE.md")
 
   @impl true
-  def name(_), do: @name
+  def default_name(_), do: @name
 
   @impl true
-  def version_title(%Artefact.Version{artefact: __MODULE__}), do: nil
+  def version_title(%Artefact.Version{artefact: %__MODULE__{}}), do: nil
 
   @impl true
-  def create_version(%Artefact.Version{artefact: __MODULE__} = version, opts) do
+  def create_version(%Artefact.Version{artefact: %__MODULE__{}} = version, opts) do
     {readme_path, opts} = Keyword.pop(opts, :readme_path, real_readme_path())
 
     version.path
@@ -79,14 +79,16 @@ defmodule Magma.Artefacts.Readme do
   def trim_prompt_result_header?, do: false
 
   @impl true
-  def relative_base_path(%Concept{subject: %Project{}}) do
-    Path.join(Project.relative_generated_artefacts_path(), @name)
+  def relative_base_path(%__MODULE__{name: name, concept: %Concept{subject: %Project{}}}) do
+    Path.join(Project.relative_generated_artefacts_path(), name)
   end
 
   @impl true
-  def relative_version_path(%Concept{} = concept) do
-    concept
+  def relative_version_path(
+        %__MODULE__{name: name, concept: %Concept{subject: %Project{}}} = artefact
+      ) do
+    artefact
     |> relative_base_path()
-    |> Path.join("#{name(concept)}.md")
+    |> Path.join("#{name}.md")
   end
 end

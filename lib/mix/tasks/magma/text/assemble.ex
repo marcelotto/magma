@@ -35,7 +35,9 @@ defmodule Mix.Tasks.Magma.Text.Assemble do
 
   defp assemble_toc(%Concept{} = concept, opts) do
     concept
-    |> TableOfContents.load_version!()
+    |> TableOfContents.new!()
+    |> Artefact.Version.new!()
+    |> Artefact.Version.load()
     |> assemble_toc(opts)
   end
 
