@@ -2,13 +2,27 @@ defmodule Magma.Text.Assembler do
   @moduledoc false
 
   alias Magma.{Concept, Matter, Artefact, Document, DocumentStruct}
+  alias Magma.Document.Loader
   alias Magma.Text.Preview
   alias Magma.Artefacts.TableOfContents
   alias Magma.View
 
   import Magma.Utils, only: [map_while_ok: 2]
 
-  def assemble(%Artefact.Version{artefact: %TableOfContents{}} = version, opts \\ []) do
+  def assemble(concept_or_artefact_version, opts \\ [])
+
+  def assemble(%Concept{} = concept, opts) do
+    with {:ok, artefact} <- TableOfContents.new(concept),
+         {:ok, version} <-
+           artefact
+           |> Artefact.relative_version_path()
+           |> Path.basename(".md")
+           |> Artefact.Version.load() do
+      assemble(version, opts)
+    end
+  end
+
+  def assemble(%Artefact.Version{artefact: %TableOfContents{}} = version, opts) do
     {artefacts_to_assemble, opts} = extract_assemble_artefacts(opts)
 
     with {:ok, document_struct} <- DocumentStruct.parse(version.content),
@@ -23,6 +37,21 @@ defmodule Magma.Text.Assembler do
          {:ok, _previews} <-
            create_artefact_previews(concept, artefacts_to_assemble, opts) do
       {:ok, concept}
+    end
+  end
+
+  def assemble(%invalid_document_type{path: path}, _) do
+    {:error,
+     Magma.InvalidDocumentType.exception(
+       document: path,
+       expected: [Concept, Artefact.Version],
+       actual: invalid_document_type
+     )}
+  end
+
+  def assemble(concept_or_toc_name, opts) when is_binary(concept_or_toc_name) do
+    with {:ok, document} <- Loader.load(concept_or_toc_name) do
+      assemble(document, opts)
     end
   end
 
