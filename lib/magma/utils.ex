@@ -68,7 +68,7 @@ defmodule Magma.Utils do
 
   """
   def extract_link_text("[[" <> string) do
-    String.slice(string, 0..-3)
+    String.slice(string, 0..-3//1)
   end
 
   def extract_link_text(_), do: nil
