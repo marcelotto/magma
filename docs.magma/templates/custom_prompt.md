@@ -1,7 +1,7 @@
 ---
 magma_type: Prompt
 magma_generation_type: OpenAI
-magma_generation_params: {"model":"gpt-4","temperature":0.6}
+magma_generation_params: {"model":"gpt-4-1106-preview","temperature":0.6}
 created_at: {{DATE:YYYY-MM-DD[T]HH:mm:ss}}
 tags: [magma-vault]
 aliases: []
