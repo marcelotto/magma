@@ -374,6 +374,18 @@ defmodule Some.Module do
 end
 ```
 
+> #### warning {: .warning}
+>
+> If you decide to include your moduledocs with `use Magma`, be aware that if you're writing a library and your users should be able to use these docs on their machines, e.g. with the `h` helper in IEx you'll have to include the Magma documents with the final moduledocs in your package like this:
+> 
+> ```elixir
+> defp package do  
+>   [  
+>     # ...
+>     files:  ~w[lib priv mix.exs docs.magma/artefacts/final/modules/**/*.md]
+>   ]  
+  > end  
+> ```
 
 However, the artefact prompt also asks for function docs for two reasons:
 

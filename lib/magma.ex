@@ -21,6 +21,23 @@ defmodule Magma do
   Adds the contents of the final version of the `Magma.Artefacts.ModuleDoc` as the `@moduledoc`.
 
   Usually this done via `use Magma`.
+
+  > #### warning {: .warning}
+  >
+  > If you decide to include your moduledocs with this macro, be aware that if
+  > you're writing a library and your users should be able to use these docs on
+  > their machines, e.g. with the `h` helper in IEx you'll have to include the
+  > Magma documents with the final moduledocs in your package like this:
+  >
+  > ```elixir
+  > defp package do
+  >   [
+  >     # ...
+  >     files:  ~w[lib priv mix.exs docs.magma/artefacts/final/modules/**/*.md]
+  >   ]
+  > end
+  > ```
+
   """
   defmacro defmoduledoc do
     quote do
