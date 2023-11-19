@@ -26,7 +26,7 @@ defmodule Magma.Generation do
         temperature: 0.6
   """
 
-  alias Magma.Artefact
+  alias Magma.{Artefact, View}
 
   import Magma.Utils.Guards
 
@@ -108,6 +108,17 @@ defmodule Magma.Generation do
       ["Magma", "Generation" | rest] -> Module.concat(rest)
       _ -> raise("invalid Magma.Generation: #{inspect(module)}")
     end
+  end
+
+  @doc """
+  Renders generation YAML frontmatter properties.
+  """
+  def render_front_matter(%_generation_type{} = generation) do
+    """
+    magma_generation_type: #{inspect(short_name(generation))}
+    magma_generation_params: #{View.yaml_nested_map(generation)}
+    """
+    |> String.trim_trailing()
   end
 
   @doc """

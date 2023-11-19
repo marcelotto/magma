@@ -156,8 +156,7 @@ defmodule Magma.PromptResult do
   def render_front_matter(%__MODULE__{} = document) do
     """
     magma_prompt: "#{View.link_to(document.prompt)}"
-    magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
-    magma_generation_params: #{View.yaml_nested_map(document.generation)}
+    #{Generation.render_front_matter(document.generation)}
     """
     |> String.trim_trailing()
   end
