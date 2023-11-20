@@ -194,8 +194,12 @@ defmodule Magma.View do
     "[" <> (list |> List.wrap() |> Enum.join(", ")) <> "]"
   end
 
-  def yaml_nested_map(map) do
-    map |> Map.from_struct() |> Jason.encode!()
+  def yaml_nested_map(%_{} = struct) do
+    struct |> Map.from_struct() |> yaml_nested_map()
+  end
+
+  def yaml_nested_map(map) when is_map(map) do
+    Jason.encode!(map)
   end
 
   def prompt_results_table do

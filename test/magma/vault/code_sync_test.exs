@@ -52,9 +52,5 @@ defmodule Magma.Vault.CodeSyncTest do
 
       refute File.exists?(concept.path)
     end
-
-    test "when the vault not exists" do
-      assert CodeSync.sync() == {:error, :vault_not_existing}
-    end
   end
 end

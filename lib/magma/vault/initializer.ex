@@ -42,12 +42,24 @@ defmodule Magma.Vault.Initializer do
       |> Path.join(".obsidian")
       |> copy_directory(vault_dest_dir)
 
+      create_config(vault_dest_dir)
+
       create_gitignore_file(vault_dest_dir)
 
       copy_directory(@bin_dir, vault_dest_dir)
 
       :ok
     end
+  end
+
+  def create_config(vault_dest_dir \\ Vault.path()) do
+    Magma.Config.template_path()
+    |> copy_directory(vault_dest_dir)
+
+    Magma.Config.System.path()
+    |> create_file(Magma.Config.System.template())
+
+    Vault.Index.index()
   end
 
   defp create_gitignore_file(vault_dest_dir) do
@@ -67,7 +79,7 @@ defmodule Magma.Vault.Initializer do
   defp create_custom_prompt_template(project) do
     prompt =
       "default"
-      |> Prompt.new!(generation: Generation.default().new!())
+      |> Prompt.new!(generation: Generation.default())
       |> Document.init()
 
     Vault.custom_prompt_template_path()

@@ -38,7 +38,7 @@ defmodule Magma.Prompt do
 
   def create(%__MODULE__{} = document, opts, []) do
     document
-    |> Document.init(generation: Generation.default().new!())
+    |> Document.init(generation: Generation.default())
     |> render()
     |> Document.create(opts)
   end

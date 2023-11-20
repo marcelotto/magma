@@ -29,7 +29,7 @@ defmodule Magma.Vault.Index do
     end
   end
 
-  defp index do
+  def index do
     if File.exists?(path = Vault.path()) do
       do_index(path)
     end

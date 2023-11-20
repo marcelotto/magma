@@ -68,7 +68,7 @@ defmodule Magma.PromptResult do
   def create(%__MODULE__{} = document, opts, []) do
     with {:ok, document} <-
            document
-           |> Document.init(generation: document.prompt.generation || Generation.default().new!())
+           |> Document.init(generation: document.prompt.generation || Generation.default())
            |> execute_prompt(opts),
          {:ok, document} <- Document.create(document, opts) do
       {:ok, document}

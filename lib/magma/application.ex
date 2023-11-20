@@ -6,7 +6,8 @@ defmodule Magma.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      Magma.Vault.Index
+      Magma.Vault.Index,
+      Magma.Config
     ]
 
     opts = [strategy: :one_for_one, name: Magma.Supervisor]

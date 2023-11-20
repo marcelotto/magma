@@ -7,6 +7,7 @@ defmodule Magma.Vault.InitializerTest do
   alias Magma.{Concept, Matter}
 
   describe "initialize/0" do
+    @tag without_vault: true
     test "copies the base Obsidian vault and creates concepts for the project and modules" do
       refute File.exists?(Vault.path())
 
@@ -19,6 +20,9 @@ defmodule Magma.Vault.InitializerTest do
       assert File.exists?(Vault.path(".obsidian"))
       assert File.exists?(Vault.path([".obsidian", "plugins"]))
       assert File.exists?(Vault.path([".obsidian", "community-plugins.json"]))
+
+      assert File.exists?(Magma.Config.path())
+      assert File.exists?(Magma.Config.path("magma_config.md"))
 
       assert File.exists?(Vault.path(".bin"))
       assert File.exists?(Vault.path([".bin", "magma.sh"]))
