@@ -36,13 +36,13 @@ defmodule Magma.Config do
   def handle_continue(_, config) do
     config =
       case cached(config, :system) do
-        {:ok, config} -> config
+        {:ok, _, config} -> config
         {:error, _} -> config
       end
 
     config =
       case cached(config, :project) do
-        {:ok, config} -> config
+        {:ok, _, config} -> config
         {:error, _} -> config
       end
 
@@ -52,17 +52,20 @@ defmodule Magma.Config do
   @impl true
   def handle_call({:cached, document_type, key}, _from, config) do
     case cached(config, document_type) do
-      {:ok, config} -> {:reply, get(config, document_type, key), config}
-      {:error, error} -> {:stop, error, config}
+      {:ok, document, config} ->
+        {:reply, if(key == nil, do: document, else: document.custom_metadata[key]), config}
+
+      {:error, error} ->
+        {:stop, error, config}
     end
   end
 
   defp cached(config, document_type) do
-    if Map.get(config, document_type) do
-      {:ok, config}
+    if document = Map.get(config, document_type) do
+      {:ok, document, config}
     else
       with {:ok, document} <- load_document(document_type) do
-        {:ok, Map.put(config, document_type, document)}
+        {:ok, document, Map.put(config, document_type, document)}
       end
     end
   end
@@ -71,7 +74,4 @@ defmodule Magma.Config do
   defp load_document(:project), do: Magma.Matter.Project.concept()
   defp load_document(unknown), do: raise("invalid config document type: #{inspect(unknown)}")
 
-  defp get(config, document_type, key \\ nil)
-  defp get(config, document_type, nil), do: Map.get(config, document_type)
-  defp get(config, document_type, key), do: get(config, document_type).custom_metadata[key]
 end
