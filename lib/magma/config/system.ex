@@ -8,6 +8,12 @@ defmodule Magma.Config.System do
   @name "magma_config"
   def path, do: Magma.Config.path("#{@name}.md")
 
+  @persona_section_title "Persona"
+  def persona_section_title, do: @persona_section_title
+
+  @persona_transclusion View.transclude(@name, @persona_section_title)
+  def persona_transclusion, do: @persona_transclusion
+
   @impl true
   def title(%__MODULE__{}), do: title()
   def title, do: "Magma config"
@@ -25,6 +31,25 @@ defmodule Magma.Config.System do
       {:ok, document} -> document
       {:error, error} -> raise error
     end
+  end
+
+  def template(project_name) do
+    """
+    ---
+    magma_type: Config.System
+    tags: [magma-config]
+    default_tags: #{View.yaml_list(default_tags())}
+    """ <>
+      generation_default_properties() <>
+      """
+      link_resolution_style: #{default_link_resolution_style()}
+      ---
+      # #{title()}
+
+      ## #{persona_section_title()}
+
+      #{default_persona(project_name)}
+      """
   end
 
   def default_generation do
@@ -49,19 +74,15 @@ defmodule Magma.Config.System do
     Application.get_env(:magma, :link_resolution_style, :plain)
   end
 
-  def template do
-    """
-    ---
-    magma_type: Config.System
-    tags: [magma-config]
-    default_tags: #{View.yaml_list(default_tags())}
-    """ <>
-      generation_default_properties() <>
+  def default_persona(project_name) do
+    Application.get_env(
+      :magma,
+      :persona,
       """
-      link_resolution_style: #{default_link_resolution_style()}
-      ---
-      # #{title()}
+      You are MagmaGPT, an assistant who helps the developers of the "#{project_name}" project during documentation and development. Your responses are in plain and clear English.
       """
+    )
+    |> String.trim_trailing()
   end
 
   defp generation_default_properties do

@@ -28,7 +28,7 @@ defmodule Magma.PromptTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             ![[magma_config#Persona|]]
 
              ### Context knowledge
 

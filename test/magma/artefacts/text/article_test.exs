@@ -45,7 +45,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.persona_transclusion()}
 
              Your task is to help write a user guide called "Some User Guide".
 

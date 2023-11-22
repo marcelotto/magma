@@ -15,6 +15,15 @@ defmodule Magma.Config.SystemTest do
               }
             } = config} = Magma.Config.System.load()
 
+    assert config.content ==
+             """
+             # Magma config
+
+             ## Persona
+
+             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             """
+
     assert config.path == Vault.path("magma.config/magma_config.md")
   end
 end

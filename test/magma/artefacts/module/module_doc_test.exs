@@ -79,7 +79,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.persona_transclusion()}
 
              You have two tasks to do based on the given implementation of the module and your knowledge base:
 
@@ -189,7 +189,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.persona_transclusion()}
 
              #{ModuleDoc.system_prompt_task()}
 

@@ -26,7 +26,7 @@ defmodule Magma.Prompt.Template do
 
     ## #{@system_prompt_section_title}
 
-    #{persona(project)}
+    #{persona()}
 
     #{context_knowledge(project)}
 
@@ -44,7 +44,7 @@ defmodule Magma.Prompt.Template do
 
     ## #{@system_prompt_section_title}
 
-    #{persona(project)}
+    #{persona()}
 
     #{context_knowledge(project)}
 
@@ -64,7 +64,7 @@ defmodule Magma.Prompt.Template do
 
     ## #{@system_prompt_section_title}
 
-    #{persona(project)}
+    #{persona()}
 
     #{artefact_type.system_prompt_task(concept)}
 
@@ -79,16 +79,7 @@ defmodule Magma.Prompt.Template do
     """
   end
 
-  def persona(project) do
-    :magma
-    |> Application.get_env(
-      :persona,
-      """
-      You are MagmaGPT, an assistant who helps the developers of the "#{project.subject.name}" project during documentation and development. Your responses are in plain and clear English.
-      """
-    )
-    |> String.trim_trailing()
-  end
+  defp persona, do: Magma.Config.System.persona_transclusion()
 
   def context_knowledge(nil) do
     """
