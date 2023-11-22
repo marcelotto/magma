@@ -205,8 +205,8 @@ defmodule Magma.Matter.Project do
   @doc """
   Returns the `Magma.Concept` about the project.
   """
-  @spec concept :: Magma.Concept.t()
-  def concept, do: Concept.load!(@concept_name)
+  @spec concept :: {:ok, Magma.Concept.t()} | {:error, any}
+  def concept, do: Concept.load(@concept_name)
 
   @doc """
   Returns all modules of the project as `Magma.Matter.Module`s.

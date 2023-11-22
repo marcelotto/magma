@@ -1,7 +1,7 @@
 defmodule Magma.Config do
   use GenServer
 
-  defstruct [:system, :matter, :artefacts]
+  defstruct [:system, :matter, :artefacts, :project]
 
   @type t :: %__MODULE__{}
 
@@ -19,7 +19,11 @@ defmodule Magma.Config do
   end
 
   def system(key \\ nil) do
-    GenServer.call(__MODULE__, {:system, key})
+    GenServer.call(__MODULE__, {:cached, :system, key})
+  end
+
+  def project(key \\ nil) do
+    GenServer.call(__MODULE__, {:cached, :project, key})
   end
 
   @impl true
@@ -30,28 +34,44 @@ defmodule Magma.Config do
 
   @impl true
   def handle_continue(_, config) do
-    case with_cached_system_config(config) do
-      {:ok, config} -> {:noreply, config}
-      {:error, _} -> {:noreply, config}
-    end
+    config =
+      case cached(config, :system) do
+        {:ok, config} -> config
+        {:error, _} -> config
+      end
+
+    config =
+      case cached(config, :project) do
+        {:ok, config} -> config
+        {:error, _} -> config
+      end
+
+    {:noreply, config}
   end
 
   @impl true
-  def handle_call({:system, key}, _from, config) do
-    case with_cached_system_config(config) do
-      {:ok, config} -> {:reply, get_system(config, key), config}
+  def handle_call({:cached, document_type, key}, _from, config) do
+    case cached(config, document_type) do
+      {:ok, config} -> {:reply, get(config, document_type, key), config}
       {:error, error} -> {:stop, error, config}
     end
   end
 
-  defp with_cached_system_config(%{system: nil} = config) do
-    with {:ok, system} <- Magma.Config.System.load() do
-      {:ok, %__MODULE__{config | system: system}}
+  defp cached(config, document_type) do
+    if Map.get(config, document_type) do
+      {:ok, config}
+    else
+      with {:ok, document} <- load_document(document_type) do
+        {:ok, Map.put(config, document_type, document)}
+      end
     end
   end
 
-  defp with_cached_system_config(%__MODULE__{} = config), do: {:ok, config}
+  defp load_document(:system), do: Magma.Config.System.load()
+  defp load_document(:project), do: Magma.Matter.Project.concept()
+  defp load_document(unknown), do: raise("invalid config document type: #{inspect(unknown)}")
 
-  defp get_system(%{system: system}, nil), do: system.custom_metadata
-  defp get_system(%{system: system}, key), do: system.custom_metadata[key]
+  defp get(config, document_type, key \\ nil)
+  defp get(config, document_type, nil), do: Map.get(config, document_type)
+  defp get(config, document_type, key), do: get(config, document_type).custom_metadata[key]
 end
