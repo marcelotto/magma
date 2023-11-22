@@ -212,17 +212,21 @@ defmodule Magma.Document do
   def render_front_matter(%document_type{} = document) do
     """
     ---
-    magma_type: #{type_name(document_type)}#{if document_specific_front_matter = document_type.render_front_matter(document) do
+    magma_type: #{type_name(document_type)}
+    """ <>
+      if document_specific_front_matter = document_type.render_front_matter(document) do
+        """
+        #{document_specific_front_matter}
+        """
+      else
+        ""
+      end <>
       """
-
-      #{document_specific_front_matter}
+      created_at: #{document.created_at}
+      tags: #{View.yaml_list(document.tags)}
+      aliases: #{View.yaml_list(document.aliases)}
+      ---
       """
-    end}
-    created_at: #{document.created_at}
-    tags: #{View.yaml_list(document.tags)}
-    aliases: #{View.yaml_list(document.aliases)}
-    ---
-    """
   end
 
   @doc """
