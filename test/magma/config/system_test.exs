@@ -6,7 +6,7 @@ defmodule Magma.Config.SystemTest do
   test "load/1" do
     assert {:ok,
             %Magma.Config.System{
-              name: "magma_config",
+              name: "Magma.System.config",
               tags: ["magma-config"],
               custom_metadata: %{
                 default_tags: ["magma-vault"],
@@ -17,13 +17,13 @@ defmodule Magma.Config.SystemTest do
 
     assert config.content ==
              """
-             # Magma config
+             # Magma system config
 
              ## Persona
 
              You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
              """
 
-    assert config.path == Vault.path("magma.config/magma_config.md")
+    assert config.path == Vault.path("magma.config/Magma.System.config.md")
   end
 end

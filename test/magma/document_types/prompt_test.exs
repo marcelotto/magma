@@ -28,7 +28,7 @@ defmodule Magma.PromptTest do
 
              ## System prompt
 
-             ![[magma_config#Persona|]]
+             ![[Magma.System.config#Persona|]]
 
              ### Context knowledge
 

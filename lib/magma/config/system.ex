@@ -5,7 +5,7 @@ defmodule Magma.Config.System do
 
   alias Magma.{Generation, View}
 
-  @name "magma_config"
+  @name "Magma.System.config"
   def path, do: Magma.Config.path("#{@name}.md")
 
   @persona_section_title "Persona"
@@ -16,7 +16,7 @@ defmodule Magma.Config.System do
 
   @impl true
   def title(%__MODULE__{}), do: title()
-  def title, do: "Magma config"
+  def title, do: "Magma system config"
 
   @impl true
   def build_path(%__MODULE__{}), do: {:ok, path()}

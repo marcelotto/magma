@@ -6,7 +6,7 @@ default_generation_type: OpenAI
 default_generation_params: {"model":"gpt-4-1106-preview","temperature":0.6}
 link_resolution_style: plain
 ---
-# Magma config
+# Magma system config
 
 ## Persona
 

@@ -22,7 +22,7 @@ defmodule Magma.Vault.InitializerTest do
       assert File.exists?(Vault.path([".obsidian", "community-plugins.json"]))
 
       assert File.exists?(Magma.Config.path())
-      assert File.exists?(Magma.Config.path("magma_config.md"))
+      assert File.exists?(Magma.Config.path("Magma.System.config.md"))
       assert File.exists?(Magma.Config.path(["artefacts", "ModuleDoc.config.md"]))
       assert File.exists?(Magma.Config.path(["text_types", "UserGuide.config.md"]))
 
