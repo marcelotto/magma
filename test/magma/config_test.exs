@@ -19,4 +19,25 @@ defmodule Magma.ConfigTest do
     assert {:ok, Magma.Config.project()} ==
              Magma.Matter.Project.concept()
   end
+
+  test "artefact/1" do
+    assert {:ok, Magma.Config.artefact(Magma.Artefacts.ModuleDoc)} ==
+             Magma.Config.Artefact.load("ModuleDoc.config")
+
+    assert {:ok, Magma.Config.artefact(Magma.Artefacts.Readme)} ==
+             Magma.Config.Artefact.load("Readme.config")
+  end
+
+  test "text_type/1" do
+    assert {:ok, Magma.Config.text_type(Magma.Matter.Texts.Generic)} ==
+             Magma.Config.TextType.load("Generic.config")
+
+    assert {:ok, Magma.Config.text_type(Magma.Matter.Texts.UserGuide)} ==
+             Magma.Config.TextType.load("UserGuide.config")
+  end
+
+  test "text_types/0" do
+    assert Magma.Config.text_types() ==
+             [Magma.Matter.Texts.Generic, Magma.Matter.Texts.UserGuide]
+  end
 end

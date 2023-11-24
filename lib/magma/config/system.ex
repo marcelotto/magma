@@ -1,9 +1,9 @@
 defmodule Magma.Config.System do
-  use Magma.Document, fields: [:sections]
+  use Magma.Config.Document
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Document, DocumentStruct, Generation, View}
+  alias Magma.{Generation, View}
 
   @name "magma_config"
   def path, do: Magma.Config.path("#{@name}.md")
@@ -104,16 +104,15 @@ defmodule Magma.Config.System do
   @impl true
   @doc false
   def load_document(%__MODULE__{} = document) do
-    with {:ok, config} <- setup_default_generation(document.custom_metadata),
-         {:ok, document_struct} <- DocumentStruct.parse(document.content) do
+    with {:ok, document} <- super(document),
+         {:ok, config} <- setup_default_generation(document.custom_metadata) do
       {:ok,
        %__MODULE__{
          document
          | custom_metadata:
              config
              |> setup_default_tags()
-             |> setup_link_resolution_style(),
-           sections: document_struct.sections
+             |> setup_link_resolution_style()
        }}
     end
   end

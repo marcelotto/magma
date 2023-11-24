@@ -322,4 +322,44 @@ defmodule Magma.DocumentStruct.Section do
         nil
     end)
   end
+
+  def preserve_eex_tags(%__MODULE__{} = section) do
+    %__MODULE__{
+      section
+      | content:
+          Enum.map(
+            section.content,
+            &Panpipe.transform(&1, fn
+              %Panpipe.AST.Str{string: "%>" <> _ = string} = node ->
+                case String.split(string, ">") do
+                  [left, right] ->
+                    [
+                      %Panpipe.AST.Str{string: left},
+                      %Panpipe.AST.RawInline{string: ">", format: "markdown"},
+                      %Panpipe.AST.Str{string: right}
+                    ]
+
+                  _ ->
+                    node
+                end
+
+              %Panpipe.AST.Str{string: string} = node ->
+                case String.split(string, "<") do
+                  [left, right] ->
+                    [
+                      %Panpipe.AST.Str{string: left},
+                      %Panpipe.AST.RawInline{string: "<", format: "markdown"},
+                      %Panpipe.AST.Str{string: right}
+                    ]
+
+                  _ ->
+                    node
+                end
+
+              _ ->
+                nil
+            end)
+          )
+    }
+  end
 end

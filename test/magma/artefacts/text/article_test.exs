@@ -47,9 +47,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
              #{Magma.Config.System.persona_transclusion()}
 
-             Your task is to help write a user guide called "Some User Guide".
-
-             The user guide should be written in English in the Markdown format.
+             ![[UserGuide.config#System prompt|]]
 
              ### Context knowledge
 

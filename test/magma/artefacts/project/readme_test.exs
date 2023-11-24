@@ -40,7 +40,7 @@ defmodule Magma.Artefacts.ReadmeTest do
 
              #{Magma.Config.System.persona_transclusion()}
 
-             #{Readme.system_prompt_task()}
+             ![[Readme.config#System prompt|]]
 
              ### Context knowledge
 

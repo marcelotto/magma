@@ -2,6 +2,7 @@ defmodule Magma.Matter.Text do
   use Magma.Matter, fields: [:type]
 
   alias Magma.{Matter, Concept}
+  alias Magma.Matter.Text.Section
 
   @type t :: %__MODULE__{}
   @type type :: module
@@ -62,28 +63,37 @@ defmodule Magma.Matter.Text do
       )
   end
 
-  @spec new(keyword) :: {:ok, t()} | {:error, any}
-  def new(attrs) when is_list(attrs) do
-    {:ok, struct(__MODULE__, attrs)}
+  @spec new(binary, keyword) :: {:ok, t()} | {:error, any}
+  def new(name, attrs \\ []) do
+    {:ok,
+     struct(
+       __MODULE__,
+       attrs
+       |> Keyword.put(:name, name)
+       |> Keyword.put_new(:type, Magma.Matter.Texts.Generic)
+     )}
   end
 
-  @spec new(type(), binary) :: {:ok, t()} | {:error, any}
-  def new(type, name) do
-    new(name: name, type: type)
-  end
-
-  def new!(attrs) do
-    case new(attrs) do
+  def new!(name, attrs \\ []) do
+    case new(name, attrs) do
       {:ok, matter} -> matter
       {:error, error} -> raise error
     end
   end
 
-  def new!(type, name) do
-    case new(type, name) do
-      {:ok, matter} -> matter
-      {:error, error} -> raise error
-    end
+  @doc false
+  def request_prompt_task_template_bindings(%Concept{subject: %__MODULE__{} = text}) do
+    [
+      text: text,
+      section: nil
+    ]
+  end
+
+  def request_prompt_task_template_bindings(%Concept{subject: %Section{} = section}) do
+    [
+      text: section.main_text,
+      section: section
+    ]
   end
 
   @impl true
@@ -95,7 +105,7 @@ defmodule Magma.Matter.Text do
         {:error, "magma_matter_text_type missing in #{document_name}"}
 
       text_type = type(magma_matter_text_type) ->
-        with {:ok, matter} <- new(text_type, document_name) do
+        with {:ok, matter} <- new(document_name, type: text_type) do
           {:ok, matter, remaining}
         end
 
@@ -130,8 +140,8 @@ defmodule Magma.Matter.Text do
       ** (RuntimeError) Invalid Magma.Matter.Text type: NonExisting
 
   """
-  def type_name(type) do
-    if type?(type) do
+  def type_name(type, validate \\ true) do
+    if not validate or type?(type) do
       case Module.split(type) do
         ["Magma", "Matter", "Texts" | name_parts] -> Enum.join(name_parts, ".")
         _ -> raise "Invalid Magma.Matter.Text type: #{inspect(type)}"
@@ -159,15 +169,15 @@ defmodule Magma.Matter.Text do
       nil
 
   """
-  def type(string) when is_binary(string) do
+  def type(string, validate \\ true) when is_binary(string) do
     module = Module.concat(Magma.Matter.Texts, string)
 
-    if type?(module) do
+    if not validate or type?(module) do
       module
     end
   end
 
   def type?(module) do
-    Code.ensure_loaded?(module) and function_exported?(module, :system_prompt_task, 1)
+    module in Magma.Config.text_types()
   end
 end

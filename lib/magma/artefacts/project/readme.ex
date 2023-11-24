@@ -6,8 +6,6 @@ defmodule Magma.Artefacts.Readme do
 
   @name "README"
 
-  @template :code.priv_dir(:magma) |> Path.join("README_TEMPLATE.md")
-
   @impl true
   def default_name(_), do: @name
 
@@ -40,39 +38,6 @@ defmodule Magma.Artefacts.Readme do
 
   defp real_readme_path do
     Path.join(File.cwd!(), "README.md")
-  end
-
-  @impl true
-  def system_prompt_task(_concept \\ nil) do
-    """
-    Your task is to generate a project README using the following template (without the surrounding Markdown block), replacing the content between {{ ... }} accordingly:
-
-    ```markdown
-    #{File.read!(@template)}
-    ```
-    """
-    |> String.trim_trailing()
-  end
-
-  @impl true
-  def request_prompt_task(concept) do
-    """
-    Generate a README for project '#{concept.subject.name}' according to its description and the following information:
-
-    Hex package name: #{Project.app_name()}
-    Repo URL: https://github.com/github_username/repo_name
-    Documentation URL: https://hexdocs.pm/#{Project.app_name()}/
-    Homepage URL:
-    Demo URL:
-    Logo path: logo.jpg
-    Screenshot path:
-    License: MIT License
-    Contact: Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - your@email.com
-    Acknowledgments:
-
-    ("n/a" means not applicable and should result in a removal of the respective parts)
-    """
-    |> String.trim_trailing()
   end
 
   @impl true

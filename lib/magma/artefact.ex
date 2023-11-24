@@ -33,8 +33,11 @@ defmodule Magma.Artefact do
 
   As opposed to the `c:request_prompt_task/1` this is a general, static text
   used by artefacts of this type.
+
+  The generated default implementation returns a transclusion of the
+  "System prompt" section of the respective artefact config document.
   """
-  @callback system_prompt_task(t()) :: binary
+  @callback system_prompt_task(Concept.t()) :: binary
 
   @doc """
   A callback that returns the request prompt text of the `Magma.Artefact.Concept` document for this type of matter that describes what to generate.
@@ -43,8 +46,17 @@ defmodule Magma.Artefact do
   one is included in the "Artefacts" section of the `Magma.Concept` document
   (and only transcluded in `Magma.Artefact.Prompt` document), so that the user
   has a chance to adapt it for a specific instance of this artefact type.
+
+  The generated default implementation returns the content of the
+  "Task prompt" section of the respective artefact config document,
+  after EEx evaluation with the bindings returned by `c:request_prompt_task_template_bindings/1`.
   """
-  @callback request_prompt_task(t()) :: binary
+  @callback request_prompt_task(Concept.t()) :: binary
+
+  @doc """
+  A callback that returns the bindings to be applied when rendering the `c:request_prompt_task/1` EEx template.
+  """
+  @callback request_prompt_task_template_bindings(Concept.t()) :: keyword
 
   @doc """
   A callback that returns the title of the "Artefacts" subsection for this type of matter in the `Magma.Concept` document.
@@ -136,6 +148,14 @@ defmodule Magma.Artefact do
 
       def matter_type, do: unquote(matter_type)
 
+      def config do
+        Magma.Config.artefact(__MODULE__)
+      end
+
+      def config_name do
+        Magma.Config.Artefact.name_by_type(__MODULE__)
+      end
+
       @impl true
       def concept_section_title, do: Artefact.type_name(__MODULE__)
 
@@ -169,6 +189,32 @@ defmodule Magma.Artefact do
       def trim_prompt_result_header?, do: true
 
       @impl true
+      def system_prompt_task(_concept) do
+        View.transclude(config_name(), Magma.Config.Artefact.system_prompt_section())
+      end
+
+      @impl true
+      def request_prompt_task(concept) do
+        Magma.Config.Artefact.render_request_prompt(
+          config(),
+          request_prompt_task_template_bindings(concept)
+        )
+      end
+
+      @impl true
+      def request_prompt_task_template_bindings(concept) do
+        [
+          project:
+            if(match?(%Magma.Matter.Project{}, concept.subject),
+              do: concept,
+              else: Magma.Config.project()
+            ),
+          concept: concept,
+          subject: concept.subject
+        ]
+      end
+
+      @impl true
       def new(concept, attrs \\ []) do
         with {:ok, attrs} <- attrs |> Keyword.get(:name) |> set_name_attr(concept, attrs) do
           {:ok, struct(__MODULE__, Keyword.put(attrs, :concept, concept))}
@@ -197,14 +243,17 @@ defmodule Magma.Artefact do
       def create_version(%Artefact.Version{artefact: %__MODULE__{}}, opts), do: nil
 
       defoverridable prompt_name: 1,
-                     version_prologue: 1,
                      trim_prompt_result_header?: 0,
                      relative_prompt_path: 1,
                      relative_version_path: 1,
                      version_title: 1,
+                     version_prologue: 1,
                      new: 1,
                      new: 2,
-                     create_version: 2
+                     create_version: 2,
+                     system_prompt_task: 1,
+                     request_prompt_task: 1,
+                     request_prompt_task_template_bindings: 1
     end
   end
 

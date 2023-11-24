@@ -1,9 +1,7 @@
 defmodule Magma.Artefacts.TableOfContents do
   use Magma.Artefact, matter: Magma.Matter.Text
 
-  alias Magma.{Concept, Matter, Artefact}
-
-  import Magma.View
+  alias Magma.{Concept, Matter, Artefact, View}
 
   @impl true
   def default_name(%Concept{subject: %Matter.Text{name: name}}), do: "#{name} ToC"
@@ -17,7 +15,7 @@ defmodule Magma.Artefacts.TableOfContents do
   end
 
   def assemble_button do
-    button("Assemble sections", "magma.text.assemble", color: "blue")
+    View.button("Assemble sections", "magma.text.assemble", color: "blue")
   end
 
   def assemble_callout(version) do
@@ -31,38 +29,19 @@ defmodule Magma.Artefacts.TableOfContents do
     It will ask you to confirm any overwrites of files with user-provided content.
     """
     |> String.trim_trailing()
-    |> callout()
+    |> View.callout()
   end
 
   @impl true
-  def system_prompt_task(%Concept{subject: %Matter.Text{type: text_type}} = concept) do
-    text_type.system_prompt_task(concept)
+  def system_prompt_task(%Concept{subject: %Matter.Text{type: text_type}}) do
+    text_type
+    |> Magma.Config.text_type()
+    |> View.transclude(Magma.Config.TextType.system_prompt_section())
   end
 
   @impl true
-  def request_prompt_task(%Concept{} = concept) do
-    """
-    Your task is to write an outline of "#{concept.name}".
-
-    Please provide the outline in the following format:
-
-    ```markdown
-    ## Title of the first section
-
-    Abstract: Abstract of the introduction.
-
-    ## Title of the next section
-
-    Abstract: Abstract of the next section.
-
-    ## Title of the another section
-
-    Abstract: Abstract of the another section.
-    ```
-
-    #{comment("Please don't change the general structure of this outline format. The section generator relies on an outline with sections.")}
-    """
-    |> String.trim_trailing()
+  def request_prompt_task_template_bindings(concept) do
+    Matter.Text.request_prompt_task_template_bindings(concept) ++ super(concept)
   end
 
   @impl true
