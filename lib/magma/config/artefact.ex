@@ -1,5 +1,5 @@
 defmodule Magma.Config.Artefact do
-  use Magma.Config.Document
+  use Magma.Config.Document, fields: [:artefact_type]
 
   alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
@@ -10,15 +10,18 @@ defmodule Magma.Config.Artefact do
   @task_prompt_section "Task prompt"
   def task_prompt_section, do: @task_prompt_section
 
-  @impl true
-  def title(%__MODULE__{name: name}), do: "#{name} artefact config"
+  @context_knowledge_section "Context knowledge"
+  def context_knowledge_section, do: @context_knowledge_section
 
   @impl true
-  def build_path(%__MODULE__{name: name}), do: {:ok, Magma.Config.artefacts_path("#{name}.md")}
+  def title(%__MODULE__{artefact_type: artefact_type}),
+    do: "#{Magma.Artefact.type_name(artefact_type, false)} artefact config"
+
+  @impl true
+  def build_path(%__MODULE__{artefact_type: artefact_type}),
+    do: {:ok, Magma.Config.artefacts_path("#{name_by_type(artefact_type)}.md")}
 
   def name_by_type(artefact_type), do: "#{Magma.Artefact.type_name(artefact_type)}.config"
-
-  def type_name(%__MODULE__{name: name}), do: Path.basename(name, ".config")
 
   def render_request_prompt(%__MODULE__{} = artefact_config, bindings) do
     artefact_config

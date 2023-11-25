@@ -275,8 +275,8 @@ defmodule Magma.Artefact do
       ** (RuntimeError) Invalid Magma.Artefacts type: NonExisting
 
   """
-  def type_name(type) do
-    if type?(type) do
+  def type_name(type, validate \\ true) do
+    if not validate or type?(type) do
       case Module.split(type) do
         ["Magma", "Artefacts" | name_parts] -> Enum.join(name_parts, ".")
         _ -> raise "Invalid Magma.Artefacts type name scheme: #{inspect(type)}"

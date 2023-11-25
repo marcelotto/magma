@@ -221,12 +221,18 @@ defmodule Magma.Document do
       else
         ""
       end <>
-      """
-      created_at: #{document.created_at}
-      tags: #{View.yaml_list(document.tags)}
-      aliases: #{View.yaml_list(document.aliases)}
-      ---
-      """
+      ("""
+       #{render_custom_metadata(document.custom_metadata)}
+       created_at: #{document.created_at}
+       tags: #{View.yaml_list(document.tags)}
+       aliases: #{View.yaml_list(document.aliases)}
+       ---
+       """
+       |> String.trim_leading())
+  end
+
+  defp render_custom_metadata(metadata) do
+    Enum.map_join(metadata, "\n", fn {key, value} -> "#{key}: #{inspect(value)}" end)
   end
 
   @doc """

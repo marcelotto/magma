@@ -1,4 +1,7 @@
 defmodule Magma.Config.Document do
+  @default_tags ["magma-config"]
+  def default_tags, do: @default_tags
+
   defmacro __using__(opts) do
     additional_fields = [:sections | Keyword.get(opts, :fields, [])]
 
@@ -15,5 +18,9 @@ defmodule Magma.Config.Document do
 
       defoverridable load_document: 1
     end
+  end
+
+  def init(document) do
+    Magma.Document.init(document, tags: default_tags())
   end
 end
