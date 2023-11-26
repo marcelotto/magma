@@ -46,7 +46,11 @@ defmodule Magma.Artefacts.ReadmeTest do
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+             #{Magma.Config.System.context_knowledge_transclusion()}
 
+
+
+             ![[Readme.config#Context knowledge|]]
 
              ![[Project#Context knowledge|]]
 

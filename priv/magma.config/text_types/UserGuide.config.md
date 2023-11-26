@@ -9,3 +9,7 @@ tags: [magma-config]
 
 Your task is to help write a user guide. It should be written in English in the Markdown format.
 
+
+## Context knowledge
+
+

@@ -22,6 +22,10 @@ defmodule Magma.Config.SystemTest do
              ## Persona
 
              You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+
+
+             ## Context knowledge
+
              """
 
     assert config.path == Vault.path("magma.config/Magma.System.config.md")

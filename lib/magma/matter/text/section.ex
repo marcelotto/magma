@@ -37,8 +37,12 @@ defmodule Magma.Matter.Text.Section do
   def default_description(%__MODULE__{}, abstract: abstract), do: abstract
 
   @impl true
-  def context_knowledge(%Concept{subject: %__MODULE__{main_text: main_text}} = concept) do
+  def context_knowledge(
+        %Concept{subject: %__MODULE__{main_text: %{type: type} = main_text}} = concept
+      ) do
     """
+    #{Magma.Config.TextType.context_knowledge_transclusion(type)}
+
     #### Outline of the '#{main_text.name}' content #{View.transclude(TableOfContents.default_name(concept), :title)}
 
     """ <>

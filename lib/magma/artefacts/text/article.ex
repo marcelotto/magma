@@ -46,7 +46,7 @@ defmodule Magma.Artefacts.Article do
   defp do_system_prompt_task(%Concept{}, text_type) do
     text_type
     |> Magma.Config.text_type()
-    |> View.transclude(Magma.Config.TextType.system_prompt_section())
+    |> View.transclude(Magma.Config.TextType.system_prompt_section_title())
   end
 
   @impl true

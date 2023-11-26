@@ -9,3 +9,5 @@ tags: [magma-config]
 
 Your task is to help write a text. It should be written in English in the Markdown format.
 
+
+## Context knowledge

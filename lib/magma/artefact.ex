@@ -75,6 +75,11 @@ defmodule Magma.Artefact do
   @callback concept_prompt_task_section_title :: binary
 
   @doc """
+  A callback that allows to specify texts which should be included generally in the "Context knowledge" section of the `Magma.Artefact.Prompt` document about this type of artefact.
+  """
+  @callback context_knowledge(Concept.t()) :: binary | nil
+
+  @doc """
   A callback that returns the title to be used for the `Magma.Artefact.Version` document.
   """
   @callback version_title(Artefact.Version.t()) :: binary
@@ -190,7 +195,7 @@ defmodule Magma.Artefact do
 
       @impl true
       def system_prompt_task(_concept) do
-        View.transclude(config_name(), Magma.Config.Artefact.system_prompt_section())
+        View.transclude(config_name(), Magma.Config.Artefact.system_prompt_section_title())
       end
 
       @impl true
@@ -212,6 +217,11 @@ defmodule Magma.Artefact do
           concept: concept,
           subject: concept.subject
         ]
+      end
+
+      @impl true
+      def context_knowledge(%Concept{}) do
+        Magma.Config.Artefact.context_knowledge_transclusion(__MODULE__)
       end
 
       @impl true

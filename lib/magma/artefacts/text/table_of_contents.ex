@@ -36,7 +36,7 @@ defmodule Magma.Artefacts.TableOfContents do
   def system_prompt_task(%Concept{subject: %Matter.Text{type: text_type}}) do
     text_type
     |> Magma.Config.text_type()
-    |> View.transclude(Magma.Config.TextType.system_prompt_section())
+    |> View.transclude(Magma.Config.TextType.system_prompt_section_title())
   end
 
   @impl true

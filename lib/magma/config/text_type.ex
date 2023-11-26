@@ -1,12 +1,14 @@
 defmodule Magma.Config.TextType do
   use Magma.Config.Document, fields: [:text_type, :label]
 
-  @system_prompt_section "System prompt"
-  def system_prompt_section, do: @system_prompt_section
+  alias Magma.View
 
   @impl true
   def title(%__MODULE__{text_type: text_type}),
     do: "#{Magma.Matter.Text.type_name(text_type, false)} text type config"
+
+  @system_prompt_section_title "System prompt"
+  def system_prompt_section_title, do: @system_prompt_section_title
 
   @impl true
   def build_path(%__MODULE__{text_type: text_type}),
@@ -70,7 +72,10 @@ defmodule Magma.Config.TextType do
       | content: """
         # #{title(document)}
 
-        ## #{@system_prompt_section}
+        ## #{@system_prompt_section_title}
+
+
+        ## Context knowledge
 
         """
     }
@@ -89,4 +94,10 @@ defmodule Magma.Config.TextType do
   end
 
   defp type_name(%__MODULE__{name: name}), do: Path.basename(name, ".config")
+
+  def context_knowledge_transclusion(text_type) do
+    text_type
+    |> name_by_type()
+    |> View.transclude(Magma.Config.Document.context_knowledge_section_title())
+  end
 end

@@ -11,6 +11,9 @@ This section is not used for this artefact type. Instead, the system prompt of t
 -->
 
 
+## Context knowledge
+
+
 ## Task prompt
 
 Your task is to write the section "<%= section.name %>" of "<%= text.name %>".

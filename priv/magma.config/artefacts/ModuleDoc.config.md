@@ -44,6 +44,9 @@ You can edit this prompt, as long you ensure the moduledoc is generated in a sec
 -->
 
 
+## Context knowledge
+
+
 ## Task prompt
 
 Generate documentation for module `<%= concept.name %>` according to its description and code in the knowledge base below.

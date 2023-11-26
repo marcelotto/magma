@@ -87,6 +87,8 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+             #{Magma.Config.System.context_knowledge_transclusion()}
+
              #### Description of the Some project ![[Project#Description|]]
 
              #### Peripherally relevant modules
@@ -94,6 +96,8 @@ defmodule Magma.Artefacts.ModuleDocTest do
              ##### `Nested` ![[Nested#Description|]]
 
              ##### `Nested.Example.Sub` ![[Nested.Example.Sub#Description|]]
+
+             ![[ModuleDoc.config#Context knowledge|]]
 
              ![[Nested.Example#Context knowledge|]]
 
@@ -162,11 +166,15 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+             #{Magma.Config.System.context_knowledge_transclusion()}
+
              #### Description of the Some project ![[Project#Description|]]
 
              #### Peripherally relevant modules
 
              ##### `Some` ![[Some#Description|]]
+
+             ![[ModuleDoc.config#Context knowledge|]]
 
              ![[Some.DocumentWithoutSpecialSections#Context knowledge|]]
 

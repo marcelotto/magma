@@ -109,6 +109,9 @@ Distributed under the {{License}}. See `LICENSE.md` for more information.
 ```
 
 
+## Context knowledge
+
+
 ## Task prompt
 
 Generate a README for project '<%= subject.name %>' according to its description and the following information:

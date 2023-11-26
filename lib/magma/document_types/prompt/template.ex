@@ -68,7 +68,7 @@ defmodule Magma.Prompt.Template do
 
     #{artefact_type.system_prompt_task(concept)}
 
-    #{context_knowledge(project, concept)}
+    #{context_knowledge(project, concept, artefact_type)}
 
 
     ## #{@request_prompt_section_title}
@@ -86,6 +86,8 @@ defmodule Magma.Prompt.Template do
     ### Context knowledge
 
     The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+    #{Magma.Config.System.context_knowledge_transclusion()}
     """
     |> String.trim_trailing()
   end
@@ -99,11 +101,13 @@ defmodule Magma.Prompt.Template do
     |> String.trim_trailing()
   end
 
-  def context_knowledge(project, %Concept{subject: %matter_type{}} = concept) do
+  def context_knowledge(project, %Concept{subject: %matter_type{}} = concept, artefact_type) do
     """
     #{context_knowledge(unless matter_type == Project, do: project)}
 
     #{matter_type.context_knowledge(concept)}
+
+    #{artefact_type.context_knowledge(concept)}
 
     #{transclude(concept, Concept.context_knowledge_section_title())}
     """

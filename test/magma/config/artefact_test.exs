@@ -54,6 +54,9 @@ defmodule Magma.Config.ArtefactTest do
              -->
 
 
+             ## Context knowledge
+
+
              ## Task prompt
 
              Generate documentation for module `<%= concept.name %>` according to its description and code in the knowledge base below.

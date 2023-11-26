@@ -2,6 +2,9 @@ defmodule Magma.Config.Document do
   @default_tags ["magma-config"]
   def default_tags, do: @default_tags
 
+  @context_knowledge_section_title "Context knowledge"
+  def context_knowledge_section_title, do: @context_knowledge_section_title
+
   defmacro __using__(opts) do
     additional_fields = [:sections | Keyword.get(opts, :fields, [])]
 

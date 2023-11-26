@@ -6,17 +6,16 @@ defmodule Magma.Config.System do
   alias Magma.{Generation, View}
 
   @name "Magma.System.config"
+  def name, do: @name
+
   def path, do: Magma.Config.path("#{@name}.md")
-
-  @persona_section_title "Persona"
-  def persona_section_title, do: @persona_section_title
-
-  @persona_transclusion View.transclude(@name, @persona_section_title)
-  def persona_transclusion, do: @persona_transclusion
 
   @impl true
   def title(%__MODULE__{}), do: title()
   def title, do: "Magma system config"
+
+  @persona_section_title "Persona"
+  def persona_section_title, do: @persona_section_title
 
   @impl true
   def build_path(%__MODULE__{}), do: {:ok, path()}
@@ -46,9 +45,13 @@ defmodule Magma.Config.System do
       ---
       # #{title()}
 
-      ## #{persona_section_title()}
+      ## #{@persona_section_title}
 
       #{default_persona(project_name)}
+
+
+      ## Context knowledge
+
       """
   end
 
@@ -151,4 +154,13 @@ defmodule Magma.Config.System do
   end
 
   def load, do: load(@name)
+
+  @persona_transclusion View.transclude(@name, @persona_section_title)
+  def persona_transclusion, do: @persona_transclusion
+
+  @context_knowledge_transclusion View.transclude(
+                                    @name,
+                                    Magma.Config.Document.context_knowledge_section_title()
+                                  )
+  def context_knowledge_transclusion, do: @context_knowledge_transclusion
 end

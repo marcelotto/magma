@@ -73,7 +73,7 @@ defmodule Magma.Matter do
   @callback custom_concept_sections(Concept.t()) :: binary | nil
 
   @doc """
-  A callback that allows to specify texts which should be included generally in the "Context knowledge" section of the `Magma.Concept` document about this type of matter.
+  A callback that allows to specify texts which should be included generally in the "Context knowledge" section of the `Magma.Artefact.Prompt` document about this type of matter.
   """
   @callback context_knowledge(Concept.t()) :: binary | nil
 

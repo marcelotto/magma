@@ -21,6 +21,8 @@ defmodule Magma.Config.TextTypeTest do
 
              Your task is to help write a text. It should be written in English in the Markdown format.
 
+
+             ## Context knowledge
              """
 
     assert config.path == Vault.path("magma.config/text_types/Generic.config.md")
@@ -44,6 +46,9 @@ defmodule Magma.Config.TextTypeTest do
              # Foo text type config
 
              ## System prompt
+
+
+             ## Context knowledge
 
              """
 

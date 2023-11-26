@@ -45,6 +45,11 @@ defmodule Magma.Matter.Text do
   end
 
   @impl true
+  def context_knowledge(%Concept{subject: %__MODULE__{type: type}}) do
+    Magma.Config.TextType.context_knowledge_transclusion(type)
+  end
+
+  @impl true
   def custom_concept_sections(%Concept{} = concept) do
     """
 
