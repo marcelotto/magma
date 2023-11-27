@@ -57,6 +57,8 @@ defmodule Magma.Artefacts.ArticleTest do
 
              #### Description of the Some project ![[Project#Description|]]
 
+             ![[Text.Section.config#Context knowledge|]]
+
              ![[UserGuide.config#Context knowledge|]]
 
              #### Outline of the 'Some User Guide' content ![[Some User Guide ToC#Some User Guide ToC|]]

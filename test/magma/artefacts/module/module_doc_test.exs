@@ -91,6 +91,8 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              #### Description of the Some project ![[Project#Description|]]
 
+             ![[Module.config#Context knowledge|]]
+
              #### Peripherally relevant modules
 
              ##### `Nested` ![[Nested#Description|]]
@@ -169,6 +171,8 @@ defmodule Magma.Artefacts.ModuleDocTest do
              #{Magma.Config.System.context_knowledge_transclusion()}
 
              #### Description of the Some project ![[Project#Description|]]
+
+             ![[Module.config#Context knowledge|]]
 
              #### Peripherally relevant modules
 

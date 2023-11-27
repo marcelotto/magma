@@ -157,6 +157,10 @@ defmodule Magma.Artefact do
         Magma.Config.artefact(__MODULE__)
       end
 
+      def config(key) do
+        Magma.Config.artefact(__MODULE__, key)
+      end
+
       def config_name do
         Magma.Config.Artefact.name_by_type(__MODULE__)
       end

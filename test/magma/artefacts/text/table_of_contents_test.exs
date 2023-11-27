@@ -53,6 +53,8 @@ defmodule Magma.Artefacts.TableOfContentsTest do
 
              #### Description of the Some project ![[Project#Description|]]
 
+             ![[Text.config#Context knowledge|]]
+
              ![[UserGuide.config#Context knowledge|]]
 
              ![[TableOfContents.config#Context knowledge|]]

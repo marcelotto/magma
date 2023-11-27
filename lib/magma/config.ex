@@ -11,6 +11,10 @@ defmodule Magma.Config do
   def path, do: Vault.path(@dir)
   def path(segments), do: Path.join([path() | List.wrap(segments)])
 
+  @matter_path "matter"
+  def matter_path, do: path(@matter_path)
+  def matter_path(segments), do: Path.join([matter_path() | List.wrap(segments)])
+
   @artefacts_path "artefacts"
   def artefacts_path, do: path(@artefacts_path)
   def artefacts_path(segments), do: Path.join([artefacts_path() | List.wrap(segments)])
@@ -32,6 +36,10 @@ defmodule Magma.Config do
 
   def project(key \\ nil) do
     GenServer.call(__MODULE__, {:cached, :project, key})
+  end
+
+  def matter(type, key \\ nil) do
+    GenServer.call(__MODULE__, {:cached, :matter, type, key})
   end
 
   def artefact(type, key \\ nil) do
@@ -63,6 +71,12 @@ defmodule Magma.Config do
     config =
       case cached(config, :project) do
         {:ok, _, config} -> config
+        {:error, _} -> config
+      end
+
+    config =
+      case init_matter(config) do
+        {:ok, config} -> config
         {:error, _} -> config
       end
 
@@ -140,12 +154,22 @@ defmodule Magma.Config do
   defp load_document(:project), do: Magma.Matter.Project.concept()
   defp load_document(invalid), do: invalid_config_document_type(invalid)
 
+  defp load_document(:matter, type) do
+    type |> Magma.Config.Matter.name_by_type() |> Magma.Config.Matter.load()
+  end
+
   defp load_document(:artefacts, type) do
     type |> Magma.Config.Artefact.name_by_type() |> Magma.Config.Artefact.load()
   end
 
   defp load_document(:text_types, type) do
     type |> Magma.Config.TextType.name_by_type() |> Magma.Config.TextType.load()
+  end
+
+  defp initialized_documents(:matter, %{matter: nil} = config) do
+    with {:ok, config} <- init_matter(config) do
+      {:ok, config.artefacts, config}
+    end
   end
 
   defp initialized_documents(:artefacts, %{artefacts: nil} = config) do
@@ -161,7 +185,7 @@ defmodule Magma.Config do
   end
 
   defp initialized_documents(document_type, config)
-       when document_type in [:artefacts, :text_types] do
+       when document_type in [:matter, :artefacts, :text_types] do
     {:ok, Map.get(config, document_type), config}
   end
 
@@ -169,6 +193,24 @@ defmodule Magma.Config do
 
   defp invalid_config_document_type(invalid) do
     raise "invalid config document type: #{inspect(invalid)}"
+  end
+
+  defp init_matter(config) do
+    with {:ok, files} <- File.ls(matter_path()) do
+      {:ok,
+       %__MODULE__{
+         config
+         | matter:
+             files
+             |> Enum.map(
+               &(&1
+                 |> Path.basename(".config.md")
+                 |> Magma.Matter.type())
+             )
+             |> Enum.reject(&is_nil/1)
+             |> Map.new(&{&1, nil})
+       }}
+    end
   end
 
   defp init_artefacts(config) do

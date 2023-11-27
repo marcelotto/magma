@@ -48,7 +48,7 @@ defmodule Magma.Artefacts.ReadmeTest do
 
              #{Magma.Config.System.context_knowledge_transclusion()}
 
-
+             ![[Project.config#Context knowledge|]]
 
              ![[Readme.config#Context knowledge|]]
 

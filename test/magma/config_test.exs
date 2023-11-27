@@ -20,6 +20,17 @@ defmodule Magma.ConfigTest do
              Magma.Matter.Project.concept()
   end
 
+  test "matter/1" do
+    assert {:ok, Magma.Config.matter(Magma.Matter.Project)} ==
+             Magma.Config.Matter.load("Project.config")
+
+    assert {:ok, Magma.Config.matter(Magma.Matter.Module)} ==
+             Magma.Config.Matter.load("Module.config")
+
+    assert {:ok, Magma.Config.matter(Magma.Matter.Text.Section)} ==
+             Magma.Config.Matter.load("Text.Section.config")
+  end
+
   test "artefact/1" do
     assert {:ok, Magma.Config.artefact(Magma.Artefacts.ModuleDoc)} ==
              Magma.Config.Artefact.load("ModuleDoc.config")
