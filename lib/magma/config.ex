@@ -30,6 +30,10 @@ defmodule Magma.Config do
     GenServer.start_link(__MODULE__, arg, name: __MODULE__)
   end
 
+  def reset do
+    GenServer.cast(__MODULE__, :reset)
+  end
+
   def system(key \\ nil) do
     GenServer.call(__MODULE__, {:cached, :system, key})
   end
@@ -93,6 +97,11 @@ defmodule Magma.Config do
       end
 
     {:noreply, config}
+  end
+
+  @impl true
+  def handle_cast(:reset, _config) do
+    {:noreply, %__MODULE__{}}
   end
 
   @impl true

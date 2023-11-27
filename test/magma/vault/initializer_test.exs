@@ -7,7 +7,7 @@ defmodule Magma.Vault.InitializerTest do
   alias Magma.{Concept, Matter}
 
   describe "initialize/0" do
-    @tag without_vault: true
+    @tag without_vault: true, reset_after_finished: true
     test "copies the base Obsidian vault and creates concepts for the project and modules" do
       refute File.exists?(Vault.path())
 

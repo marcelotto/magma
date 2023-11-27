@@ -23,6 +23,10 @@ defmodule Magma.Vault.Case do
           Magma.Vault.Case.setup_files(context[:vault_files])
         end
 
+        if context[:reset_after_finished] do
+          on_exit(fn -> Magma.Config.reset() end)
+        end
+
         on_exit(fn -> TestVault.clear() end)
       end
     end
