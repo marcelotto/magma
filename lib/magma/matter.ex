@@ -73,7 +73,7 @@ defmodule Magma.Matter do
   @callback custom_concept_sections(Concept.t()) :: binary | nil
 
   @doc """
-  A callback that allows to specify texts which should be included generally in the "Context knowledge" section of the `Magma.Concept` document about this type of matter.
+  A callback that allows to specify texts which should be included generally in the "Context knowledge" section of the `Magma.Artefact.Prompt` document about this type of matter.
   """
   @callback context_knowledge(Concept.t()) :: binary | nil
 
@@ -127,6 +127,18 @@ defmodule Magma.Matter do
 
       defstruct Magma.Matter.fields() ++ unquote(additional_fields)
 
+      def config do
+        Magma.Config.matter(__MODULE__)
+      end
+
+      def config(key) do
+        Magma.Config.matter(__MODULE__, key)
+      end
+
+      def config_name do
+        Magma.Config.Matter.name_by_type(__MODULE__)
+      end
+
       @impl true
       def default_concept_aliases(%__MODULE__{}), do: []
 
@@ -134,7 +146,9 @@ defmodule Magma.Matter do
       def custom_concept_sections(%Concept{}), do: nil
 
       @impl true
-      def context_knowledge(%Concept{}), do: nil
+      def context_knowledge(%Concept{}) do
+        Magma.Config.Matter.context_knowledge_transclusion(__MODULE__)
+      end
 
       @impl true
       def prompt_matter_description(%__MODULE__{}), do: nil
@@ -205,8 +219,8 @@ defmodule Magma.Matter do
 
   """
   @spec type(type()) :: binary
-  def type_name(type) do
-    if type?(type) do
+  def type_name(type, validate \\ true) do
+    if not validate or type?(type) do
       case Module.split(type) do
         ["Magma", "Matter" | name_parts] -> Enum.join(name_parts, ".")
         _ -> raise "Invalid Magma.Matter type name scheme: #{inspect(type)}"

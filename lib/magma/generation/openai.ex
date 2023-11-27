@@ -1,6 +1,6 @@
 if Code.ensure_loaded?(OpenAI) do
   defmodule Magma.Generation.OpenAI do
-    @behaviour Magma.Generation
+    use Magma.Generation
 
     alias Magma.Prompt.Assembler
 
@@ -10,8 +10,6 @@ if Code.ensure_loaded?(OpenAI) do
     import Magma.Utils.Guards
 
     require Logger
-
-    defp default_params, do: Application.get_env(:magma, __MODULE__, [])
 
     def new(params \\ [])
 

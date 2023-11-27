@@ -38,15 +38,19 @@ defmodule Magma.Artefacts.ReadmeTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.persona_transclusion()}
 
-             #{Readme.system_prompt_task()}
+             ![[Readme.config#System prompt|]]
 
              ### Context knowledge
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+             #{Magma.Config.System.context_knowledge_transclusion()}
 
+             ![[Project.config#Context knowledge|]]
+
+             ![[Readme.config#Context knowledge|]]
 
              ![[Project#Context knowledge|]]
 

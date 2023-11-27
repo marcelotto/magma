@@ -4,7 +4,6 @@ defmodule Magma.Prompt do
   @type t :: %__MODULE__{}
 
   alias Magma.{Vault, Generation, PromptResult}
-  alias Magma.Matter.Project
   alias Magma.Prompt.Template
 
   @path_prefix "custom_prompts"
@@ -38,7 +37,7 @@ defmodule Magma.Prompt do
 
   def create(%__MODULE__{} = document, opts, []) do
     document
-    |> Document.init(generation: Generation.default().new!())
+    |> Document.init(generation: Generation.default())
     |> render()
     |> Document.create(opts)
   end
@@ -59,7 +58,7 @@ defmodule Magma.Prompt do
   end
 
   def render(%__MODULE__{} = prompt) do
-    %__MODULE__{prompt | content: Template.render(prompt, Project.concept())}
+    %__MODULE__{prompt | content: Template.render(prompt, Magma.Config.project())}
   end
 
   @impl true

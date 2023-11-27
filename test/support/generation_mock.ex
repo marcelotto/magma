@@ -1,5 +1,5 @@
 defmodule Magma.Generation.Mock do
-  @behaviour Magma.Generation
+  use Magma.Generation
 
   alias Magma.Prompt.Assembler
 

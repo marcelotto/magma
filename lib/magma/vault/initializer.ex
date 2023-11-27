@@ -13,7 +13,7 @@ defmodule Magma.Vault.Initializer do
   @spec initialize(binary, base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
           :ok | {:error, any}
   def initialize(project_name, base_vault \\ nil, opts \\ []) do
-    with :ok <- base_vault |> BaseVault.path!() |> create_vault(opts) do
+    with :ok <- base_vault |> BaseVault.path!() |> create_vault(project_name, opts) do
       {:ok, project} = create_project(project_name)
 
       create_custom_prompt_template(project)
@@ -26,7 +26,7 @@ defmodule Magma.Vault.Initializer do
     end
   end
 
-  defp create_vault(base_vault, opts) do
+  defp create_vault(base_vault, project_name, opts) do
     vault_dest_dir = Vault.path()
 
     if File.exists?(vault_dest_dir) && !Keyword.get(opts, :force) do
@@ -42,12 +42,24 @@ defmodule Magma.Vault.Initializer do
       |> Path.join(".obsidian")
       |> copy_directory(vault_dest_dir)
 
+      create_config(project_name, vault_dest_dir)
+
       create_gitignore_file(vault_dest_dir)
 
       copy_directory(@bin_dir, vault_dest_dir)
 
       :ok
     end
+  end
+
+  def create_config(project_name, vault_dest_dir \\ Vault.path()) do
+    Magma.Config.template_path()
+    |> copy_directory(vault_dest_dir)
+
+    Magma.Config.System.path()
+    |> create_file(Magma.Config.System.template(project_name))
+
+    Vault.Index.index()
   end
 
   defp create_gitignore_file(vault_dest_dir) do
@@ -67,7 +79,7 @@ defmodule Magma.Vault.Initializer do
   defp create_custom_prompt_template(project) do
     prompt =
       "default"
-      |> Prompt.new!(generation: Generation.default().new!())
+      |> Prompt.new!(generation: Generation.default())
       |> Document.init()
 
     Vault.custom_prompt_template_path()

@@ -79,56 +79,27 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.persona_transclusion()}
 
-             You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-             1. generate the content of the `@doc` strings of the public functions
-             2. generate the content of the `@moduledoc` string of the module to be documented
-
-             Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-             After this summary sentence, the following sections and paragraphs should cover:
-
-             - What's the purpose of this module/function?
-             - For moduledocs: What are the main function(s) of this module?
-             - If possible, an example usage in an "Example" section using an indented code block
-             - configuration options (if there are any)
-             - everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-             The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-             ```markdown
-             ## Function docs
-
-             ### `function/1`
-
-             Summary sentence
-
-             Body
-
-             ## Moduledoc
-
-             Summary sentence
-
-             Body
-             ```
-
-             <!--
-             You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
-             -->
+             ![[ModuleDoc.config#System prompt|]]
 
              ### Context knowledge
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+             #{Magma.Config.System.context_knowledge_transclusion()}
+
              #### Description of the Some project ![[Project#Description|]]
+
+             ![[Module.config#Context knowledge|]]
 
              #### Peripherally relevant modules
 
              ##### `Nested` ![[Nested#Description|]]
 
              ##### `Nested.Example.Sub` ![[Nested.Example.Sub#Description|]]
+
+             ![[ModuleDoc.config#Context knowledge|]]
 
              ![[Nested.Example#Context knowledge|]]
 
@@ -189,19 +160,25 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.persona_transclusion()}
 
-             #{ModuleDoc.system_prompt_task()}
+             ![[ModuleDoc.config#System prompt|]]
 
              ### Context knowledge
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+             #{Magma.Config.System.context_knowledge_transclusion()}
+
              #### Description of the Some project ![[Project#Description|]]
+
+             ![[Module.config#Context knowledge|]]
 
              #### Peripherally relevant modules
 
              ##### `Some` ![[Some#Description|]]
+
+             ![[ModuleDoc.config#Context knowledge|]]
 
              ![[Some.DocumentWithoutSpecialSections#Context knowledge|]]
 

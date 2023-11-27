@@ -35,11 +35,12 @@ defmodule Magma.TestFactories do
   end
 
   def user_guide_matter(name \\ "Some User Guide") do
-    Matter.Text.new!(Matter.Texts.UserGuide, name)
+    Matter.Text.new!(name, type: Matter.Texts.UserGuide)
   end
 
   def user_guide_section_matter(section_name \\ "Introduction", text_name \\ "Some User Guide") do
-    Matter.Text.new!(Matter.Texts.UserGuide, text_name)
+    text_name
+    |> user_guide_matter()
     |> Matter.Text.Section.new!(section_name)
   end
 

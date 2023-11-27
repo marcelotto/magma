@@ -6,6 +6,7 @@ defmodule Magma.Vault.Case do
   use ExUnit.CaseTemplate
 
   alias Magma.TestVault
+  alias Magma.Vault
 
   using do
     quote do
@@ -15,7 +16,17 @@ defmodule Magma.Vault.Case do
 
       setup context do
         TestVault.clear()
-        Magma.Vault.Case.setup_files(context[:vault_files])
+
+        unless context[:without_vault] do
+          File.mkdir!(Vault.path())
+          Vault.Initializer.create_config(context[:project_name] || project_matter().name)
+          Magma.Vault.Case.setup_files(context[:vault_files])
+        end
+
+        if context[:reset_after_finished] do
+          on_exit(fn -> Magma.Config.reset() end)
+        end
+
         on_exit(fn -> TestVault.clear() end)
       end
     end

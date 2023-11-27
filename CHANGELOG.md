@@ -7,8 +7,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+### Added
+
+- Mix task `Mix.Tasks.Magma.Text.Type.New` (`magma.text.type.new`) to add
+  new custom text types.
+
 ### Changed
 
+- The configuration was moved into special config documents in the vault.
+  These include in particular also the system prompts and default task prompts,
+  which means they can now be easily adopted without having to touch any
+  Elixir code.
 - `Magma.Artefact` types are structs now, in order to support use cases
   where multiple artefact instances of the same type for one concept should
   be supported

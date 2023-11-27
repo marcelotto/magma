@@ -1,8 +1,7 @@
 defmodule Magma.Artefacts.Article do
-  # TODO: matter is too limited: the final artefact version of the Text matter (generated from the preview), also has this as an artefact
   use Magma.Artefact, matter: Magma.Matter.Text.Section
 
-  alias Magma.{Concept, Matter}
+  alias Magma.{Concept, Matter, View}
 
   @relative_base_dir "article"
 
@@ -44,20 +43,14 @@ defmodule Magma.Artefacts.Article do
     do_system_prompt_task(concept, text_type)
   end
 
-  defp do_system_prompt_task(%Concept{} = concept, text_type) do
-    text_type.system_prompt_task(concept)
+  defp do_system_prompt_task(%Concept{}, text_type) do
+    text_type
+    |> Magma.Config.text_type()
+    |> View.transclude(Magma.Config.TextType.system_prompt_section_title())
   end
 
   @impl true
-  def request_prompt_task(%Concept{
-        subject: %Matter.Text.Section{
-          name: section_name,
-          main_text: %Matter.Text{name: text_name}
-        }
-      }) do
-    """
-    Your task is to write the section "#{section_name}" of "#{text_name}".
-    """
-    |> String.trim_trailing()
+  def request_prompt_task_template_bindings(concept) do
+    Matter.Text.request_prompt_task_template_bindings(concept) ++ super(concept)
   end
 end

@@ -24,6 +24,16 @@ defmodule Magma.Generation do
       config :magma, Magma.Generation.OpenAI,
         model: "gpt-4",
         temperature: 0.6
+
+  Except within the `:test` environment, the defaults can be configured also
+  with the `default_generation_type` and `:default_generation_params` properties
+  in YAML frontmatter of the `magma_config.md` document in your vault, taking
+  precedence over the ones from the application config.
+
+  Unlike, the default generation params from the `magma_config.md` document,
+  the ones from the application config are used also as initial defaults on the
+  `new/1` function of a `Magma.Generation` implementation, meaning you only
+  have to provide the values differing from the application configured ones.
   """
 
   alias Magma.{Artefact, View}
@@ -39,15 +49,19 @@ defmodule Magma.Generation do
 
   @callback execute(t(), Artefact.Prompt.t(), options) :: {:ok, result} | {:error, any}
 
+  @callback default_params :: keyword
+
   def default do
-    Application.get_env(
-      :magma,
-      :default_generation,
-      if(Code.ensure_loaded?(Magma.Generation.OpenAI),
-        do: Magma.Generation.OpenAI,
-        else: Magma.Generation.Manual
-      )
-    )
+    Magma.Config.system(:default_generation)
+  end
+
+  defmacro __using__(_) do
+    quote do
+      @behaviour Magma.Generation
+
+      @impl true
+      def default_params, do: Application.get_env(:magma, __MODULE__, [])
+    end
   end
 
   def execute(prompt) when is_prompt(prompt) do

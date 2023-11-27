@@ -193,6 +193,14 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
     end
   end
 
+  defp transcluded_document_struct("Project") do
+    {:ok, %DocumentStruct{prologue: [], sections: Magma.Config.project().sections}}
+  end
+
+  defp transcluded_document_struct("magma_config") do
+    {:ok, %DocumentStruct{prologue: [], sections: Magma.Config.system().sections}}
+  end
+
   defp transcluded_document_struct(document_name) do
     case Document.Loader.load(document_name) do
       {:ok, %Concept{} = concept} ->

@@ -124,6 +124,39 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
+  @tag vault_files: ["concepts/Project.md"]
+  test "transclusion of cached documents" do
+    assert """
+           ## Example title
+
+           ![[magma_config#Persona]]
+           """
+           |> section()
+           |> Section.resolve_transclusions()
+           |> Section.to_markdown() ==
+             """
+             ## Example title
+
+             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             """
+
+    assert """
+           ## Example title
+
+           ### Foo ![[Project#Description]]
+           """
+           |> section()
+           |> Section.resolve_transclusions()
+           |> Section.to_markdown() ==
+             """
+             ## Example title
+
+             ### Foo
+
+             This is the project description.
+             """
+  end
+
   @tag vault_files: [
          "concepts/modules/Nested/Nested.Example.md",
          "concepts/modules/Some/Some.DocumentWithTransclusion.md",

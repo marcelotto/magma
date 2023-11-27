@@ -17,7 +17,8 @@ defmodule Magma.Text do
 
   def create(text_name, text_type) when is_binary(text_name) and is_atom(text_type) do
     if Matter.Text.type?(text_type) do
-      with {:ok, concept} <- text_name |> text_type.new() |> Concept.create() do
+      with {:ok, text_matter} <- Matter.Text.new(text_name, type: text_type),
+           {:ok, concept} <- Concept.create(text_matter) do
         {:ok, concept}
       end
     else

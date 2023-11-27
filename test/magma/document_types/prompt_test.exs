@@ -28,11 +28,13 @@ defmodule Magma.PromptTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             ![[Magma.System.config#Persona|]]
 
              ### Context knowledge
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+             ![[Magma.System.config#Context knowledge|]]
 
              #### Description of the Some project ![[Project#Description|]]
 

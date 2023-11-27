@@ -41,19 +41,23 @@ defmodule Magma.Artefacts.TableOfContentsTest do
 
              ## System prompt
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.persona_transclusion()}
 
-             Your task is to help write a user guide called "Some User Guide".
-
-             The user guide should be written in English in the Markdown format.
+             ![[UserGuide.config#System prompt|]]
 
              ### Context knowledge
 
              The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+             #{Magma.Config.System.context_knowledge_transclusion()}
+
              #### Description of the Some project ![[Project#Description|]]
 
+             ![[Text.config#Context knowledge|]]
 
+             ![[UserGuide.config#Context knowledge|]]
+
+             ![[TableOfContents.config#Context knowledge|]]
 
              ![[Some User Guide#Context knowledge|]]
 

@@ -166,9 +166,11 @@ defmodule Magma.Matter.Module do
   end
 
   @impl true
-  def context_knowledge(%Concept{subject: %__MODULE__{name: module}}) do
+  def context_knowledge(%Concept{subject: %__MODULE__{name: module}} = concept) do
     if auto_module_context?() do
       """
+      #{super(concept)}
+
       #### Peripherally relevant modules
 
       #{context_modules_knowledge(module)}
@@ -177,7 +179,7 @@ defmodule Magma.Matter.Module do
     end
   end
 
-  defp auto_module_context?, do: Application.get_env(:magma, :auto_module_context, true)
+  defp auto_module_context?, do: config(:auto_module_context)
 
   defp context_modules_knowledge(module) do
     context_modules =

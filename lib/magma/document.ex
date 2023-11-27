@@ -62,7 +62,7 @@ defmodule Magma.Document do
   @doc """
   Renders the document type specific fields as YAML front matter lines.
   """
-  @callback render_front_matter(t()) :: binary
+  @callback render_front_matter(t()) :: binary | nil
 
   # The fields every document type implementing this behaviour gets.
   @fields [
@@ -91,6 +91,9 @@ defmodule Magma.Document do
       alias Magma.Document
 
       defstruct Magma.Document.fields() ++ unquote(additional_fields)
+
+      @impl true
+      def from(%__MODULE__{} = system_prompts), do: system_prompts
 
       @doc """
       Fetches a document from a related document and immediately loads it with `load!/1`
@@ -129,6 +132,12 @@ defmodule Magma.Document do
       exception is returned in an `:error` tuple.
       """
       def load_linked(link), do: Document.Loader.load_linked(__MODULE__, link)
+
+      @impl true
+      def render_front_matter(%__MODULE__{}), do: nil
+
+      defoverridable from: 1,
+                     render_front_matter: 1
     end
   end
 
@@ -141,7 +150,7 @@ defmodule Magma.Document do
       document,
       [
         created_at: now(),
-        tags: :magma |> Application.get_env(:default_tags) |> List.wrap(),
+        tags: Magma.Config.system(:default_tags),
         aliases: []
       ]
       |> Keyword.merge(fields)
@@ -204,12 +213,26 @@ defmodule Magma.Document do
     """
     ---
     magma_type: #{type_name(document_type)}
-    #{document_type.render_front_matter(document)}
-    created_at: #{document.created_at}
-    tags: #{View.yaml_list(document.tags)}
-    aliases: #{View.yaml_list(document.aliases)}
-    ---
-    """
+    """ <>
+      if document_specific_front_matter = document_type.render_front_matter(document) do
+        """
+        #{document_specific_front_matter}
+        """
+      else
+        ""
+      end <>
+      ("""
+       #{render_custom_metadata(document.custom_metadata)}
+       created_at: #{document.created_at}
+       tags: #{View.yaml_list(document.tags)}
+       aliases: #{View.yaml_list(document.aliases)}
+       ---
+       """
+       |> String.trim_leading())
+  end
+
+  defp render_custom_metadata(metadata) do
+    Enum.map_join(metadata, "\n", fn {key, value} -> "#{key}: #{inspect(value)}" end)
   end
 
   @doc """
@@ -307,6 +330,9 @@ defmodule Magma.Document do
 
       iex> Magma.Document.type("Artefact.Prompt")
       Magma.Artefact.Prompt
+
+      iex> Magma.Document.type("Config.System")
+      Magma.Config.System
 
       iex> Magma.Document.type("Vault")
       nil

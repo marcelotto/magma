@@ -17,8 +17,6 @@ defmodule Magma.DocumentStruct.Section do
   alias Magma.DocumentStruct.TransclusionResolution
   alias Panpipe.AST.Header
 
-  @default_link_resolution_style :plain
-
   @doc """
   Creates a new section.
   """
@@ -284,7 +282,7 @@ defmodule Magma.DocumentStruct.Section do
   defp link_resolution_style(fun) when is_function(fun), do: fun
 
   defp default_link_resolution_style do
-    Application.get_env(:magma, :link_resolution_style, @default_link_resolution_style)
+    Magma.Config.system(:link_resolution_style)
   end
 
   @doc """
@@ -323,5 +321,45 @@ defmodule Magma.DocumentStruct.Section do
       _ ->
         nil
     end)
+  end
+
+  def preserve_eex_tags(%__MODULE__{} = section) do
+    %__MODULE__{
+      section
+      | content:
+          Enum.map(
+            section.content,
+            &Panpipe.transform(&1, fn
+              %Panpipe.AST.Str{string: "%>" <> _ = string} = node ->
+                case String.split(string, ">") do
+                  [left, right] ->
+                    [
+                      %Panpipe.AST.Str{string: left},
+                      %Panpipe.AST.RawInline{string: ">", format: "markdown"},
+                      %Panpipe.AST.Str{string: right}
+                    ]
+
+                  _ ->
+                    node
+                end
+
+              %Panpipe.AST.Str{string: string} = node ->
+                case String.split(string, "<") do
+                  [left, right] ->
+                    [
+                      %Panpipe.AST.Str{string: left},
+                      %Panpipe.AST.RawInline{string: "<", format: "markdown"},
+                      %Panpipe.AST.Str{string: right}
+                    ]
+
+                  _ ->
+                    node
+                end
+
+              _ ->
+                nil
+            end)
+          )
+    }
   end
 end

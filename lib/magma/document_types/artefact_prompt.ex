@@ -3,7 +3,7 @@ defmodule Magma.Artefact.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Matter, Generation, Prompt, PromptResult}
+  alias Magma.{Vault, Artefact, Generation, Prompt, PromptResult}
   alias Magma.Prompt.Template
 
   @impl true
@@ -37,7 +37,7 @@ defmodule Magma.Artefact.Prompt do
 
   def create(%__MODULE__{} = document, opts, []) do
     document
-    |> Document.init(generation: Generation.default().new!())
+    |> Document.init(generation: Generation.default())
     |> render()
     |> Document.create(opts)
   end
@@ -65,7 +65,7 @@ defmodule Magma.Artefact.Prompt do
   end
 
   def render(%__MODULE__{} = prompt) do
-    %__MODULE__{prompt | content: Template.render(prompt, Matter.Project.concept())}
+    %__MODULE__{prompt | content: Template.render(prompt, Magma.Config.project())}
   end
 
   @impl true

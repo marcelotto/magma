@@ -1,3 +1,14 @@
+---
+magma_type: Config.Artefact
+tags: [magma-config]
+---
+# ModuleDoc artefact config
+
+## System prompt
+
+Your task is to generate a project README using the following template (without the surrounding Markdown block), replacing the content between {{ ... }} accordingly:
+
+```markdown
 [![Hex.pm](https://img.shields.io/hexpm/v/{{Hex package name}}.svg?style=flat-square)](https://hex.pm/packages/{{Hex package name}})
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/{{Hex package name}}/)
 [![Total Download](https://img.shields.io/hexpm/dt/{{Hex package name}}.svg)](https://hex.pm/packages/{{Hex package name}})
@@ -95,5 +106,25 @@ Don't forget to give the project a star! Thanks!
 ## License
 
 Distributed under the {{License}}. See `LICENSE.md` for more information.
+```
 
 
+## Context knowledge
+
+
+## Task prompt
+
+Generate a README for project '<%= subject.name %>' according to its description and the following information:
+
+- Hex package name: <%= Magma.Matter.Project.app_name() %>
+- Repo URL: https://github.com/github_username/repo_name
+- Documentation URL: https://hexdocs.pm/<%= Magma.Matter.Project.app_name() %>/
+- Homepage URL:
+- Demo URL:
+- Logo path: logo.jpg
+- Screenshot path:
+- License: MIT License
+- Contact: Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - your@email.com
+- Acknowledgments:
+
+("n/a" means not applicable and should result in a removal of the respective parts)

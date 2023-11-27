@@ -41,6 +41,53 @@ defmodule Magma.Matter.ProjectTest do
 
     assert concept.path == expected_path
 
+    assert concept.content ==
+             """
+             # Magma project
+
+             ## Description
+
+             <!--
+             What is the Magma project about?
+             -->
+
+
+             # Context knowledge
+
+             <!--
+             This section should include background knowledge needed for the model to create a proper response, i.e. information it does not know either because of the knowledge cut-off date or unpublished knowledge.
+
+             Write it down right here in a subsection or use a transclusion. If applicable, specify source information that the model can use to generate a reference in the response.
+             -->
+
+
+
+
+             # Artefacts
+
+             ## Readme
+
+             - Prompt: [[Prompt for README]]
+             - Final version: [[README]]
+
+             ### Readme prompt task
+
+             Generate a README for project 'Magma' according to its description and the following information:
+
+             -   Hex package name: magma
+             -   Repo URL: https://github.com/github_username/repo_name
+             -   Documentation URL: https://hexdocs.pm/magma/
+             -   Homepage URL:
+             -   Demo URL:
+             -   Logo path: logo.jpg
+             -   Screenshot path:
+             -   License: MIT License
+             -   Contact: Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - your@email.com
+             -   Acknowledgments:
+
+             ("n/a" means not applicable and should result in a removal of the respective parts)
+             """
+
     assert Concept.load(concept.path) == {:ok, concept}
 
     assert Vault.document_path(concept.name) == concept.path
