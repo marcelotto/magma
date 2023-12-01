@@ -10,6 +10,9 @@ defmodule Magma.PromptResult do
 
   require Logger
 
+  @dir "__prompt_results__"
+  def dir, do: @dir
+
   @impl true
   def title(%__MODULE__{prompt: %Prompt{} = prompt}) do
     "Prompt result of '#{prompt.name}'"
@@ -31,7 +34,7 @@ defmodule Magma.PromptResult do
   @impl true
   def build_path(%__MODULE__{prompt: %Prompt{}} = result) do
     {:ok,
-     [Prompt.path_prefix(), "__prompt_results__", "#{build_name(result)}.md"]
+     [Prompt.path_prefix(), @dir, "#{build_name(result)}.md"]
      |> Vault.path()}
   end
 
@@ -40,7 +43,7 @@ defmodule Magma.PromptResult do
     {:ok,
      [
        artefact |> Artefact.relative_prompt_path() |> Path.dirname(),
-       "__prompt_results__",
+       @dir,
        "#{build_name(result)}.md"
      ]
      |> Vault.artefact_generation_path()}

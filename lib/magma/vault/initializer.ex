@@ -66,7 +66,7 @@ defmodule Magma.Vault.Initializer do
     vault_dest_dir
     |> Path.join(".gitignore")
     |> create_file("""
-    __prompt_results__/
+    #{Magma.PromptResult.dir()}/
     """)
   end
 
