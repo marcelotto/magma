@@ -177,7 +177,7 @@ defmodule Magma.Config do
 
   defp initialized_documents(:matter, %{matter: nil} = config) do
     with {:ok, config} <- init_matter(config) do
-      {:ok, config.artefacts, config}
+      {:ok, config.matter, config}
     end
   end
 
