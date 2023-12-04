@@ -9,6 +9,12 @@ defmodule Magma do
   Read the [User Guide](Magma User Guide - Introduction to Magma (article section).md) to learn more.
   """
 
+  @version_file "VERSION"
+  @version @version_file |> File.read!() |> String.trim() |> Version.parse!()
+  @external_resource @version_file
+
+  def version, do: @version
+
   defmacro __using__(_opts) do
     quote do
       import unquote(__MODULE__), only: [defmoduledoc: 0]

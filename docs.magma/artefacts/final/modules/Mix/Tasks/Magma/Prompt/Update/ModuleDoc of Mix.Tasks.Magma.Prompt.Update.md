@@ -24,3 +24,7 @@ This task is useful for example when an artefact prompt contains the code of a m
 ```sh
 $ mix magma.prompt.update "Name of a Prompt"
 ```
+
+### Command line options
+
+- `--all` - When set, all prompts of the vault are updated.

@@ -44,6 +44,8 @@ defmodule Magma.Vault.Initializer do
 
       create_config(project_name, vault_dest_dir)
 
+      Magma.Vault.Version.save(Magma.version())
+
       create_gitignore_file(vault_dest_dir)
 
       copy_directory(@bin_dir, vault_dest_dir)
@@ -60,6 +62,8 @@ defmodule Magma.Vault.Initializer do
     |> create_file(Magma.Config.System.template(project_name))
 
     Vault.Index.index()
+
+    :ok
   end
 
   defp create_gitignore_file(vault_dest_dir) do

@@ -9,6 +9,9 @@ defmodule Magma.Text.Preview do
 
   require Logger
 
+  @dir "__previews__"
+  def dir, do: @dir
+
   @impl true
   def title(%__MODULE__{} = preview), do: build_name(preview)
 
@@ -24,7 +27,7 @@ defmodule Magma.Text.Preview do
     {:ok,
      [
        Matter.Text.relative_base_path(artefact.concept.subject),
-       "__previews__",
+       @dir,
        "#{title(preview)}.md"
      ]
      |> Vault.artefact_generation_path()}

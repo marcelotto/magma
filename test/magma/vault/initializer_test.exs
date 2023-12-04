@@ -28,6 +28,9 @@ defmodule Magma.Vault.InitializerTest do
       assert File.exists?(Magma.Config.path(["artefacts", "ModuleDoc.config.md"]))
       assert File.exists?(Magma.Config.path(["text_types", "UserGuide.config.md"]))
 
+      assert File.exists?(Magma.Config.path(".VERSION"))
+      assert File.read!(Magma.Config.path(".VERSION")) == to_string(Magma.version())
+
       assert File.exists?(Vault.path(".bin"))
       assert File.exists?(Vault.path([".bin", "magma.sh"]))
       assert File.exists?(Vault.path([".bin", "magma.bat"]))

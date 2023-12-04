@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ### Added
 
+- Mix task `Mix.Tasks.Magma.Vault.Migrate` (`magma.vault.migrate`) to migrate a
+  vault to a newer version
 - Mix task `Mix.Tasks.Magma.Text.Type.New` (`magma.text.type.new`) to add
   new custom text types.
 
