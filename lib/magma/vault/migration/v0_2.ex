@@ -2,12 +2,15 @@ defmodule Magma.Vault.Migration.V0_2 do
   @target_version "0.2.0"
 
   alias Magma.Vault
+  alias Magma.Matter.Project
   alias Mix.Tasks.Magma.Prompt.Update
 
   def migrate(%Version{major: 0, minor: 1}) do
     Mix.shell().info("Migrating vault to Magma v#{@target_version}")
 
-    with :ok <- create_configs(),
+    with {:ok, project} <- Project.concept(),
+         :ok <- create_configs(),
+         :ok <- update_custom_prompt_template(project),
          :ok <- update_prompts() do
       {:ok, @target_version}
     end
@@ -21,8 +24,16 @@ defmodule Magma.Vault.Migration.V0_2 do
     end
   end
 
+  defp update_custom_prompt_template(project) do
+    Mix.shell().info("Step 2: Update custom prompt template")
+
+    Vault.Initializer.create_custom_prompt_template(project)
+
+    :ok
+  end
+
   defp update_prompts do
-    Mix.shell().info("Step 2: Updating prompts")
+    Mix.shell().info("Step 3: Updating prompts")
 
     if Mix.shell().yes?("""
        All parts of the prompts, which were previously hard-coded in the Magma source

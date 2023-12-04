@@ -80,7 +80,7 @@ defmodule Magma.Vault.Initializer do
     |> Concept.create()
   end
 
-  defp create_custom_prompt_template(project) do
+  def create_custom_prompt_template(project) do
     prompt =
       "default"
       |> Prompt.new!(generation: Generation.default())
@@ -88,5 +88,7 @@ defmodule Magma.Vault.Initializer do
 
     Vault.custom_prompt_template_path()
     |> create_file(Prompt.Template.custom_prompt_obsidian_template(project, prompt))
+
+    :ok
   end
 end
