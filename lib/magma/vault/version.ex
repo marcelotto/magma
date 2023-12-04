@@ -11,6 +11,14 @@ defmodule Magma.Vault.Version do
     end
   end
 
+  def save(version)
+
+  def save(version_string) when is_binary(version_string) do
+    with {:ok, version} <- Version.parse(version_string) do
+      save(version)
+    end
+  end
+
   def save(%Version{} = version) do
     File.write(file(), to_string(version))
   end

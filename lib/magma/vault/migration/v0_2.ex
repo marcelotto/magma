@@ -9,7 +9,7 @@ defmodule Magma.Vault.Migration.V0_2 do
 
     with :ok <- create_configs(),
          :ok <- update_prompts() do
-      :ok
+      {:ok, @target_version}
     end
   end
 
