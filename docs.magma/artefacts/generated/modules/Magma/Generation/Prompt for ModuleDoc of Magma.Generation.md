@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Generation]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-11-02 22:40:28
+created_at: 2023-12-04 14:36:50
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,58 +52,21 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
-
-##### `Magma.Generation.OpenAI` ![[Magma.Generation.OpenAI#Description|]]
-
-##### `Magma.Generation.Manual` ![[Magma.Generation.Manual#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
 ![[Magma.Generation#Context knowledge|]]
 
@@ -120,7 +83,44 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.Generation do
-  alias Magma.Artefact
+  @moduledoc """
+  Generic adapter-based `Magma.Prompt` execution.
+
+  The `Magma.Generation` module is primarily responsible for handling the
+  execution of prompts. It is designed to be adaptable and flexible,
+  supporting different LLMs via specific adapters.
+  The module defines a behaviour that each adapter should implement,
+  ensuring a consistent interface for executing prompts.
+
+  The currently implemented adapters are:
+
+  - `Magma.Generation.OpenAI` for the OpenAI API
+  - `Magma.Generation.Manual` for manual prompt execution
+
+  The default values for the generation specification embedded within a prompt
+  document (the `magma_generation_type` and `magma_generation_params` properties
+  in its YAML frontmatter) can be configured for your application in `config.exs`
+  like this:
+
+      config :magma,
+        default_generation: Magma.Generation.OpenAI
+
+      config :magma, Magma.Generation.OpenAI,
+        model: "gpt-4",
+        temperature: 0.6
+
+  Except within the `:test` environment, the defaults can be configured also
+  with the `default_generation_type` and `:default_generation_params` properties
+  in YAML frontmatter of the `magma_config.md` document in your vault, taking
+  precedence over the ones from the application config.
+
+  Unlike, the default generation params from the `magma_config.md` document,
+  the ones from the application config are used also as initial defaults on the
+  `new/1` function of a `Magma.Generation` implementation, meaning you only
+  have to provide the values differing from the application configured ones.
+  """
+
+  alias Magma.{Artefact, View}
 
   import Magma.Utils.Guards
 
@@ -133,15 +133,19 @@ defmodule Magma.Generation do
 
   @callback execute(t(), Artefact.Prompt.t(), options) :: {:ok, result} | {:error, any}
 
+  @callback default_params :: keyword
+
   def default do
-    Application.get_env(
-      :magma,
-      :default_generation,
-      if(Code.ensure_loaded?(Magma.Generation.OpenAI),
-        do: Magma.Generation.OpenAI,
-        else: Magma.Generation.Manual
-      )
-    )
+    Magma.Config.system(:default_generation)
+  end
+
+  defmacro __using__(_) do
+    quote do
+      @behaviour Magma.Generation
+
+      @impl true
+      def default_params, do: Application.get_env(:magma, __MODULE__, [])
+    end
   end
 
   def execute(prompt) when is_prompt(prompt) do
@@ -204,6 +208,24 @@ defmodule Magma.Generation do
     end
   end
 
+  @doc """
+  Renders generation YAML frontmatter properties.
+  """
+  def render_front_matter(%_generation_type{} = generation) do
+    """
+    magma_generation_type: #{inspect(short_name(generation))}
+    magma_generation_params: #{View.yaml_nested_map(generation)}
+    """
+    |> String.trim_trailing()
+  end
+
+  @doc """
+  Extracts generation information from YAML frontmatter metadata.
+
+  The function attempts to retrieve the `magma_generation_type` and
+  `magma_generation_params` from the metadata. It returns a tuple containing
+  the generation (if found and valid), and the remaining metadata.
+  """
   def extract_from_metadata(metadata) do
     {generation_type, custom_metadata} = Map.pop(metadata, :magma_generation_type)
     {generation_params, custom_metadata} = Map.pop(custom_metadata, :magma_generation_params)

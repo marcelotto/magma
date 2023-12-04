@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Matter]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-19 15:57:48
+created_at: 2023-12-04 14:36:48
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,64 +52,23 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Matter.Project` ![[Magma.Matter.Project#Description|]]
-
-##### `Magma.Matter.Module` ![[Magma.Matter.Module#Description|]]
-
-##### `Magma.Matter.Text` ![[Magma.Matter.Text#Description|]]
-
-##### Magma artefact model ![[Magma artefact model#Description|]]
-
-![[Magma artefact model#Sequence diagram|]]
+![[Magma.Matter#Context knowledge|]]
 
 
 ## Request
@@ -124,7 +83,19 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.Matter do
+  @moduledoc """
+  Behaviour for types of matter that can be subject of a `Magma.Concept` and the `Magma.Artefact`s generated from these concepts.
+
+  This module defines a set of callbacks that each matter type must implement.
+  These callbacks allow for the specification of various properties and
+  behaviours of the matter type, such as the available artefacts, paths for
+  different kinds of documents, texts for different parts of the concept and
+  prompt documents, and more.
+  """
+
   @type t :: struct
+
+  @type type :: module
 
   @type name :: binary | atom
 
@@ -186,7 +157,7 @@ defmodule Magma.Matter do
   @callback custom_concept_sections(Concept.t()) :: binary | nil
 
   @doc """
-  A callback that allows to specify texts which should be included generally in the "Context knowledge" section of the `Magma.Concept` document about this type of matter.
+  A callback that allows to specify texts which should be included generally in the "Context knowledge" section of the `Magma.Artefact.Prompt` document about this type of matter.
   """
   @callback context_knowledge(Concept.t()) :: binary | nil
 
@@ -240,6 +211,18 @@ defmodule Magma.Matter do
 
       defstruct Magma.Matter.fields() ++ unquote(additional_fields)
 
+      def config do
+        Magma.Config.matter(__MODULE__)
+      end
+
+      def config(key) do
+        Magma.Config.matter(__MODULE__, key)
+      end
+
+      def config_name do
+        Magma.Config.Matter.name_by_type(__MODULE__)
+      end
+
       @impl true
       def default_concept_aliases(%__MODULE__{}), do: []
 
@@ -247,7 +230,9 @@ defmodule Magma.Matter do
       def custom_concept_sections(%Concept{}), do: nil
 
       @impl true
-      def context_knowledge(%Concept{}), do: nil
+      def context_knowledge(%Concept{}) do
+        Magma.Config.Matter.context_knowledge_transclusion(__MODULE__)
+      end
 
       @impl true
       def prompt_matter_description(%__MODULE__{}), do: nil
@@ -317,8 +302,9 @@ defmodule Magma.Matter do
       ** (RuntimeError) Invalid Magma.Matter type: NonExisting
 
   """
-  def type_name(type) do
-    if type?(type) do
+  @spec type(type()) :: binary
+  def type_name(type, validate \\ true) do
+    if not validate or type?(type) do
       case Module.split(type) do
         ["Magma", "Matter" | name_parts] -> Enum.join(name_parts, ".")
         _ -> raise "Invalid Magma.Matter type name scheme: #{inspect(type)}"
@@ -346,6 +332,7 @@ defmodule Magma.Matter do
       nil
 
   """
+  @spec type(binary) :: type() | nil
   def type(string) when is_binary(string) do
     module = Module.concat(__MODULE__, string)
 
@@ -357,6 +344,7 @@ defmodule Magma.Matter do
   @doc """
   Checks if the given `module` is a `Magma.Matter` type module.
   """
+  @spec type?(module) :: boolean
   def type?(module) do
     Code.ensure_loaded?(module) and function_exported?(module, :relative_concept_path, 1)
   end

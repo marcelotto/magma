@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Matter.Text.Section]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-06 16:03:20
+created_at: 2023-12-04 14:36:48
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,51 +52,28 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+![[Magma.System.config#Persona|]]
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
-
-```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
-## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
-
-### `function/1`
-
-The first line should be a very short one-sentence summary of the main purpose of this function.
-
-Then follows the main body of the function documentation.
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Matter` ![[Magma.Matter#Description|]]
-
-##### `Magma.Matter.Text` ![[Magma.Matter.Text#Description|]]
+![[Magma.Matter.Text.Section#Context knowledge|]]
 
 
 ## Request
 
-### ![[Magma.Matter.Text.Section#ModuleDoc prompt task|]]
+![[Magma.Matter.Text.Section#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.Matter.Text.Section` ![[Magma.Matter.Text.Section#Description|]]
 
@@ -108,7 +85,7 @@ This is the code of the module to be documented. Ignore commented out code.
 defmodule Magma.Matter.Text.Section do
   use Magma.Matter, fields: [:main_text]
 
-  alias Magma.{Concept, Prompt}
+  alias Magma.Concept
   alias Magma.Matter.Text
   alias Magma.Artefacts.TableOfContents
   alias Magma.View
@@ -144,14 +121,20 @@ defmodule Magma.Matter.Text.Section do
   def default_description(%__MODULE__{}, abstract: abstract), do: abstract
 
   @impl true
-  def context_knowledge(%Concept{subject: %__MODULE__{main_text: main_text}}) do
+  def context_knowledge(
+        %Concept{subject: %__MODULE__{main_text: %{type: type} = main_text}} = concept
+      ) do
     """
-    #### Outline of the '#{main_text.name}' content #{View.transclude(TableOfContents.name(main_text), :title)}
+    #{super(concept)}
+
+    #{Magma.Config.TextType.context_knowledge_transclusion(type)}
+
+    #### Outline of the '#{main_text.name}' content #{View.transclude(TableOfContents.default_name(concept), :title)}
 
     """ <>
       case Concept.load(main_text.name) do
         {:ok, text_concept} ->
-          Prompt.Template.include_context_knowledge(text_concept)
+          View.include_context_knowledge(text_concept)
 
         {:error, error} ->
           Logger.warning("error on main text context knowledge extraction: #{inspect(error)}")
@@ -164,8 +147,8 @@ defmodule Magma.Matter.Text.Section do
     "Description of the intended content of the '#{name}' section"
   end
 
-  @impl true
   def new(attrs) when is_list(attrs) do
+    # TODO: check presence of main_text
     {:ok, struct(__MODULE__, attrs)}
   end
 

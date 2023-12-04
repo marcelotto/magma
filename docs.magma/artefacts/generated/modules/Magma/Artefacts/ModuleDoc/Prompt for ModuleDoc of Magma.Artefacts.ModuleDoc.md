@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Artefacts.ModuleDoc]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-06 16:03:18
+created_at: 2023-12-04 14:36:45
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,49 +52,28 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+![[Magma.System.config#Persona|]]
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
-
-```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
-## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
-
-### `function/1`
-
-The first line should be a very short one-sentence summary of the main purpose of this function.
-
-Then follows the main body of the function documentation.
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Artefacts` ![[Magma.Artefacts#Description|]]
+![[Magma.Artefacts.ModuleDoc#Context knowledge|]]
 
 
 ## Request
 
-### ![[Magma.Artefacts.ModuleDoc#ModuleDoc prompt task|]]
+![[Magma.Artefacts.ModuleDoc#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.Artefacts.ModuleDoc` ![[Magma.Artefacts.ModuleDoc#Description|]]
 
@@ -111,52 +90,15 @@ defmodule Magma.Artefacts.ModuleDoc do
 
   import Magma.Utils.Guards
 
+  # Remember to update the ModuleDoc.config.md file when changing this!
   @prompt_result_section_title "Moduledoc"
   def prompt_result_section_title, do: @prompt_result_section_title
 
   @impl true
-  def name(concept), do: "ModuleDoc of #{concept.name}"
+  def default_name(concept), do: "ModuleDoc of #{concept.name}"
 
   @impl true
-  def system_prompt_task(_concept) do
-    """
-    Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
-
-    ```markdown
-    ## #{@prompt_result_section_title}
-
-    The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-    Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
-    ## Function docs
-
-    In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
-
-    ### `function/1`
-
-    The first line should be a very short one-sentence summary of the main purpose of this function.
-
-    Then follows the main body of the function documentation.
-    ```
-
-    #{View.comment("You can edit this prompt, as long you ensure the moduledoc is generated in a section named '#{@prompt_result_section_title}', as the contents of this section is used for the @moduledoc.")}
-
-    """
-    |> String.trim_trailing()
-  end
-
-  @impl true
-  def request_prompt_task(concept) do
-    """
-    Generate documentation for module `#{concept.name}` according to its description and code in the knowledge base below.
-    """
-    |> String.trim_trailing()
-  end
-
-  @impl true
-  def version_prologue(%Artefact.Version{artefact: __MODULE__}) do
+  def version_prologue(%Artefact.Version{artefact: %__MODULE__{}}) do
     """
     Ensure that the module documentation is under a "#{@prompt_result_section_title}" section, as the contents of this section is used for the `@moduledoc`.
 
@@ -170,7 +112,9 @@ defmodule Magma.Artefacts.ModuleDoc do
   def trim_prompt_result_header?, do: false
 
   @impl true
-  def relative_base_path(%Concept{subject: %Matter.Module{name: module} = matter}) do
+  def relative_base_path(%__MODULE__{
+        concept: %Concept{subject: %Matter.Module{name: module} = matter}
+      }) do
     Path.join([Matter.Module.relative_base_path(matter) | Module.split(module)])
   end
 
@@ -179,7 +123,8 @@ defmodule Magma.Artefacts.ModuleDoc do
     mod
     |> Matter.Module.new!()
     |> Concept.new!()
-    |> Artefact.Version.build_path(__MODULE__)
+    |> new!()
+    |> Artefact.Version.build_path()
     |> case do
       {:ok, path} -> path
       _ -> nil
@@ -197,7 +142,7 @@ defmodule Magma.Artefacts.ModuleDoc do
         if section =
              DocumentStruct.section_by_title(document_struct, @prompt_result_section_title) do
           section
-          |> DocumentStruct.Section.to_string(header: false)
+          |> DocumentStruct.Section.to_markdown(header: false)
           |> String.trim()
         else
           raise "invalid ModuleDoc artefact version document at #{path}: no '#{@prompt_result_section_title}' section found"

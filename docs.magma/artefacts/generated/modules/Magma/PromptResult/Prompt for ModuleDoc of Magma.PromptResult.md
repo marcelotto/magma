@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.PromptResult]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-06 16:03:21
+created_at: 2023-12-04 14:36:50
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,47 +52,28 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+![[Magma.System.config#Persona|]]
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
-
-```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
-## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
-
-### `function/1`
-
-The first line should be a very short one-sentence summary of the main purpose of this function.
-
-Then follows the main body of the function documentation.
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
+
+![[Magma.PromptResult#Context knowledge|]]
 
 
 ## Request
 
-### ![[Magma.PromptResult#ModuleDoc prompt task|]]
+![[Magma.PromptResult#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.PromptResult` ![[Magma.PromptResult#Description|]]
 
@@ -109,9 +90,12 @@ defmodule Magma.PromptResult do
   alias Magma.{Vault, Artefact, Generation, Prompt, View}
   alias Magma.Document.Loader
 
-  import Magma.Utils, only: [init_field: 2, set_file_read_only: 1]
+  import Magma.Utils, only: [init_field: 2]
 
   require Logger
+
+  @dir "__prompt_results__"
+  def dir, do: @dir
 
   @impl true
   def title(%__MODULE__{prompt: %Prompt{} = prompt}) do
@@ -119,8 +103,8 @@ defmodule Magma.PromptResult do
   end
 
   @impl true
-  def title(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact, concept: concept}}) do
-    "Generated #{artefact.name(concept)}"
+  def title(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact}}) do
+    "Generated #{artefact.name}"
   end
 
   def build_name(%__MODULE__{prompt: %Prompt{} = prompt} = result) do
@@ -134,18 +118,16 @@ defmodule Magma.PromptResult do
   @impl true
   def build_path(%__MODULE__{prompt: %Prompt{}} = result) do
     {:ok,
-     [Prompt.path_prefix(), "__prompt_results__", "#{build_name(result)}.md"]
+     [Prompt.path_prefix(), @dir, "#{build_name(result)}.md"]
      |> Vault.path()}
   end
 
   @impl true
-  def build_path(
-        %__MODULE__{prompt: %Artefact.Prompt{artefact: artefact, concept: concept}} = result
-      ) do
+  def build_path(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact}} = result) do
     {:ok,
      [
-       concept |> artefact.relative_prompt_path() |> Path.dirname(),
-       "__prompt_results__",
+       artefact |> Artefact.relative_prompt_path() |> Path.dirname(),
+       @dir,
        "#{build_name(result)}.md"
      ]
      |> Vault.artefact_generation_path()}
@@ -173,10 +155,9 @@ defmodule Magma.PromptResult do
   def create(%__MODULE__{} = document, opts, []) do
     with {:ok, document} <-
            document
-           |> Document.init(generation: document.prompt.generation || Generation.default().new!())
+           |> Document.init(generation: document.prompt.generation || Generation.default())
            |> execute_prompt(opts),
          {:ok, document} <- Document.create(document, opts) do
-      make_read_only(document)
       {:ok, document}
     end
   end
@@ -225,7 +206,7 @@ defmodule Magma.PromptResult do
 
   defp trim_header(result, _), do: result
 
-  defp trim_header?(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact_type}}) do
+  defp trim_header?(%__MODULE__{prompt: %Artefact.Prompt{artefact: %artefact_type{}}}) do
     artefact_type.trim_prompt_result_header?()
   end
 
@@ -252,6 +233,8 @@ defmodule Magma.PromptResult do
     #{View.delete_current_file_button()}
 
     Final version: #{View.link_to_version(prompt_result)}
+
+    #{View.callout("This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.", :attention)}
     """
     |> String.trim_trailing()
   end
@@ -260,8 +243,7 @@ defmodule Magma.PromptResult do
   def render_front_matter(%__MODULE__{} = document) do
     """
     magma_prompt: "#{View.link_to(document.prompt)}"
-    magma_generation_type: #{inspect(Magma.Generation.short_name(document.generation))}
-    magma_generation_params: #{View.yaml_nested_map(document.generation)}
+    #{Generation.render_front_matter(document.generation)}
     """
     |> String.trim_trailing()
   end
@@ -284,19 +266,6 @@ defmodule Magma.PromptResult do
       end
     else
       {:error, "magma_prompt missing"}
-    end
-  end
-
-  defp make_read_only(%__MODULE__{generation: %Generation.Manual{}} = result), do: result
-
-  defp make_read_only(result) do
-    case set_file_read_only(result.path) do
-      :ok ->
-        result
-
-      {:error, error} ->
-        Logger.warning("Failed to make #{result.path} read-only: #{inspect(error)}")
-        result
     end
   end
 end

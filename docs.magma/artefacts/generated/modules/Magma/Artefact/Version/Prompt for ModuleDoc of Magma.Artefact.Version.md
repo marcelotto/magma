@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Artefact.Version]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-06 16:03:17
+created_at: 2023-12-04 14:36:47
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,49 +52,28 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+![[Magma.System.config#Persona|]]
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
-
-```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
-## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
-
-### `function/1`
-
-The first line should be a very short one-sentence summary of the main purpose of this function.
-
-Then follows the main body of the function documentation.
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Artefact` ![[Magma.Artefact#Description|]]
+![[Magma.Artefact.Version#Context knowledge|]]
 
 
 ## Request
 
-### ![[Magma.Artefact.Version#ModuleDoc prompt task|]]
+![[Magma.Artefact.Version#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.Artefact.Version` ![[Magma.Artefact.Version#Description|]]
 
@@ -104,75 +83,68 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.Artefact.Version do
-  use Magma.Document, fields: [:artefact, :concept, :draft]
+  use Magma.Document, fields: [:artefact, :draft]
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Concept, PromptResult, DocumentStruct, View}
+  alias Magma.{Vault, Artefact, PromptResult, DocumentStruct, View}
   alias Magma.DocumentStruct.Section
   alias Magma.Document.Loader
   alias Magma.Text.Preview
 
   @impl true
-  def title(%__MODULE__{name: name}), do: name
+  def title(%__MODULE__{artefact: %artefact_type{}} = version),
+    do: artefact_type.version_title(version)
 
   @impl true
-  def build_path(%__MODULE__{artefact: artefact, concept: concept}) do
-    build_path(concept, artefact)
+  def build_path(%__MODULE__{artefact: artefact}) do
+    build_path(artefact)
   end
 
-  def build_path(concept, artefact) do
-    {:ok, concept |> artefact.relative_version_path() |> Vault.artefact_version_path()}
+  def build_path(%_artefact_type{} = artefact) do
+    {:ok, artefact |> Artefact.relative_version_path() |> Vault.artefact_version_path()}
   end
 
   @impl true
   def from(%__MODULE__{} = version), do: version
-  def from({%Concept{} = concept, artefact}), do: artefact.name(concept)
-
-  def from(%Artefact.Prompt{} = prompt),
-    do: from({Concept.from(prompt), prompt.artefact})
-
-  def from(%PromptResult{prompt: %Artefact.Prompt{}} = result),
-    do: from({Concept.from(result), result.prompt.artefact})
+  def from(%Artefact.Prompt{} = prompt), do: from(prompt.artefact)
+  def from(%PromptResult{prompt: %Artefact.Prompt{}} = result), do: from(result.prompt.artefact)
+  def from(%Preview{} = preview), do: from(preview.artefact)
+  def from(%_artefact_type{concept: _, name: name}), do: name
 
   def new(draft, attrs \\ [])
 
   def new(%PromptResult{prompt: %Artefact.Prompt{}} = prompt_result, attrs) do
-    attrs =
-      attrs
-      |> Keyword.put_new(:concept, prompt_result.prompt.concept)
-      |> Keyword.put_new(:artefact, prompt_result.prompt.artefact)
+    attrs = Keyword.put_new(attrs, :artefact, prompt_result.prompt.artefact)
 
-    cond do
-      attrs[:concept] != prompt_result.prompt.concept -> {:error, "inconsistent concept"}
-      attrs[:artefact] != prompt_result.prompt.artefact -> {:error, "inconsistent artefact"}
-      true -> do_new(prompt_result, attrs)
+    if attrs[:artefact] == prompt_result.prompt.artefact do
+      do_new(prompt_result, attrs)
+    else
+      {:error, "inconsistent artefact"}
     end
   end
 
   def new(%Preview{} = preview, attrs) do
-    attrs =
-      attrs
-      |> Keyword.put_new(:concept, preview.concept)
-      |> Keyword.put_new(:artefact, preview.artefact)
+    attrs = Keyword.put_new(attrs, :artefact, preview.artefact)
 
-    cond do
-      attrs[:concept] != preview.concept -> {:error, "inconsistent concept"}
-      attrs[:artefact] != preview.artefact -> {:error, "inconsistent artefact"}
-      true -> do_new(preview, attrs)
+    if attrs[:artefact] == preview.artefact do
+      do_new(preview, attrs)
+    else
+      {:error, "inconsistent artefact"}
     end
   end
 
   def new(%Magma.DocumentNotFound{} = missing_document, attrs) do
-    cond do
-      !attrs[:concept] -> {:error, "concept missing"}
-      !attrs[:artefact] -> {:error, "artefact missing"}
-      true -> do_new(missing_document, attrs)
+    if attrs[:artefact] do
+      do_new(missing_document, attrs)
+    else
+      {:error, "artefact missing"}
     end
   end
 
   defp do_new(draft, attrs) do
-    struct(__MODULE__, [{:draft, draft} | attrs])
+    __MODULE__
+    |> struct(Keyword.put(attrs, :draft, draft))
     |> Document.init_path()
   end
 
@@ -190,7 +162,7 @@ defmodule Magma.Artefact.Version do
            document
            |> Document.init()
            |> assemble() do
-      Document.create(document, opts)
+      do_create(document, opts)
     end
   end
 
@@ -198,7 +170,7 @@ defmodule Magma.Artefact.Version do
     do:
       raise(
         ArgumentError,
-        "Magma.Artefact.Version.create/3 is available only with new/2 arguments"
+        "Magma.Artefact.Version.create/3 is not available with an initialized document"
       )
 
   def create(draft, attrs, opts) do
@@ -207,13 +179,21 @@ defmodule Magma.Artefact.Version do
     end
   end
 
+  defp do_create(%__MODULE__{artefact: %artefact_type{}} = document, opts) do
+    artefact_type.create_version(document, opts) ||
+      Document.create(document, opts)
+  end
+
   defp assemble(%__MODULE__{draft: %PromptResult{}} = document) do
+    title = if title = title(document), do: "# #{title}"
+
     content =
       """
-      # #{title(document)}
+      #{title}
 
       #{Document.content_without_prologue(document.draft)}
       """
+      |> String.trim_leading()
 
     {:ok, %__MODULE__{document | content: prologue(document) <> content}}
   end
@@ -225,14 +205,14 @@ defmodule Magma.Artefact.Version do
         |> DocumentStruct.main_section()
         |> Section.resolve_transclusions()
         |> Section.remove_comments()
-        |> Section.to_string()
+        |> Section.to_markdown()
 
       {:ok, %__MODULE__{document | content: prologue(document) <> content}}
     end
   end
 
-  defp prologue(%__MODULE__{artefact: artefact} = version) do
-    if prologue = artefact.version_prologue(version) do
+  defp prologue(%__MODULE__{artefact: %artefact_type{}} = version) do
+    if prologue = artefact_type.version_prologue(version) do
       """
 
       #{prologue}
@@ -246,8 +226,7 @@ defmodule Magma.Artefact.Version do
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
     """
-    magma_artefact: #{Magma.Artefact.type_name(document.artefact)}
-    magma_concept: "#{View.link_to(document.concept)}"
+    #{Artefact.render_front_matter(document.artefact)}
     magma_draft: "#{View.link_to(document.draft)}"
     """
     |> String.trim_trailing()
@@ -257,38 +236,24 @@ defmodule Magma.Artefact.Version do
   @doc false
   def load_document(%__MODULE__{} = version) do
     {draft_link, metadata} = Map.pop(version.custom_metadata, :magma_draft)
-    {concept_link, metadata} = Map.pop(metadata, :magma_concept)
-    {artefact_type, metadata} = Map.pop(metadata, :magma_artefact)
 
-    cond do
-      !draft_link ->
-        {:error, "magma_draft missing"}
-
-      !concept_link ->
-        {:error, "magma_concept missing"}
-
-      !artefact_type ->
-        {:error, "magma_artefact missing"}
-
-      artefact_module = Artefact.type(artefact_type) ->
-        with {:ok, draft} <-
-               (case Loader.load_linked([PromptResult, Preview], draft_link) do
-                  {:ok, _} = ok -> ok
-                  {:error, %Magma.DocumentNotFound{} = e} -> {:ok, e}
-                end),
-             {:ok, concept} <- Concept.load_linked(concept_link) do
-          {:ok,
-           %__MODULE__{
-             version
-             | artefact: artefact_module,
-               concept: concept,
-               draft: draft,
-               custom_metadata: metadata
-           }}
-        end
-
-      true ->
-        {:error, "invalid magma_artefact type: #{artefact_type}"}
+    if draft_link do
+      with {:ok, artefact, metadata} <- Artefact.extract_from_metadata(metadata),
+           {:ok, draft} <-
+             (case Loader.load_linked([PromptResult, Preview], draft_link) do
+                {:ok, _} = ok -> ok
+                {:error, %Magma.DocumentNotFound{} = e} -> {:ok, e}
+              end) do
+        {:ok,
+         %__MODULE__{
+           version
+           | artefact: artefact,
+             draft: draft,
+             custom_metadata: metadata
+         }}
+      end
+    else
+      {:error, "magma_draft missing"}
     end
   end
 end

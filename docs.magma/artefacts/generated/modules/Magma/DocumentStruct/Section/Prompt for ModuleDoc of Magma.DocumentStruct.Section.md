@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.DocumentStruct.Section]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-18 17:14:21
+created_at: 2023-12-04 14:36:46
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,56 +52,23 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
-The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response (unless its explicitly requested to include some parts of it) as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+![[Magma.System.config#Context knowledge|]]
 
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.DocumentStruct` ![[Magma.DocumentStruct#Description|]]
+![[Magma.DocumentStruct.Section#Context knowledge|]]
 
 
 ## Request
@@ -116,6 +83,10 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.DocumentStruct.Section do
+  @moduledoc """
+  Recursive structure for the nested sections of a `Magma.DocumentStruct`.
+  """
+
   defstruct [:title, :level, :header, :content, :sections]
 
   @type t :: %__MODULE__{
@@ -130,20 +101,34 @@ defmodule Magma.DocumentStruct.Section do
   alias Magma.DocumentStruct.TransclusionResolution
   alias Panpipe.AST.Header
 
-  @default_link_resolution_style :plain
-
   @doc """
-  Creates a section.
+  Creates a new section.
   """
-  @spec new(Header.t(), [Panpipe.AST.Node.t()], [t()]) :: t()
+  @spec new(Header.t() | {pos_integer(), binary}, [Panpipe.AST.Node.t()], [t()]) :: t()
+  def new(header, content, sections \\ [])
+
   def new(%Header{} = header, content, sections) do
+    content
+    |> do_new(sections)
+    |> set_header(header)
+  end
+
+  def new({level, title}, content, sections) do
+    content
+    |> do_new(sections)
+    |> set_header(title, level)
+  end
+
+  defp do_new(content, sections) do
     %__MODULE__{
       content: content,
       sections: sections
     }
-    |> set_header(header)
   end
 
+  @doc """
+  Sets a new `header` for the given `section`, updating the `:title` and `:level` fields accordingly.
+  """
   def set_header(%__MODULE__{} = section, %Header{} = header) do
     %__MODULE__{
       section
@@ -151,6 +136,26 @@ defmodule Magma.DocumentStruct.Section do
         title: header_title(header),
         level: header.level
     }
+  end
+
+  @doc """
+  Sets a new header with the given title and level for the given `section`, updating the `:title` and `:level` fields accordingly.
+  """
+  def set_header(%__MODULE__{} = section, title, level)
+      when is_binary(title) and is_integer(level) do
+    %__MODULE__{
+      section
+      | header: to_pandoc_header(title, level),
+        title: title,
+        level: level
+    }
+  end
+
+  defp to_pandoc_header(title, level) do
+    %Panpipe.Document{children: [header]} =
+      Panpipe.ast!("#{String.duplicate("#", level)} #{title}")
+
+    header
   end
 
   defp header_title(%Header{children: children}) do
@@ -167,12 +172,13 @@ defmodule Magma.DocumentStruct.Section do
   If no section with `section` exists, it returns `:error`.
 
   This implements `Access.fetch/2` function, so that the `section[title]`
-  syntax is supported.
+  syntax and the `Kernel` macros for accessing nested data structures like
+  `get_in/2` are supported.
 
-  Note that only sections directly under the given section is searched.
-  If a recursive search is needed, `section_by_title/2` should be used.
+  This function only searches sections directly under the given section.
+  For a recursive search, use `section_by_title/2`.
   """
-  @spec fetch(t(), binary) :: {:ok, t()} | :error
+  @spec fetch(t() | DocumentStruct.compatible(), binary) :: {:ok, t()} | :error
   def fetch(%_{sections: sections}, title) do
     Enum.find_value(sections, fn
       %{title: ^title} = section -> {:ok, section}
@@ -180,15 +186,48 @@ defmodule Magma.DocumentStruct.Section do
     end) || :error
   end
 
+  #  def get_and_update(%_{sections: subsections} = section, title, fun) do
+  #    {get, updated_subsections} = get_and_update(subsections, [], title, fun)
+  #    {get, %{section | sections: updated_subsections}}
+  #  end
+  #
+  #  defp get_and_update([%__MODULE__{title: title} = current | t], acc, title, fun) do
+  #    case fun.(current) do
+  #      {get, %__MODULE__{} = update} ->
+  #        {get, :lists.reverse(acc, [update | t])}
+  #
+  #      :pop ->
+  #        {current, :lists.reverse(acc, t)}
+  #
+  #      other ->
+  #        raise "the given function must return a two-element tuple with a #{inspect(__MODULE__)} or :pop, got: #{inspect(other)}"
+  #    end
+  #  end
+  #
+  #  defp get_and_update([h | t], acc, title, fun), do: get_and_update(t, [h | acc], title, fun)
+  #
+  #  defp get_and_update([], acc, title, fun) do
+  #    case fun.(nil) do
+  #      {get, %__MODULE__{} = new} ->
+  #        {get, :lists.reverse([new | acc])}
+  #
+  #      :pop ->
+  #        {nil, :lists.reverse(acc)}
+  #
+  #      other ->
+  #        raise "the given function must return a two-element tuple with a #{inspect(__MODULE__)} or :pop, got: #{inspect(other)}"
+  #    end
+  #  end
+
   @doc """
-  Returns if the given section is empty, i.e. it has no `content` and nested `sections`.
+  Checks if the given `section` is empty, i.e. it has no `content` and nested `sections`.
   """
   @spec empty?(t()) :: boolean
   def empty?(%__MODULE__{content: [], sections: []}), do: true
   def empty?(%__MODULE__{}), do: false
 
   @doc """
-  Return if given section consists solely of subsection headers.
+  Checks if the given `section` consists solely of subsection headers.
   """
   @spec empty_content?(t()) :: boolean
   def empty_content?(%__MODULE__{} = section) do
@@ -239,9 +278,10 @@ defmodule Magma.DocumentStruct.Section do
   end
 
   @doc """
-  Returns the section as
+  Converts a `Magma.DocumentStruct.Section` into a Markdown string.
   """
-  def to_string(%__MODULE__{} = section, opts \\ []) do
+  @spec to_markdown(t(), keyword) :: binary
+  def to_markdown(%__MODULE__{} = section, opts \\ []) do
     %Panpipe.Document{children: ast(section, opts)}
     # TODO: use new way to enabling and disabling extensions on format functions
     #      |> Panpipe.to_markdown()
@@ -288,8 +328,49 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
+  @doc """
+  Processes and resolves transclusions within the given `section`.
+
+  Transclusion resolution in Magma is a procedure where an Obsidian transclusion,
+  such as `![[Some document]]`, is replaced with its actual content.
+  This mechanism forms the foundation for constructing LLM prompts in Magma.
+  The content from the referenced document or section undergoes several processing
+  steps before its insertion:
+
+  - Comments (`<!-- comment -->`) are removed.
+  - Internal links are replaced with the target as plain text.
+  - Transclusions within the transcluded content itself are resolved recursively
+    (unless it would result in an infinite recursion).
+  - If the transcluded content (after removing the comments), consists
+    exclusively of a heading with no content below it, the transclusion is
+    resolved with the empty string.
+  - The level of the transcluded sections is adjusted according to the current
+    level at the point of the transclusion.
+
+  Different types of transclusions are resolved in slightly varied ways,
+  particularly regarding the leading header of the transcluded content:
+
+  - _Inline transclusions_: Exclude the leading header.
+  - _Custom header transclusions_: Replace the leading header.
+  - _Empty header transclusions_: Retain the leading header.
+  """
+
   defdelegate resolve_transclusions(section), to: TransclusionResolution
 
+  @doc """
+  Resolves internal links in the provided `section` by replacing them with their content or display text.
+
+  The style of the resolved links can be specified with the `:style` option,
+  which accepts the following values:
+
+  - `:plain` (default) - no styling
+  - `:emph` - italic
+  - `:strong` - bold
+  - `:underline` - underlined
+  - a function accepting the children of the link AST and returning the
+    replacement AST node
+  """
+  @spec resolve_links(t(), keyword) :: t()
   def resolve_links(%__MODULE__{} = section, opts \\ []) do
     do_resolve_links(
       section,
@@ -322,9 +403,18 @@ defmodule Magma.DocumentStruct.Section do
   defp link_resolution_style(fun) when is_function(fun), do: fun
 
   defp default_link_resolution_style do
-    Application.get_env(:magma, :link_resolution_style, @default_link_resolution_style)
+    Magma.Config.system(:link_resolution_style)
   end
 
+  @doc """
+  Removes all comment blocks from the given `section_or_content`.
+
+  This function cleans up the document by removing all comment blocks
+  (`<!-- comment -->`).
+  """
+  def remove_comments(section_or_content)
+
+  @spec remove_comments(t()) :: t()
   def remove_comments(%__MODULE__{} = section) do
     %__MODULE__{
       section
@@ -333,17 +423,18 @@ defmodule Magma.DocumentStruct.Section do
     }
   end
 
+  @spec remove_comments([Panpipe.AST.Node.t()]) :: [Panpipe.AST.Node.t()]
   def remove_comments(content) when is_list(content) do
     Enum.flat_map(content, &List.wrap(do_remove_comments(&1)))
   end
 
-  def do_remove_comments(%Panpipe.AST.RawBlock{format: "html", string: "<!--" <> comment} = ast) do
+  defp do_remove_comments(%Panpipe.AST.RawBlock{format: "html", string: "<!--" <> comment} = ast) do
     unless String.ends_with?(comment, "-->") do
       ast
     end
   end
 
-  def do_remove_comments(ast) do
+  defp do_remove_comments(ast) do
     Panpipe.transform(ast, fn
       %Panpipe.AST.RawInline{format: "html", string: "<!--" <> comment} ->
         if String.ends_with?(comment, "-->"), do: []
@@ -351,6 +442,46 @@ defmodule Magma.DocumentStruct.Section do
       _ ->
         nil
     end)
+  end
+
+  def preserve_eex_tags(%__MODULE__{} = section) do
+    %__MODULE__{
+      section
+      | content:
+          Enum.map(
+            section.content,
+            &Panpipe.transform(&1, fn
+              %Panpipe.AST.Str{string: "%>" <> _ = string} = node ->
+                case String.split(string, ">") do
+                  [left, right] ->
+                    [
+                      %Panpipe.AST.Str{string: left},
+                      %Panpipe.AST.RawInline{string: ">", format: "markdown"},
+                      %Panpipe.AST.Str{string: right}
+                    ]
+
+                  _ ->
+                    node
+                end
+
+              %Panpipe.AST.Str{string: string} = node ->
+                case String.split(string, "<") do
+                  [left, right] ->
+                    [
+                      %Panpipe.AST.Str{string: left},
+                      %Panpipe.AST.RawInline{string: "<", format: "markdown"},
+                      %Panpipe.AST.Str{string: right}
+                    ]
+
+                  _ ->
+                    node
+                end
+
+              _ ->
+                nil
+            end)
+          )
+    }
   end
 end
 

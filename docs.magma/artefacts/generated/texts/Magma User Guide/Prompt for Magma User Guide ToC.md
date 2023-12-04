@@ -4,7 +4,7 @@ magma_artefact: TableOfContents
 magma_concept: "[[Magma User Guide]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-20 09:39:55
+created_at: 2023-12-04 11:50:39
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,23 +52,25 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-Your task is to help write a user guide called "Magma User Guide".
-
-The user guide should be written in English in the Markdown format.
+![[UserGuide.config#System prompt|]]
 
 ### Context knowledge
 
-The following sections contain background knowledge on Magma.
+The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+![[Magma.System.config#Context knowledge|]]
 
 #### Description of the Magma project ![[Project#Description|]]
 
+![[Text.config#Context knowledge|]]
 
+![[UserGuide.config#Context knowledge|]]
 
-#### Magma artefact model ![[Magma artefact model#Description|]]
+![[TableOfContents.config#Context knowledge|]]
 
-#### Transclusion resolution ![[Magma-Transclusion-Resolution#Description|]]
+![[Magma User Guide#Context knowledge|]]
 
 
 ## Request

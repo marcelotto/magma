@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.DocumentStruct]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-18 14:52:48
+created_at: 2023-12-04 14:36:46
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,56 +52,23 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
-The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response (unless its explicitly requested to include some parts of it) as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+
+![[Magma.System.config#Context knowledge|]]
 
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.DocumentStruct.Section` ![[Magma.DocumentStruct.Section#Description|]]
+![[Magma.DocumentStruct#Context knowledge|]]
 
 
 ## Request
@@ -116,7 +83,23 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.DocumentStruct do
-  use Magma
+  @moduledoc """
+  Provides an abstract representation of a Markdown document structured based on the Pandoc AST.
+
+  The `Magma.DocumentStruct` module provides an Elixir struct for representing
+  the contents of a Markdown document as an Abstract Syntax Tree (AST) based
+  on the Pandoc AST. The struct is designed to access the individual sections
+  including their subsections and facilitate the transclusion resolution feature,
+  which is essential for the prompt generation in Magma.
+
+  The `Magma.DocumentStruct` struct consists of a prologue, which is the
+  header-less text before the first section, and all sections of level 1
+  (which in turn consist of sections of level 2 and so on).
+  The core functionalities related to sections are implemented in the
+  `Magma.DocumentStruct.Section` module. The `Magma.DocumentStruct` acts as a
+  wrapper around this recursive section structure and delegates most of its
+  functions to the said module.
+  """
 
   defstruct [:prologue, :sections]
 
@@ -124,9 +107,16 @@ defmodule Magma.DocumentStruct do
   alias Magma.DocumentStruct.TransclusionResolution
 
   @type t :: %__MODULE__{
-          prologue: binary,
+          prologue: [Panpipe.AST.Node.t()],
           sections: [Section.t()]
         }
+
+  @type compatible ::
+          %{
+            prologue: [Panpipe.AST.Node.t()],
+            sections: [Section.t()]
+          }
+          | Magma.Concept.t()
 
   @doc false
   @pandoc_extension {:markdown,
@@ -144,35 +134,38 @@ defmodule Magma.DocumentStruct do
   def pandoc_extension, do: @pandoc_extension
 
   @doc false
+  @spec new(keyword) :: t()
   def new(args) do
     struct(__MODULE__, args)
   end
 
   @doc """
-  TODO
+  Parses the given content into a `Magma.DocumentStruct`.
   """
+  @spec parse(binary) :: {:ok, t()} | {:error, any}
   defdelegate parse(content), to: Parser
 
   @doc """
   Fetches the section with the given `title` and returns it in an ok tuple.
 
-  If no section with `section` exists, it returns `:error`.
+  If no section with `title` exists, it returns `:error`.
 
   This implements `Access.fetch/2` function, so that the `document_struct[title]`
-  syntax is supported.
+  syntax and the `Kernel` macros for accessing nested data structures like
+  `get_in/2` are supported.
 
-  Note that only sections directly under the given section is searched.
-  If a recursive search is needed, `section_by_title/2` should be used.
+  This function only searches sections directly under the given section.
+  For a recursive search, use `section_by_title/2`.
   """
-  defdelegate fetch(document_struct, key), to: Section
+  defdelegate fetch(document_struct, title), to: Section
 
   @doc """
   Fetches the first section with the given `title`.
 
-  Other than accessing the sections with the `fetch/2`, this searches the
-  sections recursively.
+  Unlike `fetch/2`, this function performs a recursive search throughout the
+  document to find the desired section.
   """
-  @spec section_by_title(t(), binary) :: Section.t() | nil
+  @spec section_by_title(t() | compatible(), binary) :: Section.t() | nil
   def section_by_title(%{sections: sections}, title) do
     Enum.find_value(sections, &Section.section_by_title(&1, title))
   end
@@ -182,21 +175,25 @@ defmodule Magma.DocumentStruct do
 
   Assuming that the first section with header level 1 is the main section.
   """
-  @spec main_section(t()) :: Section.t() | nil
+  @spec main_section(t() | compatible()) :: Section.t() | nil
   def main_section(%{sections: [%Section{} = main_section | _]}), do: main_section
   def main_section(%{sections: []}), do: nil
 
   @doc """
-  Returns the header title of the main section.
+  Extracts and returns the title of the `main_section/1`.
   """
-  @spec title(t()) :: binary | nil
-  def title(document) do
-    if main_section = main_section(document) do
+  @spec title(t() | compatible()) :: binary | nil
+  def title(document_struct) do
+    if main_section = main_section(document_struct) do
       String.trim(main_section.title)
     end
   end
 
-  def to_string(%{prologue: prologue} = document) do
+  @doc """
+  Converts the given `document_struct` back into a Markdown string.
+  """
+  @spec to_markdown(t() | compatible()) :: binary
+  def to_markdown(%{prologue: prologue} = document) do
     %Panpipe.Document{children: prologue ++ ast(document)}
     # TODO: use new way to enabling and disabling extensions on format functions
     #      |> Panpipe.to_markdown()
@@ -207,6 +204,13 @@ defmodule Magma.DocumentStruct do
     Enum.flat_map(sections, &Section.ast(&1, opts))
   end
 
+  @doc """
+  Sets the header level for all sections within the document.
+
+  See `Magma.DocumentStruct.Section.set_level/2` which does the same
+  on a section level.
+  """
+  @spec set_level(t(), non_neg_integer()) :: t()
   def set_level(%__MODULE__{} = document_struct, level) do
     %__MODULE__{
       document_struct
@@ -214,6 +218,13 @@ defmodule Magma.DocumentStruct do
     }
   end
 
+  @doc """
+  Removes all comment blocks from the given `document_struct`.
+
+  See `Magma.DocumentStruct.Section.remove_comments/1` which does the same
+  on a section level.
+  """
+  @spec remove_comments(t()) :: t()
   def remove_comments(%__MODULE__{} = document_struct) do
     %__MODULE__{
       document_struct
@@ -222,6 +233,13 @@ defmodule Magma.DocumentStruct do
     }
   end
 
+  @doc """
+  Processes and resolves transclusions within the given `document_struct`.
+
+  See `Magma.DocumentStruct.Section.resolve_transclusions/1` which does the same
+  on a section level.
+  """
+  @spec resolve_transclusions(t()) :: t()
   defdelegate resolve_transclusions(document_struct), to: TransclusionResolution
 end
 

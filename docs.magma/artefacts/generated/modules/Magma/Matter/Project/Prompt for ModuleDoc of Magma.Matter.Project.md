@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Matter.Project]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.5}
-created_at: 2023-10-20 16:53:02
+created_at: 2023-12-04 14:36:47
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,58 +52,23 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Matter` ![[Magma.Matter#Description|]]
-
-#### Magma artefact model ![[Magma artefact model#Description|]]
+![[Magma.Matter.Project#Context knowledge|]]
 
 
 ## Request
@@ -118,13 +83,30 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.Matter.Project do
+  @moduledoc """
+  `Magma.Matter` type behaviour implementation for the project Magma is used for.
+
+  It is unique in the sense that there is only one instance of it, corresponding
+  to the one project for which artefacts are being created. It plays a central
+  role as its description (in the corresponding `Magma.Concept` about this matter)
+  is included in every prompt.
+
+  The single `Magma.Concept` for the project can be fetched with the `concept/0`
+  function.
+
+  """
+
   use Magma.Matter
 
   @type t :: %__MODULE__{}
 
   alias Magma.{Matter, Concept}
 
-  @artefacts []
+  @concept_name "Project"
+
+  @generated_artefacts_base_path "project"
+
+  @artefacts [Magma.Artefacts.Readme]
 
   @doc """
   Returns the list of `Magma.Artefact` types available for a project.
@@ -158,7 +140,7 @@ defmodule Magma.Matter.Project do
   end
 
   @doc """
-  Extracts the project name from the metadata of a `Magma.Concept` document about this matter type and creates a new instance with it.
+  Extracts the project name from the metadata of a `Magma.Concept` document about the project and creates a new instance with it.
 
   The project name must be specified in the `magma_matter_name` YAML frontmatter property.
   If the project name is not found, it returns an error.
@@ -177,7 +159,7 @@ defmodule Magma.Matter.Project do
   end
 
   @doc """
-  Renders the YAML frontmatter properties specific for this type of matter.
+  Renders the YAML frontmatter properties specific for the `Magma.Concept` document about the project.
 
   In particular this includes `magma_matter_name` with the project name.
   """
@@ -189,6 +171,17 @@ defmodule Magma.Matter.Project do
     |> String.trim_trailing()
   end
 
+  @doc """
+  Returns a list of Obsidian aliases for the `Magma.Concept` document about the project.
+
+  ### Example
+
+      iex> "Example"
+      ...> |> Magma.Matter.Project.new!()
+      ...> |> Magma.Matter.Project.default_concept_aliases()
+      ["Example project", "Example-project"]
+
+  """
   @impl true
   def default_concept_aliases(%__MODULE__{name: name}), do: ["#{name} project", "#{name}-project"]
 
@@ -212,11 +205,14 @@ defmodule Magma.Matter.Project do
       iex> "Example"
       ...> |> Magma.Matter.Project.new!()
       ...> |> Magma.Matter.Project.relative_concept_path()
-      "Project.md"
+      "#{@concept_name}.md"
 
   """
   @impl true
   def relative_concept_path(%__MODULE__{} = project), do: "#{concept_name(project)}.md"
+
+  @doc false
+  def relative_generated_artefacts_path, do: @generated_artefacts_base_path
 
   @doc """
   Returns the name of the `Magma.Concept` document about the project.
@@ -231,11 +227,11 @@ defmodule Magma.Matter.Project do
       iex> "Example"
       ...> |> Magma.Matter.Project.new!()
       ...> |> Magma.Matter.Project.concept_name()
-      "Project"
+      #{inspect(@concept_name)}
 
   """
   @impl true
-  def concept_name(%__MODULE__{}), do: "Project"
+  def concept_name(%__MODULE__{}), do: @concept_name
 
   @doc """
   Returns the title header text of the `Magma.Concept` document about the project.
@@ -278,12 +274,30 @@ defmodule Magma.Matter.Project do
     "Description of the '#{name}' project"
   end
 
+  @doc """
+  Returns the project's app name as specified in the `mix.exs` file.
+  """
+  @spec app_name :: binary
   def app_name, do: Mix.Project.config()[:app]
 
+  @doc """
+  Returns the project's version as specified in the `mix.exs` file.
+  """
+  @spec version :: binary
   def version, do: Mix.Project.config()[:version]
 
-  def concept, do: Concept.load!("Project")
+  @doc """
+  Returns the `Magma.Concept` about the project.
+  """
+  @spec concept :: {:ok, Magma.Concept.t()} | {:error, any}
+  def concept, do: Concept.load(@concept_name)
 
+  @doc """
+  Returns all modules of the project as `Magma.Matter.Module`s.
+
+  which are not ignored in terms of `Magma.Matter.Module.ignore?/1`
+  """
+  @spec modules :: [Magma.Matter.Module.t()]
   def modules do
     with {:ok, modules} <- :application.get_key(app_name(), :modules) do
       modules

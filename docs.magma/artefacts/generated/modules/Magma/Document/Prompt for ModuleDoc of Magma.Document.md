@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Document]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-11-02 21:50:12
+created_at: 2023-12-04 14:36:49
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,54 +52,21 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
 ![[Magma.Document#Context knowledge|]]
 
@@ -116,6 +83,19 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.Document do
+  @moduledoc """
+  A behavior for the different kinds of document types in Magma.
+
+  Besides the callback definition, it provides shared fields and logic between
+  all document types. Each document type defines additional fields for its
+  specific tasks and a path scheme that determines where instances of this type
+  are stored.
+
+  Note, that in general the content under the YAML frontmatter of a document
+  is not further interpreted (except `Magma.Concept`).
+  `Magma.DocumentStruct` allows to get the AST of a Markdown document.
+  """
+
   alias Magma.{Vault, View, Concept, Artefact, Prompt, PromptResult, Text}
 
   import Magma.Utils, only: [init_fields: 2]
@@ -166,7 +146,7 @@ defmodule Magma.Document do
   @doc """
   Renders the document type specific fields as YAML front matter lines.
   """
-  @callback render_front_matter(t()) :: binary
+  @callback render_front_matter(t()) :: binary | nil
 
   # The fields every document type implementing this behaviour gets.
   @fields [
@@ -195,6 +175,9 @@ defmodule Magma.Document do
       alias Magma.Document
 
       defstruct Magma.Document.fields() ++ unquote(additional_fields)
+
+      @impl true
+      def from(%__MODULE__{} = system_prompts), do: system_prompts
 
       @doc """
       Fetches a document from a related document and immediately loads it with `load!/1`
@@ -233,6 +216,12 @@ defmodule Magma.Document do
       exception is returned in an `:error` tuple.
       """
       def load_linked(link), do: Document.Loader.load_linked(__MODULE__, link)
+
+      @impl true
+      def render_front_matter(%__MODULE__{}), do: nil
+
+      defoverridable from: 1,
+                     render_front_matter: 1
     end
   end
 
@@ -245,7 +234,7 @@ defmodule Magma.Document do
       document,
       [
         created_at: now(),
-        tags: :magma |> Application.get_env(:default_tags) |> List.wrap(),
+        tags: Magma.Config.system(:default_tags),
         aliases: []
       ]
       |> Keyword.merge(fields)
@@ -308,12 +297,26 @@ defmodule Magma.Document do
     """
     ---
     magma_type: #{type_name(document_type)}
-    #{document_type.render_front_matter(document)}
-    created_at: #{document.created_at}
-    tags: #{View.yaml_list(document.tags)}
-    aliases: #{View.yaml_list(document.aliases)}
-    ---
-    """
+    """ <>
+      if document_specific_front_matter = document_type.render_front_matter(document) do
+        """
+        #{document_specific_front_matter}
+        """
+      else
+        ""
+      end <>
+      ("""
+       #{render_custom_metadata(document.custom_metadata)}
+       created_at: #{document.created_at}
+       tags: #{View.yaml_list(document.tags)}
+       aliases: #{View.yaml_list(document.aliases)}
+       ---
+       """
+       |> String.trim_leading())
+  end
+
+  defp render_custom_metadata(metadata) do
+    Enum.map_join(metadata, "\n", fn {key, value} -> "#{key}: #{inspect(value)}" end)
   end
 
   @doc """
@@ -411,6 +414,9 @@ defmodule Magma.Document do
 
       iex> Magma.Document.type("Artefact.Prompt")
       Magma.Artefact.Prompt
+
+      iex> Magma.Document.type("Config.System")
+      Magma.Config.System
 
       iex> Magma.Document.type("Vault")
       nil

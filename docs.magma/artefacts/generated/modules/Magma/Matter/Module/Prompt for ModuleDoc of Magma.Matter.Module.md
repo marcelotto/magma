@@ -4,11 +4,11 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Matter.Module]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-19 16:34:49
+created_at: 2023-12-04 14:36:47
 tags: [magma-vault]
 aliases: []
 ---
-	
+
 **Generated results**
 
 ```dataview
@@ -52,56 +52,23 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Matter` ![[Magma.Matter#Description|]]
+![[Magma.Matter.Module#Context knowledge|]]
 
 
 ## Request
@@ -116,8 +83,15 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma.Matter.Module do
-  # We don't have any additional fields, since we can get everything
-  # via the Elixir and Erlang reflection API from the module name
+  @moduledoc """
+  `Magma.Matter` type behaviour implementation for Elixir modules.
+
+  The `Magma.Matter.Module` struct is used for generation of `Magma.Artefact`s
+  about Elixir modules. It does not have any additional fields above the
+  `Magma.Matter.fields/0` as it retrieves all necessary information via the
+  Elixir and Erlang reflection API from the module name.
+  """
+
   use Magma.Matter
 
   alias Magma.Concept
@@ -126,11 +100,24 @@ defmodule Magma.Matter.Module do
 
   @type t :: %__MODULE__{}
 
+  @artefacts [Magma.Artefacts.ModuleDoc]
+
   @relative_base_path "modules"
 
-  @impl true
-  def artefacts, do: [Magma.Artefacts.ModuleDoc]
+  @doc """
+  Returns the list of `Magma.Artefact` types available for Elixir modules.
 
+      iex> Magma.Matter.Module.artefacts()
+      #{inspect(@artefacts)}
+
+  """
+  @impl true
+  def artefacts, do: @artefacts
+
+  @doc """
+  Creates a new `Magma.Matter.Module` instance from a given module name in an ok tuple.
+  """
+  @spec new(binary | atom | [name: binary | atom]) :: {:ok, t()} | {:error, any}
   def new(name: name), do: new(name)
 
   def new(name) when is_binary(name) do
@@ -141,6 +128,9 @@ defmodule Magma.Matter.Module do
     {:ok, %__MODULE__{name: module}}
   end
 
+  @doc """
+  Creates a new `Magma.Matter.Module` instance from a given module name and fails in error cases.
+  """
   def new!(attrs) do
     case new(attrs) do
       {:ok, matter} -> matter
@@ -148,9 +138,25 @@ defmodule Magma.Matter.Module do
     end
   end
 
+  @doc """
+  Returns the base path segment to be used for different kinds of documents for Elixir modules.
+
+  The base path for all modules is `#{inspect(@relative_base_path)}`.
+  """
   @impl true
   def relative_base_path(_), do: @relative_base_path
 
+  @doc """
+  Returns the path for `Magma.Concept` documents about Elixir modules.
+
+  ### Example
+
+      iex> Some.Module
+      ...> |> Magma.Matter.Module.new!()
+      ...> |> Magma.Matter.Module.relative_concept_path()
+      "modules/Some/Some.Module.md"
+
+  """
   @impl true
   def relative_concept_path(%__MODULE__{name: module} = matter) do
     [@relative_base_path | context_segments(module)]
@@ -162,6 +168,15 @@ defmodule Magma.Matter.Module do
     module |> Module.split() |> List.delete_at(-1)
   end
 
+  @doc """
+  Returns a list of the modules the given `module` is defined under.
+
+  ### Example
+
+      iex> Magma.Matter.Module.context_modules(Magma.DocumentStruct.Section)
+      [Magma, Magma.DocumentStruct]
+
+  """
   def context_modules(module) do
     {result, _} =
       module
@@ -174,6 +189,11 @@ defmodule Magma.Matter.Module do
     result
   end
 
+  @doc """
+  Returns a list of the submodules defined under the given `module`.
+
+  Note: This function relies on the existence of concept documents for modules.
+  """
   def submodules(module) do
     {:ok, path} = module |> Module.concat(X) |> new!() |> Concept.build_path()
     module_path = Path.dirname(path)
@@ -186,12 +206,39 @@ defmodule Magma.Matter.Module do
     end
   end
 
+  @doc """
+  Returns the name of the `Magma.Concept` document for an Elixir module.
+
+  It is the module name as a string.
+
+  ### Example
+
+    iex> Some.Module
+    ...> |> Magma.Matter.Module.new!()
+    ...> |> Magma.Matter.Module.concept_name()
+    "Some.Module"
+
+  """
   @impl true
   def concept_name(%__MODULE__{name: module}), do: inspect(module)
 
+  @doc """
+  Returns the title header text of the `Magma.Concept` document for an Elixir module.
+
+  ### Example
+
+    iex> Some.Module
+    ...> |> Magma.Matter.Module.new!()
+    ...> |> Magma.Matter.Module.concept_title()
+    "`Some.Module`"
+
+  """
   @impl true
   def concept_title(%__MODULE__{name: module}), do: "`#{inspect(module)}`"
 
+  @doc """
+  Returns a default description for the `Magma.Concept` document of an Elixir module.
+  """
   @impl true
   def default_description(%__MODULE__{} = matter, _) do
     """
@@ -203,14 +250,22 @@ defmodule Magma.Matter.Module do
   end
 
   @impl true
-  def context_knowledge(%Concept{subject: %__MODULE__{name: module}}) do
-    """
-    #### Peripherally relevant modules
+  def context_knowledge(%Concept{subject: %__MODULE__{name: module}} = concept) do
+    super(concept) <>
+      if auto_module_context?() do
+        """
 
-    #{context_modules_knowledge(module)}
-    """
-    |> String.trim_trailing()
+        #### Peripherally relevant modules
+
+        #{context_modules_knowledge(module)}
+        """
+        |> String.trim_trailing()
+      else
+        ""
+      end
   end
+
+  defp auto_module_context?, do: config(:auto_module_context)
 
   defp context_modules_knowledge(module) do
     context_modules =
@@ -233,11 +288,25 @@ defmodule Magma.Matter.Module do
     """
   end
 
+  @doc """
+  Returns the title for the description section of the module in artefact prompts.
+
+  ### Example
+
+      iex> Some.Module
+      ...> |> Magma.Matter.Module.new!()
+      ...> |> Magma.Matter.Module.prompt_concept_description_title()
+      "Description of the module `Some.Module`"
+
+  """
   @impl true
   def prompt_concept_description_title(%__MODULE__{name: name}) do
     "Description of the module `#{inspect(name)}`"
   end
 
+  @doc """
+  Returns a string with a Markdown section containing the source code of the module for artefact prompts.
+  """
   @impl true
   def prompt_matter_description(%__MODULE__{} = matter) do
     """
@@ -251,6 +320,14 @@ defmodule Magma.Matter.Module do
     """
   end
 
+  @doc """
+  Returns the source path of the `module`, if it exists.
+
+  The source path is the file path where the source code of the module is located.
+  """
+  @spec source_path(t() | module) :: Path.t() | nil
+  def source_path(module)
+
   def source_path(%__MODULE__{name: module}), do: source_path(module)
 
   def source_path(module) when maybe_module(module) do
@@ -258,6 +335,14 @@ defmodule Magma.Matter.Module do
       if source = module.__info__(:compile)[:source], do: to_string(source)
     end
   end
+
+  @doc """
+  Returns the source code of the module, if it exists.
+
+  The source code is read from the `source_path/1`.
+  """
+  @spec code(t() | module | Path.t()) :: binary | nil
+  def code(module)
 
   def code(%__MODULE__{name: module}), do: code(module)
 
@@ -274,6 +359,16 @@ defmodule Magma.Matter.Module do
   @ignore_pragma "# Magma pragma: ignore"
   @include_pragma "# Magma pragma: include"
 
+  @doc """
+  Determines whether the module should be ignored when generating documentation.
+
+  A module is ignored
+
+  - if it has a #{@ignore_pragma} comment at the beginning of its source code, or
+  - if it is marked as hidden (e.g. with `@moduledoc false`) and does not have a
+    #{@include_pragma} comment at the beginning of its source code.
+
+  """
   def ignore?(module) do
     if module_code = code(module) do
       module_code = String.trim_leading(module_code)

@@ -4,7 +4,7 @@ magma_artefact: Article
 magma_concept: "[[Magma User Guide - Transclusion Resolution]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-29 21:41:56
+created_at: 2023-12-04 11:50:46
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,21 +52,30 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-Your task is to help write a user guide called "Magma User Guide".
-
-The user guide should be written in English in the Markdown format.
+![[UserGuide.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
+
+![[Text.Section.config#Context knowledge|]]
+
+![[UserGuide.config#Context knowledge|]]
 
 #### Outline of the 'Magma User Guide' content ![[Magma User Guide ToC#Magma User Guide ToC|]]
 
 #### Magma artefact model ![[Magma artefact model#Description|]]
+
+#### Transclusion resolution ![[Magma-Transclusion-Resolution#Compact Description|]]
+
+![[Article.config#Context knowledge|]]
+
 ![[Magma User Guide - Transclusion Resolution#Context knowledge|]]
 
 

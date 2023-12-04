@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Matter.Text]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-06 16:03:20
+created_at: 2023-12-04 14:36:48
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,53 +52,28 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, a software developer on the "Magma" project with a lot of experience with Elixir and writing high-quality documentation.
+![[Magma.System.config#Persona|]]
 
-Your task is to write documentation for Elixir modules. The produced documentation is in English, clear, concise, comprehensible and follows the format in the following Markdown block (Markdown block not included):
-
-```markdown
-## Moduledoc
-
-The first line should be a very short one-sentence summary of the main purpose of the module. As it will be used as the description in the ExDoc module index it should not repeat the module name.
-
-Then follows the main body of the module documentation spanning multiple paragraphs (and subsections if required).
-
-
-## Function docs
-
-In this section the public functions of the module are documented in individual subsections. If a function is already documented perfectly, just write "Perfect!" in the respective section.
-
-### `function/1`
-
-The first line should be a very short one-sentence summary of the main purpose of this function.
-
-Then follows the main body of the function documentation.
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Matter` ![[Magma.Matter#Description|]]
-
-##### `Magma.Matter.Text.Section` ![[Magma.Matter.Text.Section#Description|]]
-
-##### `Magma.Matter.Text.Type` ![[Magma.Matter.Text.Type#Description|]]
+![[Magma.Matter.Text#Context knowledge|]]
 
 
 ## Request
 
-### ![[Magma.Matter.Text#ModuleDoc prompt task|]]
+![[Magma.Matter.Text#ModuleDoc prompt task|]]
 
 ### Description of the module `Magma.Matter.Text` ![[Magma.Matter.Text#Description|]]
 
@@ -111,8 +86,10 @@ defmodule Magma.Matter.Text do
   use Magma.Matter, fields: [:type]
 
   alias Magma.{Matter, Concept}
+  alias Magma.Matter.Text.Section
 
   @type t :: %__MODULE__{}
+  @type type :: module
 
   @impl true
   def artefacts, do: [Magma.Artefacts.TableOfContents]
@@ -147,12 +124,22 @@ defmodule Magma.Matter.Text do
   end
 
   @impl true
-  def prompt_concept_description_title(%__MODULE__{name: name, type: text_type}) do
-    "Description of the content to be covered by the '#{name}' #{text_type.label}"
+  def prompt_concept_description_title(%__MODULE__{name: name}) do
+    "Description of the content to be covered by '#{name}'"
   end
 
   @impl true
-  def custom_sections(%Concept{} = concept) do
+  def context_knowledge(%Concept{subject: %__MODULE__{type: type}} = concept) do
+    """
+    #{super(concept)}
+
+    #{Magma.Config.TextType.context_knowledge_transclusion(type)}
+    """
+    |> String.trim_trailing()
+  end
+
+  @impl true
+  def custom_concept_sections(%Concept{} = concept) do
     """
 
     # #{@sections_section_title}
@@ -166,31 +153,42 @@ defmodule Magma.Matter.Text do
       Enum.map_join(
         Matter.Text.Section.artefacts(),
         "\n",
-        &"- #{View.link_to_preview({concept, &1})}"
+        &"- #{concept |> &1.new!() |> View.link_to_preview()}"
       )
   end
 
-  @impl true
-  def new(attrs) when is_list(attrs) do
-    {:ok, struct(__MODULE__, attrs)}
+  @spec new(binary, keyword) :: {:ok, t()} | {:error, any}
+  def new(name, attrs \\ []) do
+    # TODO: validate type
+    {:ok,
+     struct(
+       __MODULE__,
+       attrs
+       |> Keyword.put(:name, name)
+       |> Keyword.put_new(:type, Magma.Matter.Texts.Generic)
+     )}
   end
 
-  def new(type, name) do
-    new(name: name, type: type)
-  end
-
-  def new!(attrs) do
-    case new(attrs) do
+  def new!(name, attrs \\ []) do
+    case new(name, attrs) do
       {:ok, matter} -> matter
       {:error, error} -> raise error
     end
   end
 
-  def new!(type, name) do
-    case new(type, name) do
-      {:ok, matter} -> matter
-      {:error, error} -> raise error
-    end
+  @doc false
+  def request_prompt_task_template_bindings(%Concept{subject: %__MODULE__{} = text}) do
+    [
+      text: text,
+      section: nil
+    ]
+  end
+
+  def request_prompt_task_template_bindings(%Concept{subject: %Section{} = section}) do
+    [
+      text: section.main_text,
+      section: section
+    ]
   end
 
   @impl true
@@ -202,7 +200,7 @@ defmodule Magma.Matter.Text do
         {:error, "magma_matter_text_type missing in #{document_name}"}
 
       text_type = type(magma_matter_text_type) ->
-        with {:ok, matter} <- new(text_type, document_name) do
+        with {:ok, matter} <- new(document_name, type: text_type) do
           {:ok, matter, remaining}
         end
 
@@ -227,6 +225,9 @@ defmodule Magma.Matter.Text do
       iex> Magma.Matter.Text.type_name(Magma.Matter.Texts.UserGuide)
       "UserGuide"
 
+      iex> Magma.Matter.Text.type_name(Magma.Matter.Texts.Generic)
+      "Generic"
+
       iex> Magma.Matter.Text.type_name(Magma.Vault)
       ** (RuntimeError) Invalid Magma.Matter.Text type: Magma.Vault
 
@@ -234,8 +235,8 @@ defmodule Magma.Matter.Text do
       ** (RuntimeError) Invalid Magma.Matter.Text type: NonExisting
 
   """
-  def type_name(type) do
-    if type?(type) do
+  def type_name(type, validate \\ true) do
+    if not validate or type?(type) do
       case Module.split(type) do
         ["Magma", "Matter", "Texts" | name_parts] -> Enum.join(name_parts, ".")
         _ -> raise "Invalid Magma.Matter.Text type: #{inspect(type)}"
@@ -253,6 +254,9 @@ defmodule Magma.Matter.Text do
       iex> Magma.Matter.Text.type("UserGuide")
       Magma.Matter.Texts.UserGuide
 
+      iex> Magma.Matter.Text.type("Generic")
+      Magma.Matter.Texts.Generic
+
       iex> Magma.Matter.Text.type("Vault")
       nil
 
@@ -260,16 +264,16 @@ defmodule Magma.Matter.Text do
       nil
 
   """
-  def type(string) when is_binary(string) do
+  def type(string, validate \\ true) when is_binary(string) do
     module = Module.concat(Magma.Matter.Texts, string)
 
-    if type?(module) do
+    if not validate or type?(module) do
       module
     end
   end
 
   def type?(module) do
-    Code.ensure_loaded?(module) and function_exported?(module, :system_prompt_task, 1)
+    module in Magma.Config.text_types()
   end
 end
 

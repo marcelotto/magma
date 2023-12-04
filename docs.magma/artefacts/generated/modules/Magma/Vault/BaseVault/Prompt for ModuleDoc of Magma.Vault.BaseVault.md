@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Vault.BaseVault]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-18 04:04:14
+created_at: 2023-12-04 14:36:51
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,59 +52,23 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- Configuration options (if there are any)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
-#### Peripherally relevant modules
+![[Module.config#Context knowledge|]]
 
-##### `Magma` ![[Magma#Description|]]
+![[ModuleDoc.config#Context knowledge|]]
 
-##### `Magma.Vault` ![[Magma.Vault#Description|]]
-
-#### `Magma.Vault` ![[Magma.Vault#Description|]]
-
-#### ![[Magma vault creation#Vault initialization]]
+![[Magma.Vault.BaseVault#Context knowledge|]]
 
 
 ## Request
@@ -129,9 +93,19 @@ defmodule Magma.Vault.BaseVault do
   @doc """
   Returns the path to a base vault.
 
-  Either the name of one of predefined base vault in the `priv/base_vault`
+  Either the atom name of one of the predefined base vault in the `priv/base_vault`
   directory of Magma can be used or the path to a custom local base vault.
   If no base vault is given the default base vault is used.
+
+      # Get path for the default base vault
+      Magma.Vault.BaseVault.path()
+
+      # Get path for a predefined base vault
+      Magma.Vault.BaseVault.path(:custom_theme)
+
+      # Get path for a custom base vault
+      Magma.Vault.BaseVault.path("/path/to/custom/base/vault")
+
   """
   def path(path_or_theme \\ nil)
   def path(nil), do: path(@default_theme)

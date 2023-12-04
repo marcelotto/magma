@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-11-03 04:34:45
+created_at: 2023-12-04 14:36:50
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,51 +52,21 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.System.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-```markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-```
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.System.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
 
+![[Module.config#Context knowledge|]]
+
+![[ModuleDoc.config#Context knowledge|]]
 
 ![[Magma#Context knowledge|]]
 
@@ -113,6 +83,22 @@ This is the code of the module to be documented. Ignore commented out code.
 
 ```elixir
 defmodule Magma do
+  @moduledoc """
+  Magma is an environment for writing and executing complex prompts.
+
+  It is primarily designed to support developers in documenting their projects.
+  It provides a system of documents for predefined workflows, to generate
+  various documentation artefacts.
+
+  Read the [User Guide](Magma User Guide - Introduction to Magma (article section).md) to learn more.
+  """
+
+  @version_file "VERSION"
+  @version @version_file |> File.read!() |> String.trim() |> Version.parse!()
+  @external_resource @version_file
+
+  def version, do: @version
+
   defmacro __using__(_opts) do
     quote do
       import unquote(__MODULE__), only: [defmoduledoc: 0]
@@ -125,6 +111,23 @@ defmodule Magma do
   Adds the contents of the final version of the `Magma.Artefacts.ModuleDoc` as the `@moduledoc`.
 
   Usually this done via `use Magma`.
+
+  > #### warning {: .warning}
+  >
+  > If you decide to include your moduledocs with this macro, be aware that if
+  > you're writing a library and your users should be able to use these docs on
+  > their machines, e.g. with the `h` helper in IEx you'll have to include the
+  > Magma documents with the final moduledocs in your package like this:
+  >
+  > ```elixir
+  > defp package do
+  >   [
+  >     # ...
+  >     files:  ~w[lib priv mix.exs docs.magma/artefacts/final/modules/**/*.md]
+  >   ]
+  > end
+  > ```
+
   """
   defmacro defmoduledoc do
     quote do
