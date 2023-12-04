@@ -167,16 +167,19 @@ defmodule Magma.Matter.Module do
 
   @impl true
   def context_knowledge(%Concept{subject: %__MODULE__{name: module}} = concept) do
-    if auto_module_context?() do
-      """
-      #{super(concept)}
+    super(concept) <>
+      if auto_module_context?() do
+        """
 
-      #### Peripherally relevant modules
 
-      #{context_modules_knowledge(module)}
-      """
-      |> String.trim_trailing()
-    end
+        #### Peripherally relevant modules
+
+        #{context_modules_knowledge(module)}
+        """
+        |> String.trim_trailing()
+      else
+        ""
+      end
   end
 
   defp auto_module_context?, do: config(:auto_module_context)
