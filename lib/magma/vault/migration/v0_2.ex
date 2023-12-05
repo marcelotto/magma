@@ -1,4 +1,6 @@
 defmodule Magma.Vault.Migration.V0_2 do
+  @moduledoc false
+
   @target_version "0.2.0"
 
   alias Magma.Vault

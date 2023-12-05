@@ -84,7 +84,9 @@ defmodule Magma.MixProject do
       groups_for_modules: [
         Vault: [
           Magma.Vault,
-          Magma.Vault.BaseVault
+          Magma.Vault.BaseVault,
+          Magma.Vault.Version,
+          Magma.Vault.Migration
         ],
         Documents: [
           Magma.Document,

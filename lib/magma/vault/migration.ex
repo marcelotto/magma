@@ -1,9 +1,23 @@
 defmodule Magma.Vault.Migration do
+  @moduledoc """
+  Migration of Magma vaults to be compatible with newer versions.
+
+  This module implements the general migration logic for `Magma.Vault`s
+  created with older versions of Magma, so they can be updated to work with
+  a newer version. It provides functionality to check the vault's version
+  against the required version and apply any necessary migrations, implemented
+  dedicated modules for specific versions. This process is crucial for
+  maintaining consistency and functionality as the Magma project evolves.
+  """
+
   alias Magma.Vault
 
   @magma_version_requirement "~> #{%Version{Magma.version() | patch: 0, pre: []}}"
   def magma_version_requirement, do: @magma_version_requirement
 
+  @doc """
+  Applies all necessary migrations to update the vault for a newer version of Magma.
+  """
   def migrate(), do: Vault.Version.load() |> migrate()
 
   defp migrate(version_string) when is_binary(version_string) do
