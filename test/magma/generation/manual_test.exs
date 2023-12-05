@@ -1,5 +1,5 @@
 defmodule Magma.Generation.ManualTest do
-  use Magma.TestCase
+  use Magma.Vault.Case, async: false
 
   doctest Magma.Generation.Manual
 
