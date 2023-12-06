@@ -1,4 +1,8 @@
 defmodule Magma.Config.TextType do
+  @moduledoc """
+  `Magma.Config.Document` for `Magma.Matter.Text` types.
+  """
+
   use Magma.Config.Document, fields: [:text_type, :label]
 
   alias Magma.View

@@ -1,4 +1,11 @@
 defmodule Magma.Config do
+  @moduledoc """
+  Cache for the vault-based configuration.
+
+  This singleton GenServer provides access to the cached
+  `Magma.Config.Document`s in the `Magma.Vault`.
+  """
+
   use GenServer
 
   defstruct [:system, :project, :matter, :artefacts, :text_types]
@@ -8,21 +15,56 @@ defmodule Magma.Config do
   alias Magma.Vault
 
   @dir "magma.config"
+
+  @doc """
+  Returns the path with `Magma.Config.Document`s in the vault.
+  """
   def path, do: Vault.path(@dir)
+
+  @doc """
+  Constructs a complete path to a config document by joining the specified `segments` to the `path/0`.
+  """
   def path(segments), do: Path.join([path() | List.wrap(segments)])
 
   @matter_path "matter"
+
+  @doc """
+  Returns the path with `Magma.Config.Matter` documents in the vault.
+  """
   def matter_path, do: path(@matter_path)
+
+  @doc """
+  Constructs a complete path to a matter config document by joining the specified `segments` to the `matter_path/0`.
+  """
   def matter_path(segments), do: Path.join([matter_path() | List.wrap(segments)])
 
   @artefacts_path "artefacts"
+
+  @doc """
+  Returns the path with `Magma.Config.Artefact` documents in the vault.
+  """
   def artefacts_path, do: path(@artefacts_path)
+
+  @doc """
+  Constructs a complete path to a artefact config document by joining the specified `segments` to the `artefacts_path/0`.
+  """
   def artefacts_path(segments), do: Path.join([artefacts_path() | List.wrap(segments)])
 
   @text_types_path "text_types"
+
+  @doc """
+  Returns the path with `Magma.Config.TextType` documents in the vault.
+  """
   def text_types_path, do: path(@text_types_path)
+
+  @doc """
+  Constructs a complete path to a text type config document by joining the specified `segments` to the `text_types_path/0`.
+  """
   def text_types_path(segments), do: Path.join([text_types_path() | List.wrap(segments)])
 
+  @doc """
+  Returns the path with templates for the config document for a new vault.
+  """
   def template_path, do: :code.priv_dir(:magma) |> Path.join(@dir)
 
   @spec start_link(any()) :: GenServer.on_start()
@@ -30,30 +72,51 @@ defmodule Magma.Config do
     GenServer.start_link(__MODULE__, arg, name: __MODULE__)
   end
 
+  @doc """
+  Resets the cache of all documents.
+  """
   def reset do
     GenServer.cast(__MODULE__, :reset)
   end
 
+  @doc """
+  Returns the `Magma.Config.System` document or a property of it.
+  """
   def system(key \\ nil) do
     GenServer.call(__MODULE__, {:cached, :system, key})
   end
 
+  @doc """
+  Returns the `Magma.Project` document or a property of it.
+  """
   def project(key \\ nil) do
     GenServer.call(__MODULE__, {:cached, :project, key})
   end
 
+  @doc """
+  Returns a `Magma.Config.Matter` document or a property of it.
+  """
   def matter(type, key \\ nil) do
     GenServer.call(__MODULE__, {:cached, :matter, type, key})
   end
 
+  @doc """
+  Returns a `Magma.Config.Artefact` document or a property of it.
+  """
   def artefact(type, key \\ nil) do
     GenServer.call(__MODULE__, {:cached, :artefacts, type, key})
   end
 
+  @doc """
+  Returns a `Magma.Config.TextType` document or a property of it.
+  """
   def text_type(type, key \\ nil) do
     GenServer.call(__MODULE__, {:cached, :text_types, type, key})
   end
 
+  @doc """
+  Returns a list of all text types.
+  """
   def text_types do
     GenServer.call(__MODULE__, :text_types)
   end

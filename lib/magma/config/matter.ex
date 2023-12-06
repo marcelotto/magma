@@ -1,4 +1,8 @@
 defmodule Magma.Config.Matter do
+  @moduledoc """
+  `Magma.Config.Document` for `Magma.Matter` types.
+  """
+
   use Magma.Config.Document, fields: [:matter_type]
 
   alias Magma.View

@@ -1,4 +1,8 @@
 defmodule Magma.Config.System do
+  @moduledoc """
+  `Magma.Config.Document` for the general Magma system configuration.
+  """
+
   use Magma.Config.Document
 
   @type t :: %__MODULE__{}

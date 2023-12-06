@@ -1,4 +1,8 @@
 defmodule Magma.Config.Artefact do
+  @moduledoc """
+  `Magma.Config.Document` for `Magma.Artefact` types.
+  """
+
   use Magma.Config.Document, fields: [:artefact_type]
 
   alias Magma.{DocumentStruct, View}
