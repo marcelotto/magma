@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Mix.Tasks.Magma.Prompt.Gen]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-12-04 14:36:43
+created_at: 2023-12-06 16:35:47
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,21 +52,21 @@ color default
 
 ## System prompt
 
-![[Magma.System.config#Persona|]]
+![[Magma.system.config#Persona|]]
 
-![[ModuleDoc.config#System prompt|]]
+![[ModuleDoc.artefact.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
-![[Magma.System.config#Context knowledge|]]
+![[Magma.system.config#Context knowledge|]]
 
 #### Description of the Magma project ![[Project#Description|]]
 
-![[Module.config#Context knowledge|]]
+![[Module.matter.config#Context knowledge|]]
 
-![[ModuleDoc.config#Context knowledge|]]
+![[ModuleDoc.artefact.config#Context knowledge|]]
 
 ![[Mix.Tasks.Magma.Prompt.Gen#Context knowledge|]]
 

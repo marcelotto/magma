@@ -4,7 +4,7 @@ magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Artefacts.ModuleDoc]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-12-04 14:36:45
+created_at: 2023-12-06 16:35:49
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,21 +52,21 @@ color default
 
 ## System prompt
 
-![[Magma.System.config#Persona|]]
+![[Magma.system.config#Persona|]]
 
-![[ModuleDoc.config#System prompt|]]
+![[ModuleDoc.artefact.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
-![[Magma.System.config#Context knowledge|]]
+![[Magma.system.config#Context knowledge|]]
 
 #### Description of the Magma project ![[Project#Description|]]
 
-![[Module.config#Context knowledge|]]
+![[Module.matter.config#Context knowledge|]]
 
-![[ModuleDoc.config#Context knowledge|]]
+![[ModuleDoc.artefact.config#Context knowledge|]]
 
 ![[Magma.Artefacts.ModuleDoc#Context knowledge|]]
 
@@ -90,7 +90,7 @@ defmodule Magma.Artefacts.ModuleDoc do
 
   import Magma.Utils.Guards
 
-  # Remember to update the ModuleDoc.config.md file when changing this!
+  # Remember to update the ModuleDoc.artefact.config.md file when changing this!
   @prompt_result_section_title "Moduledoc"
   def prompt_result_section_title, do: @prompt_result_section_title
 

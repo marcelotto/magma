@@ -4,7 +4,7 @@ magma_artefact: Article
 magma_concept: "[[Magma User Guide - Creating and Understanding Magma Artefacts]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-12-04 11:50:43
+created_at: 2023-12-06 16:35:37
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,21 +52,21 @@ color default
 
 ## System prompt
 
-![[Magma.System.config#Persona|]]
+![[Magma.system.config#Persona|]]
 
-![[UserGuide.config#System prompt|]]
+![[UserGuide.text_type.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
-![[Magma.System.config#Context knowledge|]]
+![[Magma.system.config#Context knowledge|]]
 
 #### Description of the Magma project ![[Project#Description|]]
 
-![[Text.Section.config#Context knowledge|]]
+![[Text.Section.matter.config#Context knowledge|]]
 
-![[UserGuide.config#Context knowledge|]]
+![[UserGuide.text_type.config#Context knowledge|]]
 
 #### Outline of the 'Magma User Guide' content ![[Magma User Guide ToC#Magma User Guide ToC|]]
 
@@ -74,7 +74,7 @@ The following sections contain background knowledge you need to be aware of, but
 
 #### Transclusion resolution ![[Magma-Transclusion-Resolution#Compact Description|]]
 
-![[Article.config#Context knowledge|]]
+![[Article.artefact.config#Context knowledge|]]
 
 ![[Magma User Guide - Creating and Understanding Magma Artefacts#Context knowledge|]]
 

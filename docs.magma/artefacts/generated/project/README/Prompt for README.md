@@ -4,7 +4,7 @@ magma_artefact: Readme
 magma_concept: "[[Project]]"
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-12-04 11:50:39
+created_at: 2023-12-06 16:35:33
 tags: [magma-vault]
 aliases: []
 ---
@@ -52,19 +52,19 @@ color default
 
 ## System prompt
 
-![[Magma.System.config#Persona|]]
+![[Magma.system.config#Persona|]]
 
-![[Readme.config#System prompt|]]
+![[Readme.artefact.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
-![[Magma.System.config#Context knowledge|]]
+![[Magma.system.config#Context knowledge|]]
 
-![[Project.config#Context knowledge|]]
+![[Project.matter.config#Context knowledge|]]
 
-![[Readme.config#Context knowledge|]]
+![[Readme.artefact.config#Context knowledge|]]
 
 ![[Project#Context knowledge|]]
 
