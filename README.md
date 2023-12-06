@@ -1,6 +1,5 @@
 [![Hex.pm](https://img.shields.io/hexpm/v/magma.svg?style=flat-square)](https://hex.pm/packages/magma)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/magma/)
-[![Total Download](https://img.shields.io/hexpm/dt/magma.svg)](https://hex.pm/packages/magma)
 [![License](https://img.shields.io/hexpm/l/magma.svg)](https://github.com/marcelotto/magma/blob/main/LICENSE.md)
 
 [![ExUnit Tests](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml)
@@ -37,7 +36,7 @@
 
 <img src="docs.magma/attachments/screenshot.png" align="center" />
 
-Magma is an environment for writing and executing complex prompts. It is designed primarily to support developers, especially those using Elixir, in collecting project knowledge, generating documentation, and solving problems through LLM prompts. However, it can also be useful outside this context for generating longer texts.
+Magma is an environment for writing and executing complex prompts. It is designed primarily to support developers, especially those using Elixir, in collecting project knowledge, generating documentation, and solving problems through LLM prompts. However, it can also be useful outside this context, e.g. for generating longer texts.
 
 _Read on in the [User Guide](https://hexdocs.pm/magma/magma-user-guide-introduction-to-magma-article-section.html)_
 
