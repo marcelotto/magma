@@ -1,0 +1,207 @@
+{
+  "recentFiles": [
+    {
+      "basename": "Generated ModuleDoc of Magma.Config.Matter (2023-12-06T21:26:04)",
+      "path": "artefacts/generated/modules/Magma/Config/Matter/__prompt_results__/Generated ModuleDoc of Magma.Config.Matter (2023-12-06T21:26:04).md"
+    },
+    {
+      "basename": "Prompt for ModuleDoc of Magma.Config.Matter",
+      "path": "artefacts/generated/modules/Magma/Config/Matter/Prompt for ModuleDoc of Magma.Config.Matter.md"
+    },
+    {
+      "basename": "Magma.Config.Matter",
+      "path": "concepts/modules/Magma/Config/Magma.Config.Matter.md"
+    },
+    {
+      "basename": "Magma.Config.Document",
+      "path": "concepts/modules/Magma/Config/Magma.Config.Document.md"
+    },
+    {
+      "basename": "Prompt for ModuleDoc of Magma.Config.Document",
+      "path": "artefacts/generated/modules/Magma/Config/Document/Prompt for ModuleDoc of Magma.Config.Document.md"
+    },
+    {
+      "basename": "ModuleDoc of Magma.Config.Document",
+      "path": "artefacts/final/modules/Magma/Config/Document/ModuleDoc of Magma.Config.Document.md"
+    },
+    {
+      "basename": "Generated ModuleDoc of Magma.Config.Document (2023-12-06T21:12:16)",
+      "path": "artefacts/generated/modules/Magma/Config/Document/__prompt_results__/Generated ModuleDoc of Magma.Config.Document (2023-12-06T21:12:16).md"
+    },
+    {
+      "basename": "Magma User Guide - Installation and setup (article section)",
+      "path": "artefacts/final/texts/Magma User Guide/article/Magma User Guide - Installation and setup (article section).md"
+    },
+    {
+      "basename": "Magma.Config",
+      "path": "concepts/modules/Magma/Magma.Config.md"
+    },
+    {
+      "basename": "Prompt for ModuleDoc of Magma.Config",
+      "path": "artefacts/generated/modules/Magma/Config/Prompt for ModuleDoc of Magma.Config.md"
+    },
+    {
+      "basename": "Generated ModuleDoc of Magma.Config (2023-12-06T19:48:26)",
+      "path": "artefacts/generated/modules/Magma/Config/__prompt_results__/Generated ModuleDoc of Magma.Config (2023-12-06T19:48:26).md"
+    },
+    {
+      "basename": "Magma.Vault.Migration",
+      "path": "concepts/modules/Magma/Vault/Magma.Vault.Migration.md"
+    },
+    {
+      "basename": "README",
+      "path": "artefacts/final/project/README/README.md"
+    },
+    {
+      "basename": "Magma User Guide - Custom Prompts and Prompt Execution (article section)",
+      "path": "artefacts/final/texts/Magma User Guide/article/Magma User Guide - Custom Prompts and Prompt Execution (article section).md"
+    },
+    {
+      "basename": "Magma User Guide - Creating and Understanding Magma Artefacts (article section)",
+      "path": "artefacts/final/texts/Magma User Guide/article/Magma User Guide - Creating and Understanding Magma Artefacts (article section).md"
+    },
+    {
+      "basename": "Magma User Guide - Generating Complex Artefacts (article section)",
+      "path": "artefacts/final/texts/Magma User Guide/article/Magma User Guide - Generating Complex Artefacts (article section).md"
+    },
+    {
+      "basename": "Magma.system.config",
+      "path": "magma.config/Magma.system.config.md"
+    },
+    {
+      "basename": "Prompt for Magma User Guide - Introduction to Magma (article section)",
+      "path": "artefacts/generated/texts/Magma User Guide/article/Prompt for Magma User Guide - Introduction to Magma (article section).md"
+    },
+    {
+      "basename": "Magma.System.config",
+      "path": "magma.config/Magma.System.config.md"
+    },
+    {
+      "basename": "UserGuide.config",
+      "path": "magma.config/text_types/UserGuide.config.md"
+    },
+    {
+      "basename": "Prompt for ModuleDoc of Magma.Generation",
+      "path": "artefacts/generated/modules/Magma/Generation/Prompt for ModuleDoc of Magma.Generation.md"
+    },
+    {
+      "basename": "Module.config",
+      "path": "magma.config/matter/Module.config.md"
+    },
+    {
+      "basename": "Prompt for README",
+      "path": "artefacts/generated/project/README/Prompt for README.md"
+    },
+    {
+      "basename": "Magma User Guide - Current Limitations and Roadmap (article section)",
+      "path": "artefacts/final/texts/Magma User Guide/article/Magma User Guide - Current Limitations and Roadmap (article section).md"
+    },
+    {
+      "basename": "Buffer",
+      "path": "Buffer.md"
+    },
+    {
+      "basename": "Prompt for discussion issue on Generating Module Tests",
+      "path": "custom_prompts/Prompt for discussion issue on Generating Module Tests.md"
+    },
+    {
+      "basename": "Prompt for initial release announcements",
+      "path": "custom_prompts/Prompt for initial release announcements.md"
+    },
+    {
+      "basename": "Prompt for Magma.Vault.create function",
+      "path": "custom_prompts/Prompt for Magma.Vault.create function.md"
+    },
+    {
+      "basename": "Prompt for slogan",
+      "path": "custom_prompts/Prompt for slogan.md"
+    },
+    {
+      "basename": "Prompt GPT4-preview test",
+      "path": "custom_prompts/Prompt GPT4-preview test.md"
+    },
+    {
+      "basename": "Readme.config",
+      "path": "magma.config/artefacts/Readme.config.md"
+    },
+    {
+      "basename": "Magma User Guide - Transclusion Resolution (article section)",
+      "path": "artefacts/final/texts/Magma User Guide/article/Magma User Guide - Transclusion Resolution (article section).md"
+    },
+    {
+      "basename": "Magma User Guide - Transclusion Resolution",
+      "path": "concepts/texts/Magma User Guide/Magma User Guide - Transclusion Resolution.md"
+    },
+    {
+      "basename": "Project",
+      "path": "concepts/Project.md"
+    },
+    {
+      "basename": "Magma.Vault.Version",
+      "path": "concepts/modules/Magma/Vault/Magma.Vault.Version.md"
+    },
+    {
+      "basename": "Prompt for ModuleDoc of Magma.Vault.Version",
+      "path": "artefacts/generated/modules/Magma/Vault/Version/Prompt for ModuleDoc of Magma.Vault.Version.md"
+    },
+    {
+      "basename": "ModuleDoc of Magma.Vault.Version",
+      "path": "artefacts/final/modules/Magma/Vault/Version/ModuleDoc of Magma.Vault.Version.md"
+    },
+    {
+      "basename": "Generated ModuleDoc of Magma.Vault.Version (2023-12-04T14:51:41)",
+      "path": "artefacts/generated/modules/Magma/Vault/Version/__prompt_results__/Generated ModuleDoc of Magma.Vault.Version (2023-12-04T14:51:41).md"
+    },
+    {
+      "basename": "Prompt for ModuleDoc of Magma.Vault.Migration",
+      "path": "artefacts/generated/modules/Magma/Vault/Migration/Prompt for ModuleDoc of Magma.Vault.Migration.md"
+    },
+    {
+      "basename": "Generated ModuleDoc of Magma.Vault.Migration (2023-12-04T13:57:03)",
+      "path": "artefacts/generated/modules/Magma/Vault/Migration/__prompt_results__/Generated ModuleDoc of Magma.Vault.Migration (2023-12-04T13:57:03).md"
+    },
+    {
+      "basename": "ModuleDoc of Magma.Vault.Migration",
+      "path": "artefacts/final/modules/Magma/Vault/Migration/ModuleDoc of Magma.Vault.Migration.md"
+    },
+    {
+      "basename": "ModuleDoc of Mix.Tasks.Magma.Prompt.Update",
+      "path": "artefacts/final/modules/Mix/Tasks/Magma/Prompt/Update/ModuleDoc of Mix.Tasks.Magma.Prompt.Update.md"
+    },
+    {
+      "basename": "ModuleDoc of Mix.Tasks.Magma.Text.New",
+      "path": "artefacts/final/modules/Mix/Tasks/Magma/Text/New/ModuleDoc of Mix.Tasks.Magma.Text.New.md"
+    },
+    {
+      "basename": "Prompt GPT4-preview test (Prompt result 2023-11-12T22:21:13)",
+      "path": "custom_prompts/__prompt_results__/Prompt GPT4-preview test (Prompt result 2023-11-12T22:21:13).md"
+    },
+    {
+      "basename": "custom_prompt",
+      "path": "templates/custom_prompt.md"
+    },
+    {
+      "basename": "Generated ModuleDoc of Mix.Tasks.Magma.Text.Type.New (2023-11-25T22:42:59)",
+      "path": "artefacts/generated/modules/Mix/Tasks/Magma/Text/Type/New/__prompt_results__/Generated ModuleDoc of Mix.Tasks.Magma.Text.Type.New (2023-11-25T22:42:59).md"
+    },
+    {
+      "basename": "Mix.Tasks.Magma.Text.New",
+      "path": "concepts/modules/Mix/Tasks/Magma/Text/Mix.Tasks.Magma.Text.New.md"
+    },
+    {
+      "basename": "Generated ModuleDoc of Mix.Tasks.Magma.Text.Type.New (2023-11-25T22:41:35)",
+      "path": "artefacts/generated/modules/Mix/Tasks/Magma/Text/Type/New/__prompt_results__/Generated ModuleDoc of Mix.Tasks.Magma.Text.Type.New (2023-11-25T22:41:35).md"
+    },
+    {
+      "basename": "Prompt for ModuleDoc of Magma",
+      "path": "artefacts/generated/modules/Magma/Prompt for ModuleDoc of Magma.md"
+    },
+    {
+      "basename": "Prompt for Artefact model diagrams",
+      "path": "custom_prompts/Prompt for Artefact model diagrams.md"
+    }
+  ],
+  "omittedPaths": [],
+  "maxLength": null,
+  "openType": "tab"
+}

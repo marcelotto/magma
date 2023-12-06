@@ -36,7 +36,7 @@
   "devMode": false,
   "templateFolderPath": "",
   "announceUpdates": false,
-  "version": "1.3.0",
+  "version": "1.6.1",
   "disableOnlineFeatures": true,
   "ai": {
     "OpenAIApiKey": "",
