@@ -23,5 +23,14 @@ if [ -f ".envrc" ]; then
   source .envrc
 fi
 
+# The following addresses an issue with the Obsidian shell commands plugin, where
+# the plugin does not automatically inherit the system's default LC_CTYPE setting.
+# LC_CTYPE determines the character encoding used by the shell, which is crucial for
+# correctly handling and displaying characters esp. when using the "Copy to clipboard"
+# button.
+if [ -z "$LC_CTYPE" ]; then
+  export LC_CTYPE="UTF-8"
+fi
+
 # Execute the Mix task
 mix "$@"

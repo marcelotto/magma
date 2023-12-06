@@ -23,7 +23,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - `Magma.Artefact` types are structs now, in order to support use cases
   where multiple artefact instances of the same type for one concept should
   be supported
-  
+
+### Fixed
+
+- encoding issues with the "Copy to clipboard" button when the prompt contained 
+  special characters 
 
 [Compare v0.1.1...HEAD](https://github.com/marcelotto/magma/compare/v0.1.1...HEAD)
 
