@@ -18,7 +18,8 @@ defmodule Magma.Config.Artefact do
   def build_path(%__MODULE__{artefact_type: artefact_type}),
     do: {:ok, Magma.Config.artefacts_path("#{name_by_type(artefact_type)}.md")}
 
-  def name_by_type(artefact_type), do: "#{Magma.Artefact.type_name(artefact_type)}.config"
+  def name_by_type(artefact_type),
+    do: "#{Magma.Artefact.type_name(artefact_type)}.artefact.config"
 
   def render_request_prompt(%__MODULE__{} = artefact_config, bindings) do
     artefact_config

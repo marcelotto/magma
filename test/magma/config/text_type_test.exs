@@ -6,12 +6,12 @@ defmodule Magma.Config.TextTypeTest do
   test "load/1" do
     assert {:ok,
             %Magma.Config.TextType{
-              name: "Generic.config",
+              name: "Generic.text_type.config",
               tags: ["magma-config"],
               custom_metadata: %{
                 text_type_label: "Text"
               }
-            } = config} = Magma.Config.TextType.load("Generic.config")
+            } = config} = Magma.Config.TextType.load("Generic.text_type.config")
 
     assert config.content ==
              """
@@ -25,13 +25,13 @@ defmodule Magma.Config.TextTypeTest do
              ## Context knowledge
              """
 
-    assert config.path == Vault.path("magma.config/text_types/Generic.config.md")
+    assert config.path == Vault.path("magma.config/text_types/Generic.text_type.config.md")
   end
 
   test "create/1" do
     assert {:ok,
             %Magma.Config.TextType{
-              name: "Foo.config",
+              name: "Foo.text_type.config",
               text_type: Magma.Matter.Texts.Foo,
               tags: ["magma-config"],
               custom_metadata: %{

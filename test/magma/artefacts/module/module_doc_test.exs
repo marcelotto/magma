@@ -81,7 +81,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              #{Magma.Config.System.persona_transclusion()}
 
-             ![[ModuleDoc.config#System prompt|]]
+             ![[ModuleDoc.artefact.config#System prompt|]]
 
              ### Context knowledge
 
@@ -91,7 +91,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              #### Description of the Some project ![[Project#Description|]]
 
-             ![[Module.config#Context knowledge|]]
+             ![[Module.matter.config#Context knowledge|]]
 
              #### Peripherally relevant modules
 
@@ -99,7 +99,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              ##### `Nested.Example.Sub` ![[Nested.Example.Sub#Description|]]
 
-             ![[ModuleDoc.config#Context knowledge|]]
+             ![[ModuleDoc.artefact.config#Context knowledge|]]
 
              ![[Nested.Example#Context knowledge|]]
 
@@ -162,7 +162,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              #{Magma.Config.System.persona_transclusion()}
 
-             ![[ModuleDoc.config#System prompt|]]
+             ![[ModuleDoc.artefact.config#System prompt|]]
 
              ### Context knowledge
 
@@ -172,13 +172,13 @@ defmodule Magma.Artefacts.ModuleDocTest do
 
              #### Description of the Some project ![[Project#Description|]]
 
-             ![[Module.config#Context knowledge|]]
+             ![[Module.matter.config#Context knowledge|]]
 
              #### Peripherally relevant modules
 
              ##### `Some` ![[Some#Description|]]
 
-             ![[ModuleDoc.config#Context knowledge|]]
+             ![[ModuleDoc.artefact.config#Context knowledge|]]
 
              ![[Some.DocumentWithoutSpecialSections#Context knowledge|]]
 

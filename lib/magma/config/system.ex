@@ -5,7 +5,7 @@ defmodule Magma.Config.System do
 
   alias Magma.{Generation, View}
 
-  @name "Magma.System.config"
+  @name "Magma.system.config"
   def name, do: @name
 
   def path, do: Magma.Config.path("#{@name}.md")

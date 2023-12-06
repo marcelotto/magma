@@ -14,7 +14,8 @@ defmodule Magma.Config.TextType do
   def build_path(%__MODULE__{text_type: text_type}),
     do: {:ok, Magma.Config.text_types_path("#{name_by_type(text_type)}.md")}
 
-  def name_by_type(text_type), do: "#{Magma.Matter.Text.type_name(text_type, false)}.config"
+  def name_by_type(text_type),
+    do: "#{Magma.Matter.Text.type_name(text_type, false)}.text_type.config"
 
   def new(text_type_name, attrs \\ []) when is_binary(text_type_name) do
     {label, attrs} = Keyword.pop(attrs, :label)
@@ -93,7 +94,7 @@ defmodule Magma.Config.TextType do
     end
   end
 
-  defp type_name(%__MODULE__{name: name}), do: Path.basename(name, ".config")
+  defp type_name(%__MODULE__{name: name}), do: Path.basename(name, ".text_type.config")
 
   def context_knowledge_transclusion(text_type) do
     text_type

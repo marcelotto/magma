@@ -43,7 +43,7 @@ defmodule Magma.Artefacts.TableOfContentsTest do
 
              #{Magma.Config.System.persona_transclusion()}
 
-             ![[UserGuide.config#System prompt|]]
+             ![[UserGuide.text_type.config#System prompt|]]
 
              ### Context knowledge
 
@@ -53,11 +53,11 @@ defmodule Magma.Artefacts.TableOfContentsTest do
 
              #### Description of the Some project ![[Project#Description|]]
 
-             ![[Text.config#Context knowledge|]]
+             ![[Text.matter.config#Context knowledge|]]
 
-             ![[UserGuide.config#Context knowledge|]]
+             ![[UserGuide.text_type.config#Context knowledge|]]
 
-             ![[TableOfContents.config#Context knowledge|]]
+             ![[TableOfContents.artefact.config#Context knowledge|]]
 
              ![[Some User Guide#Context knowledge|]]
 

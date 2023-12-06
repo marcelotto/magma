@@ -11,7 +11,7 @@ defmodule Magma.Config.Matter do
   def build_path(%__MODULE__{matter_type: matter_type}),
     do: {:ok, Magma.Config.matter_path("#{name_by_type(matter_type)}.md")}
 
-  def name_by_type(matter_type), do: "#{Magma.Matter.type_name(matter_type)}.config"
+  def name_by_type(matter_type), do: "#{Magma.Matter.type_name(matter_type)}.matter.config"
 
   def context_knowledge_transclusion(matter_type) do
     matter_type

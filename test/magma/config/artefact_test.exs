@@ -6,9 +6,9 @@ defmodule Magma.Config.ArtefactTest do
   test "load/1" do
     assert {:ok,
             %Magma.Config.Artefact{
-              name: "ModuleDoc.config",
+              name: "ModuleDoc.artefact.config",
               tags: ["magma-config"]
-            } = config} = Magma.Config.Artefact.load("ModuleDoc.config")
+            } = config} = Magma.Config.Artefact.load("ModuleDoc.artefact.config")
 
     assert config.content ==
              """
@@ -62,6 +62,6 @@ defmodule Magma.Config.ArtefactTest do
              Generate documentation for module `<%= concept.name %>` according to its description and code in the knowledge base below.
              """
 
-    assert config.path == Vault.path("magma.config/artefacts/ModuleDoc.config.md")
+    assert config.path == Vault.path("magma.config/artefacts/ModuleDoc.artefact.config.md")
   end
 end

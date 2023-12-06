@@ -22,29 +22,29 @@ defmodule Magma.ConfigTest do
 
   test "matter/1" do
     assert {:ok, Magma.Config.matter(Magma.Matter.Project)} ==
-             Magma.Config.Matter.load("Project.config")
+             Magma.Config.Matter.load("Project.matter.config")
 
     assert {:ok, Magma.Config.matter(Magma.Matter.Module)} ==
-             Magma.Config.Matter.load("Module.config")
+             Magma.Config.Matter.load("Module.matter.config")
 
     assert {:ok, Magma.Config.matter(Magma.Matter.Text.Section)} ==
-             Magma.Config.Matter.load("Text.Section.config")
+             Magma.Config.Matter.load("Text.Section.matter.config")
   end
 
   test "artefact/1" do
     assert {:ok, Magma.Config.artefact(Magma.Artefacts.ModuleDoc)} ==
-             Magma.Config.Artefact.load("ModuleDoc.config")
+             Magma.Config.Artefact.load("ModuleDoc.artefact.config")
 
     assert {:ok, Magma.Config.artefact(Magma.Artefacts.Readme)} ==
-             Magma.Config.Artefact.load("Readme.config")
+             Magma.Config.Artefact.load("Readme.artefact.config")
   end
 
   test "text_type/1" do
     assert {:ok, Magma.Config.text_type(Magma.Matter.Texts.Generic)} ==
-             Magma.Config.TextType.load("Generic.config")
+             Magma.Config.TextType.load("Generic.text_type.config")
 
     assert {:ok, Magma.Config.text_type(Magma.Matter.Texts.UserGuide)} ==
-             Magma.Config.TextType.load("UserGuide.config")
+             Magma.Config.TextType.load("UserGuide.text_type.config")
   end
 
   test "text_types/0" do

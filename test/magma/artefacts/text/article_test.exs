@@ -47,7 +47,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
              #{Magma.Config.System.persona_transclusion()}
 
-             ![[UserGuide.config#System prompt|]]
+             ![[UserGuide.text_type.config#System prompt|]]
 
              ### Context knowledge
 
@@ -57,9 +57,9 @@ defmodule Magma.Artefacts.ArticleTest do
 
              #### Description of the Some project ![[Project#Description|]]
 
-             ![[Text.Section.config#Context knowledge|]]
+             ![[Text.Section.matter.config#Context knowledge|]]
 
-             ![[UserGuide.config#Context knowledge|]]
+             ![[UserGuide.text_type.config#Context knowledge|]]
 
              #### Outline of the 'Some User Guide' content ![[Some User Guide ToC#Some User Guide ToC|]]
 
@@ -69,7 +69,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
              #### Transcluded background knowledge ![[Document#Title|]]
 
-             ![[Article.config#Context knowledge|]]
+             ![[Article.artefact.config#Context knowledge|]]
 
              ![[Some User Guide - Introduction#Context knowledge|]]
 

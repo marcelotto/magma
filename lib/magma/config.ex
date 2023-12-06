@@ -213,7 +213,7 @@ defmodule Magma.Config do
              files
              |> Enum.map(
                &(&1
-                 |> Path.basename(".config.md")
+                 |> Path.basename(".matter.config.md")
                  |> Magma.Matter.type())
              )
              |> Enum.reject(&is_nil/1)
@@ -231,7 +231,7 @@ defmodule Magma.Config do
              files
              |> Enum.map(
                &(&1
-                 |> Path.basename(".config.md")
+                 |> Path.basename(".artefact.config.md")
                  |> Magma.Artefact.type())
              )
              |> Enum.reject(&is_nil/1)
@@ -249,7 +249,7 @@ defmodule Magma.Config do
              files
              |> Enum.map(
                &(&1
-                 |> Path.basename(".config.md")
+                 |> Path.basename(".text_type.config.md")
                  |> Magma.Matter.Text.type(false))
              )
              |> Map.new(&{&1, nil})

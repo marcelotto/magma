@@ -6,7 +6,7 @@ defmodule Magma.Artefacts.ModuleDoc do
 
   import Magma.Utils.Guards
 
-  # Remember to update the ModuleDoc.config.md file when changing this!
+  # Remember to update the ModuleDoc.artefact.config.md file when changing this!
   @prompt_result_section_title "Moduledoc"
   def prompt_result_section_title, do: @prompt_result_section_title
 
