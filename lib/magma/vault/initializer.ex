@@ -8,7 +8,11 @@ defmodule Magma.Vault.Initializer do
 
   import Magma.MixHelper
 
-  @bin_dir :code.priv_dir(:magma) |> Path.join(".bin")
+  @bin_dir ".bin"
+  def bin_dir, do: @bin_dir
+
+  @bin_dir_path :code.priv_dir(:magma) |> Path.join(@bin_dir)
+  def bin_dir_path, do: @bin_dir_path
 
   @spec initialize(binary, base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
           :ok | {:error, any}
@@ -48,7 +52,7 @@ defmodule Magma.Vault.Initializer do
 
       create_gitignore_file(vault_dest_dir)
 
-      copy_directory(@bin_dir, vault_dest_dir)
+      copy_directory(@bin_dir_path, vault_dest_dir)
 
       :ok
     end

@@ -9,11 +9,13 @@ defmodule Magma.Vault.Migration.V0_2 do
 
   def migrate(%Version{major: 0, minor: 1}) do
     Mix.shell().info("Migrating vault to Magma v#{@target_version}")
+    vault_dest_dir = Vault.path()
 
     with {:ok, project} <- Project.concept(),
          :ok <- create_configs(),
          :ok <- update_custom_prompt_template(project),
-         :ok <- update_prompts() do
+         :ok <- update_prompts(),
+         :ok <- update_magma_shell_wrapper(vault_dest_dir) do
       {:ok, @target_version}
     end
   end
@@ -51,5 +53,18 @@ defmodule Magma.Vault.Migration.V0_2 do
     else
       :ok
     end
+  end
+
+  defp update_magma_shell_wrapper(vault_dest_dir) do
+    Mix.shell().info("Step 4: Update magma.sh shell wrapper")
+
+    Vault.Initializer.bin_dir_path()
+    |> Path.join("magma.sh")
+    |> Mix.Generator.copy_file(
+      Path.join([vault_dest_dir, Vault.Initializer.bin_dir(), "magma.sh"]),
+      force: true
+    )
+
+    :ok
   end
 end
