@@ -12,8 +12,9 @@ defmodule Magma.Vault.Migration do
 
   alias Magma.Vault
 
-  @magma_version_requirement "~> #{%Version{Magma.version() | patch: 0, pre: []}}"
-  def magma_version_requirement, do: @magma_version_requirement
+  def magma_version_requirement do
+    "~> #{%Version{Magma.version() | patch: 0, pre: []}}"
+  end
 
   @doc """
   Applies all necessary migrations to update the vault for a newer version of Magma.
@@ -27,7 +28,7 @@ defmodule Magma.Vault.Migration do
   end
 
   defp migrate(%Version{} = vault_version) do
-    if Version.match?(vault_version, @magma_version_requirement) do
+    if Version.match?(vault_version, magma_version_requirement()) do
       :ok
     else
       with {:ok, version} <- do_migrate(vault_version),
