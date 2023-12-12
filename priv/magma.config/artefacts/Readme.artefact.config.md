@@ -19,10 +19,10 @@ Your task is to generate a project README using the following template (without 
 <br />
 <div align="center">
   <a href="{{Homepage URL or Repo URL}}">
-    <img src="{{Logo path}}" alt="Logo" width="80" height="80">
+    <img src="{{Logo path}}" alt="Logo" width="256" height="256">
   </a>
 
-<h3 align="center">{{Project name}}</h3>
+<h1 align="center">{{Project name}}</h1>
 
   <p align="center">
     {{A project slogan or description of the project with just a few words}}
