@@ -12,7 +12,7 @@
     <img src="docs.magma/attachments/logo.png" alt="Logo" width="256" height="256">
   </a>
 
-<h3 align="center">Magma</h3>
+<h1 align="center">Magma</h3>
 
   <p align="center">
     An environment for writing and executing prompts for documentation and more
