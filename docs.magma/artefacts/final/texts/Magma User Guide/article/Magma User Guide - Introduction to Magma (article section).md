@@ -26,7 +26,7 @@ Magma addresses these issues by providing a comprehensive environment for projec
 
 Although Magma is designed for use with Obsidian, it's worth noting that since Obsidian documents are essentially Markdown documents, Magma could be used without Obsidian by manually using the Mix Tasks and a Markdown editor of your choice.
 
-> #### info {: .info}
+> #### Info {: .info}
 >
 > In the first version of Magma, only the OpenAI API is supported for automatic prompt execution. However, the system is designed with an LLM adapter facility that allows for the implementation of other LLMs in the future. Additionally, manual prompt execution is supported, which can be used to execute the prompts with anything you want.
 

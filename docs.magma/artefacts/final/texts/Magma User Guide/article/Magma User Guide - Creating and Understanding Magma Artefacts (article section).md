@@ -127,23 +127,28 @@ The main body of the concept includes:
 
 #### a) Description of the Matter
 
-The "Description" section of any concept document is crucial as it provides a description of its subject matter, in this case, the project, which will be trancluded as the central part in the request part of the prompt. This description can be written directly into this section or transcluded from other documents. 
+The "Description" section of any concept document is crucial as it provides a description of its subject matter, in this case, the project, which will be transcluded as the central part in the request part of the prompt. This description can be written directly into this section or transcluded from other documents. 
 
-> #### info {: .info}
+> #### Info {: .info}
 >
 > As we saw in the last chapter, the project description is very important, as it is transcluded in the "Context knowledge" section of every custom prompt and every artefact prompt (except for those about the project itself, where it is transcluded more prominently since it's not just context knowledge in this case).
 
 #### b) Context Knowledge
 
-The "Context knowledge" section provides background information that helps to understand the matter and its description. For our project, for example, we could describe its eco-system or some used technologies.
+The "Context knowledge" section provides background information that helps to understand the matter and its description. For our project, for example, we could describe its ecosystem or some used technologies.
 
 We encountered this section already in the introduction of [Custom prompts](Magma User Guide - Custom Prompts and Prompt Execution (article section).md). However, while in the case of a Custom prompt its content was specified directly in the prompt document, it is now specified in the concept document and transcluded in the prompts of all artefacts of this matter instance.
 
 #### c) Artefacts
 
-The "Artefacts" section includes subsections for all supported artefact types of the respective matter type. These subsections contain links to the respective artefact prompt and artefact version document, and a "Prompt task" section with a default text for the artefact type, which can be customized or extended. 
+The "Artefacts" section includes subsections for all supported artefact types of the respective matter type. These subsections contain links to the respective artefact prompt and artefact version document, and a "Prompt task" section with the default prompt for the respective artefact type, which can be customized or extended for this particular instance here in the concept document. 
 
-In the case of our project concept document, the only available artefact type in this first version of Magma is the README artefact. The system prompt for its generation is based on a template, which relies on some information, which should be provided in the given form in this section. If some of the fields do not apply for your project, you should write `n/a`.
+> #### Tip {: .tip}
+> 
+> If you want to customize the task prompt for an artefact type in general, you can do so in the "Task prompt" section of the config document of the respective artefact type in the `magma.config/artefacts` subdirectory of the vault. Note that this section is special because it is not transcluded, but interpreted as an EEx template that is evaluated when a concept document is created. The result of this evaluation is used as the content of the "Prompt task" section of the corresponding artefact type.
+
+In the case of our project concept document, the only available artefact type in this first version of Magma is the README artefact. The system prompt for its generation is based on a template, which relies on some information, which should be provided in the given form in this section. If some fields do not apply for your project, you should write `n/a`.
+
 
 ### The Prompt Document
 
@@ -204,115 +209,21 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Example" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.system.config#Persona|]]
 
-Your task is to generate a project README using the following template, replacing the content between {{ ... }} accordingly:
-
-``markdown
-[![Hex.pm](https://img.shields.io/hexpm/v/{{Hex package name}}.svg?style=flat-square)](https://hex.pm/packages/{{Hex package name}})  
-[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/{{Hex package name}}/)  
-[![Total Download](https://img.shields.io/hexpm/dt/{{Hex package name}}.svg)](https://hex.pm/packages/{{Hex package name}})  
-[![License](https://img.shields.io/hexpm/l/{{Hex package name}}.svg)]({{Repo URL}}/blob/main/LICENSE.md)  
-
-  
-<br />  
-<div align="center">  
-  <a href="{{Homepage URL or Repo URL}}">  
-    <img src="{{Logo path}}" alt="Logo" width="80" height="80">  
-  </a>  
-  
-<h3 align="center">{{Project name}}</h3>  
-  
-  <p align="center">  
-    {{A project slogan or description of the project with just a few words}}  
-    <br />  
-    <a href="{{Documentation URL}}"><strong>Explore the docs »</strong></a>  
-    <br />  
-    <br />  
-    <a href="{{Demo URL}}">View Demo</a>  
-    ·  
-    <a href="{{Repo URL}}/blob/main/CHANGELOG.md">Changelog</a>  
-    ·  
-    <a href="{{Repo URL}}/issues">Report Bug</a>  
-    ·  
-    <a href="{{Repo URL}}/issues">Request Feature</a>  
-  </p>  
-</div>  
-  
-  
-  
-## About the Project  
-  
-<img src="{{Screenshot path}}" align="center" />  
-  
-{{A summary of the project}}   
-  
-  
-  
-## Getting Started  
-  
-### Prerequisites  
-  
-{{Prerequisites of the project}}  
-  
-  
-### Installation  
-  
-{{Step-by-step instructions on installing and setting the project.}}  
-  
-  
-  
-## Usage  
-  
-{{Useful examples of how the project can be used.}}  
-  
-_For more examples, please refer to the [Documentation]({{Documentation URL}})_  
-  
-  
-  
-## Roadmap  
-  
-{{Roadmap as a Markdown task list}}  
-  
-See the [open issues]({{Repo URL}}/issues) for a full list of proposed features (and known issues).  
-  
-  
-  
-## Contributing  
-  
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.  
-  
-If you have a suggestion that would make this better, please fork the repo and create a pull request.  
-See [CONTRIBUTING](CONTRIBUTING.md) for details.  
-You can also simply open an issue with the tag "enhancement".  
-  
-Don't forget to give the project a star! Thanks!  
-  
-  
-  
-## Contact  
-  
-{{Contact}}  
-  
-  
-  
-## Acknowledgments  
-  
-{{Acknowledgments}}  
-  
-  
-  
-## License  
-  
-Distributed under the {{License}}. See `LICENSE.md` for more information.
-``
-
+![[Readme.artefact.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
-![[Project#Context knowledge]]
+![[Magma.system.config#Context knowledge|]]
+
+![[Project.matter.config#Context knowledge|]]
+
+![[Readme.artefact.config#Context knowledge|]]
+
+![[Project#Context knowledge|]]
 
 
 ## Request
@@ -322,11 +233,16 @@ The following sections contain background knowledge you need to be aware of, but
 ### Description of the 'Example' project ![[Project#Description|]]
 ```
 
-Besides to artefact-specific content in the "System prompt" section, you will notice its structure is very similar to the prompt shown in the previous page about "Custom prompts", but has some notable differences:
+You should notice its structure is very similar to the prompt shown in the previous page about "Custom prompts", but has some notable differences:
 
 - In the YAML frontmatter, the properties `magma_artefact` and `magma_concept` have been added, which specify the artefact type and link to the concept document. 
 - The **Generated results** now contains a dedicated link to the final artefact version document. 
-- The **Actions** buttons now also has an update button, which you can use to regenerate the prompt. Although transcluded content is displayed automatically, it is sometimes necessary to regenerate the prompt (for example when source code, which is included for some artefact prompts, was modified, like for moduledocs), which can be done with this button or the `Mix.Tasks.Magma.Prompt.Update` Mix task .
+- The **Actions** buttons now also have an update button, which you can use to regenerate the prompt. Although transcluded content is displayed automatically, it is sometimes necessary to regenerate the prompt (for example when source code, which is included for some artefact prompts, was modified, like for moduledocs), which can be done with this button or the `Mix.Tasks.Magma.Prompt.Update` Mix task.
+- The "System prompt" section transcludes a section of the respective artefact type config document, which can be adapted to your specific needs. In the case of the README artefact type it contains a template for the README to be generated, which uses the fields of the form in the README artefact section in the concept document seen above.
+- The "Context knowledge" section now includes a lot more transclusions from additional config documents, which allows you to compose the necessary knowledge more granular. After the "Context knowledge" section from the general `Magma.system.config` document that is always transcluded, we now see the following additional "Context knowledge" section transclusions:
+	- from a config document for the matter type of the concept, in this case of the `Project` subject matter, the `Project.matter.config` document,
+	- from a config document for the artefact type, in this case of a `Readme` artefact, the `Readme.artefact.config` document,
+	- and finally, the "Context knowledge" section from the concept document above.
 
 The artefact prompt can be executed in the same way as described in the "Custom Prompts and Prompt Execution" section of this guide. You may need to execute the prompt multiple times until you're satisfied with the result.
 
@@ -340,7 +256,7 @@ Alternatively, you can use the `Mix.Tasks.Magma.Artefact.SelectDraft` Mix task d
 $ mix magma.artefact.select_draft "Name of prompt result"
 ```
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
 > If a README already exists and must be overwritten, you must use the Mix task to confirm the overwrite. If you want to use the button, you must manually remove the old version beforehand, as a confirmation is currently not supported in Obsidian.
 
@@ -374,7 +290,7 @@ defmodule Some.Module do
 end
 ```
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
 > If you decide to include your moduledocs with `use Magma`, be aware that if you're writing a library and your users should be able to use these docs on their machines, e.g. with the `h` helper in IEx you'll have to include the Magma documents with the final moduledocs in your package like this:
 > 
@@ -384,7 +300,7 @@ end
 >     # ...
 >     files:  ~w[lib priv mix.exs docs.magma/artefacts/final/modules/**/*.md]
 >   ]  
-  > end  
+> end  
 > ```
 
 However, the artefact prompt also asks for function docs for two reasons:
@@ -392,64 +308,36 @@ However, the artefact prompt also asks for function docs for two reasons:
 1.  It's challenging to get the language model to ignore the functions and focus solely on the `@moduledoc`. It tends to describe the functions present in the shown implementation.
 2.  Even though Magma doesn't currently offer a similar integration for function docs as it does for `@moduledoc`, they are useful as copy-paste templates.
 
-Here is a detailed look at the prompt for the `ModuleDoc` artefact:
-
+Here is a detailed look at the prompt for the `ModuleDoc` artefact (without the YAML frontmatter and prologue with the document controls, which are similar to the README prompt above):
 
 ```markdown
 # Prompt for ModuleDoc of Some.Example
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Name of your project" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.system.config#Persona|]]
 
-You have two tasks to do based on the given implementation of the module and your knowledge base:
-
-1. generate the content of the `@doc` strings of the public functions
-2. generate the content of the `@moduledoc` string of the module to be documented
-
-Each documentation string should start with a short introductory sentence summarizing the main function of the module or function. Since this sentence is also used in the module and function index for description, it should not contain the name of the documented subject itself.
-
-After this summary sentence, the following sections and paragraphs should cover:
-
-- What's the purpose of this module/function?
-- For moduledocs: What are the main function(s) of this module?
-- If possible, an example usage in an "Example" section using an indented code block
-- configuration options (if there are any)
-- everything else users of this module/function need to know (but don't repeat anything that's already obvious from the typespecs)
-
-The produced documentation follows the format in the following Markdown block (Produce just the content, not wrapped in a Markdown block). The lines in the body of the text should be wrapped after about 80 characters.
-
-``markdown
-## Function docs
-
-### `function/1`
-
-Summary sentence
-
-Body
-
-## Moduledoc
-
-Summary sentence
-
-Body
-``
-
-<!--
-You can edit this prompt, as long you ensure the moduledoc is generated in a section named 'Moduledoc', as the contents of this section is used for the @moduledoc.
--->
+![[ModuleDoc.artefact.config#System prompt|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
+![[Magma.system.config#Context knowledge|]]
+
 #### Description of the Magma project ![[Project#Description|]]
+
+![[Module.matter.config#Context knowledge|]]
 
 #### Peripherally relevant modules
 
 ##### `Some` ![[Some#Description|]]
 
 ##### `Some.Example.Nested` ![[Some.Example.Nested#Description|]]
+
+![[ModuleDoc.artefact.config#Context knowledge|]]
+
+![[Some.Example#Context knowledge|]]
 
 
 ## Request
@@ -471,13 +359,8 @@ end
 ``
 ```
 
-Besides the project description, the "Context knowledge" section now transcludes the descriptions of all modules beneath the module to be documented  in a subsection "Peripherally relevant modules". For example, for a module `A.B.C`, the descriptions of the modules `A` and `A.B` are transcluded here. Also, all direct submodules are transcluded, i.e. in this case all modules `Some.Example.*`. If you prefer to transclude module descriptions on your own and want to circumvent possible duplicate transclusions, these automatic module context transclusions can be disabled for your application in the `config.exs` with the `auto_module_context` key:
+Besides the project description, the "Context knowledge" section now transcludes the descriptions of all modules beneath the module to be documented  in a subsection "Peripherally relevant modules". For example, for a module `A.B.C`, the descriptions of the modules `A` and `A.B` are transcluded here. Also, all direct submodules are transcluded, i.e. in this case all modules `Some.Example.*`. If you prefer to transclude module descriptions on your own and want to circumvent possible duplicate transclusions, these automatic module context transclusions can be disabled via the `auto_module_context` property in the `Module.matter.config` document.
 
-```elixir  
-config :magma,    
-  auto_module_context: false
-```
-
-As can be seen here, the "Request" section in the artefact prompt also includes the actual source code of the module to be documented. Use the "Update" button from the **Actions** in the prologue, to update the prompt after modifications of the code.
+As can be seen in this artefact prompt, the "Request" section also includes the actual source code of the module to be documented. Use the "Update" button from the **Actions** in the prologue, to update the prompt after modifications of the code.
 
 The process of executing the artefact prompt and choosing the final artefact is similar to the README artefact. However, that the artefact version can now be kept in a proper artefact version document (with respective YAML frontmatter) at the place where it belongs (in this case `artefacts/final/modules/Some/Module/ModuleDoc of Some.Module.md`) and without the need for a symbolic link.

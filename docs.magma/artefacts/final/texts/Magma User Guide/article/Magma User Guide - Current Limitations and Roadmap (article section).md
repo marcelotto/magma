@@ -18,8 +18,7 @@ Magma is still in its early stages of development. While it already provides a u
 
 ## Limitations
 
-- The shell commands triggered by the buttons on the various Magma documents are only tested under MacOS. If you're experiencing problems under Linux or Windows, please report them on [this issue](https://github.com/marcelotto/magma/issues/1). If they work on one of these systems for you, please also confirm this on this issue.
-- System prompts are currently hardcoded in the Elixir implementation of the artefact types. This means you cannot edit or extend them directly from within Obsidian.
+- The shell commands triggered by the buttons on the various Magma documents are only tested under macOS. If you're experiencing problems under Linux or Windows, please report them on [this issue](https://github.com/marcelotto/magma/issues/1). If they work on one of these systems for you, please also confirm this on this issue.
 - The table of contents of a text cannot be easily modified after the initial section creation.
 - Intra-document transclusions (transclusions of sections inside the same document) are not supported due to a coarse transclusion recursion detection.
 - Previous artefact versions are not automatically backed up when selecting a new one, you'll have to use the Mix task to overwrite previous ones or delete them manually.
@@ -29,7 +28,6 @@ Magma is still in its early stages of development. While it already provides a u
 
 Main goals for the next versions are:
 
-- Moving system prompts into the Magma vault, so they can be edited or extended to your needs from within Obsidian. Ideally, new artefacts could be defined completely in Obsidian without having to touch the Magma codebase.
 - Improving the process of changing the table of contents of a text after the initial section creation.
 - Supporting intra-document transclusions.
 - Implementing automatic backup for previous artefact versions when creating a new one.

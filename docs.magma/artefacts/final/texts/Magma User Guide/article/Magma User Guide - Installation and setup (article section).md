@@ -16,9 +16,9 @@ aliases: []
 
 This section provides instructions on how to install and setup Magma within an Elixir project. 
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
-> Please note that Magma has only been tested with MacOS so far. However, there is nothing that prevents it from running on other systems such as Windows and Linux. If you're a using these, please read [this issue](https://github.com/marcelotto/magma/issues/1).
+> Please note that Magma has only been tested with macOS so far. However, there is nothing that prevents it from running on other systems such as Windows and Linux. If you're using these, please read [this issue](https://github.com/marcelotto/magma/issues/1).
 
 Although primarily developed for Elixir projects, Magma can be useful in a variety of contexts. The following instructions assume you already have an Elixir project in which Magma will be installed. If you want to use Magma for general use cases, refer to the section, "Installation for non-Elixir devs" at the end.
 
@@ -29,14 +29,14 @@ Firstly, you need to set up the Magma Hex package as a development dependency in
 ``` elixir
 def deps do
   [
-    {:magma, "~> 0.1", only: [:dev, :test]}
+    {:magma, "~> 0.2", only: [:dev, :test]}
   ]
 end
 ```
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
-> If you're running on Apple Silicon you might experience problems with Rambo. You'll have to switch to the Github master version until the next version is released. See this issue: https://github.com/jayjun/rambo/pull/13#issuecomment-1193371511
+> If you're running on Apple Silicon you might experience problems with Rambo. You'll have to switch to the GitHub master version until the next version is released. See this issue: https://github.com/jayjun/rambo/pull/13#issuecomment-1193371511
 
 Magma relies on Pandoc, which needs to be installed separately. Make sure you have at least version 3.1.7. Refer to the [Pandoc installation guide](https://pandoc.org/installing.html) for more details.
 
@@ -62,7 +62,7 @@ config :openai,
   http_options: [recv_timeout: 300_000]
 ```
 
-> #### warning {: .warning}
+> #### Info {: .info}
 >
 > The default HTTP timeout is increased here, which is strongly recommended as Magma prompts can become quite large, resulting in lengthy executions especially with the GPT-4 model. For more details on the configuration options of Openai.ex refer to its README.
 
@@ -92,9 +92,9 @@ config :magma,
   dir: "your_magma_vault/"
 ```
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
-> At the current state of the project, you can only change the name of directory here and not specify a completely separate directory outside of the Elixir project. This is not supported yet.
+> At the current state of the project, you can only change the name of directory here and not specify a completely separate directory outside the Elixir project. This is not supported yet.
 
 You can also configure a set of tags to be added on all generated documents with the `default_tags` key in your `config.exs`:
 
@@ -102,6 +102,10 @@ You can also configure a set of tags to be added on all generated documents with
 config :magma,  
   default_tags: ["magma-vault"]
 ```
+
+> #### Info {: .info}
+>
+> While Magma is primarily configured using specific config documents in the `magma.config` subdirectory of the Magma vault, including the `default_tags` through the `Magma.system.config` file, there are certain configuration options that should be set up in the application config. This ensures that the respective defaults are provided for the vault config files that are created during vault initialization. This is especially important when these settings are already utilized during vault initialization, such as the `default_tags` setting. It is used for the creation of all documents during vault initialization.
 
 ## Code sync
 

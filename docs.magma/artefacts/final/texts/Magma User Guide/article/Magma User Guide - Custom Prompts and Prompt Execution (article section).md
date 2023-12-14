@@ -28,13 +28,13 @@ $ mix magma.prompt.gen "Name of prompt"
 
 or from within Obsidian using the command palette or the Cmd-Ctrl-P hotkey for the QuickAdd command "Custom Magma prompt". This triggers the same Mix task via the Obsidian ShellCommand plugin.
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
 > Just like the name of any Obsidian document, the name of the prompt document must be unique. A good practice is to stick to a common naming scheme for prompts, e.g., "Prompt for ...", to ensure that the prompt documents never conflict with non-prompt documents.
 
 This process creates a Magma prompt document, a special type of Magma document. It is saved in the `custom_prompt/` subdirectory of the Magma vault. 
 
-> #### info {: .info}
+> #### Magma documents {: .neutral}
 > 
 > Magma documents are Markdown files with a particular structure and semantic rules specific to Magma. 
 
@@ -45,7 +45,7 @@ Below is an example of a newly created custom prompt named "Example prompt":
 magma_type: Prompt
 magma_generation_type: OpenAI
 magma_generation_params: {"model":"gpt-4","temperature":0.6}
-created_at: 2023-10-22T14:14:57
+created_at: 2023-12-04T16:32:39
 tags: [magma-vault]
 aliases: []
 ---
@@ -54,9 +54,9 @@ aliases: []
 
 ``dataview
 TABLE
-    tags AS Tags,
-    magma_generation_type AS Generator,
-    magma_generation_params AS Params
+	tags AS Tags,
+	magma_generation_type AS Generator,
+	magma_generation_params AS Params
 WHERE magma_prompt = [[]]
 ``
 
@@ -85,20 +85,22 @@ color default
 
 ## System prompt
 
-You are MagmaGPT, an assistant who helps the developers of the "Magma" project during documentation and development. Your responses are in plain and clear English.
+![[Magma.system.config#Persona|]]
 
 ### Context knowledge
 
 The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
 
-#### Description of the Example project ![[Project#Description|]]
+![[Magma.system.config#Context knowledge|]]
+
+#### Description of the Magma project ![[Project#Description|]]
 
 
 ## Request
 
 ```
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
 > To prevent problems with the Markdown processor, code blocks with three backticks are written in this guide using two backticks to maintain proper rendering. In the actual documents the code blocks are written correctly with three backticks.
 
@@ -115,13 +117,17 @@ The custom prompt document consists of several parts:
     -   "System prompt": This section becomes the system prompt of the OpenAI API request. It includes the persona and a "Context knowledge" subsection for providing background knowledge to the LLM.
     -   "Request": This section is where you write the actual prompt.
 
-The persona used in all prompts can be customized for your application in the `config.exs` file:
+## Prompt configuration
 
-``` elixir
-config :magma,  
-  persona: "Your custom persona"
-```
+As you can see from the example prompt above, this contains some transclusions of sections from documents with a `.config` extension. These documents, which are located in the `magma.config` subdirectory of the vault, contain some basic setting options via properties in the YAML frontmatter as well as some sections that are transcluded or copied in various places. Of the numerous configuration files, however, only the `Magma.system.config` document, with the most general settings that are relevant for all prompts, plays a role for custom prompts. On the one hand, the persona, i.e. the text that opens the system prompt part in all prompts, can be defined there. On the other hand, parts of the context knowledge that should appear in all prompts can be defined here.
 
+> #### Context knowledge {: .neutral}
+> 
+> In Magma, "context knowledge" refers to knowledge that should not necessarily be part of the result of a prompt, but is relevant to its understanding or execution. Typically, these are transclusions of various atomic notes.
+
+> #### Info {: .info}
+> 
+> Note that the project description is always part of the context knowledge of every prompt, except when it comes to prompts that have the project itself as its subject, where this description is included in a more prominent manner. Due to this conditional transclusion, the project description is not part of the context knowledge section of the `Magma.system.config` document.
 
 The initial content of custom prompts can be customized with the Obsidian template in the directory `templates/custom_prompt.md` of the Magma vault. However, the basic structure of a "System prompt" and a "Request" section should remain unchanged.
 
@@ -135,13 +141,13 @@ The initial content of custom prompts can be customized with the Obsidian templa
 
 Magma provides two ways to execute the prompt: automatic execution and manual execution. In both cases, the prompt result is saved in a separate prompt result document named after the original prompt with a timestamp. Like any prompt result it is placed in a subdirectory `__prompt_results__` of the directory where the prompt document is stored.
 
-> #### info {: .info}
+> #### Info {: .info}
 > 
 > The Magma vault directory contains its own `.gitignore` file in which `__prompt_results__/` is listed by default, so they won't be version controlled.
 
 ### Manual Execution
 
-Manual execution can be triggered from within Obsidian via the "Execute manually" button. This creates an empty prompt result document, which should show up in the "Generated results" table in the prologue and copies the compiled prompt with all transclusions resolved to the clipboard. The prompt from the clipboard can then be copied to the chatbot of your choice (ChaptGPT, Claude, Bard etc.), executed there and the result can be copied to the respective result document.
+Manual execution can be triggered from within Obsidian via the "Execute manually" button. This creates an empty prompt result document, which should show up in the "Generated results" table in the prologue and copies the compiled prompt with all transclusions resolved to the clipboard. The prompt from the clipboard can then be copied to the chatbot of your choice (ChatGPT, Claude, Bard etc.), executed there and the result can be copied to the respective result document.
 
 When executing manually via the `Mix.Tasks.Magma.Prompt.Exec` Mix task directly:
 
@@ -163,21 +169,10 @@ Automatic execution is triggered via the "Execute" button or the `Mix.Tasks.Magm
 
 In automatic execution, the `magma_generation_type` and `magma_generation_params` properties of the YAML frontmatter determine how the prompt is executed. The `magma_generation_type` determines which implementation of an LLM adapter (`Magma.Generation`) should be used. Currently, only the OpenAI API implementation (`Magma.Generation.OpenAI`) is available. The `magma_generation_params` set the values for the parameters of the selected adapter.
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
 > Unfortunately, the property editor in Obsidian does not currently support editing JSON parameters. Therefore, you need to switch to source mode to edit `magma_generation_params` in Obsidian.
 
 The prompt is then executed using the configured LLM adapter and its parameters, and the result is stored in a prompt result document upon completion. Execution can take several minutes, especially with GPT-4, which is highly recommended for its superior results. Completion is signaled by an Obsidian notification. If you are not satisfied with a prompt result, you can delete it using the "Delete" button in the prologue and try again with different parameters.
 
-You can configure the default values for the `magma_generation_type` and `magma_generation_params` properties in `config.exs`:
-
-``` elixir
-config :magma,  
-  default_generation: Magma.Generation.OpenAI
-  
-config :magma, Magma.Generation.OpenAI,  
-  model: "gpt-4",  
-  temperature: 0.6
-```
-
-The `default_generation` key sets the `Magma.Generation` adapter to be used for new prompt documents, while the configuration for the adapter sets the default values for the `magma_generation_params` property of new prompt documents. Note, that you can still adapt them there individually.
+You can configure the default values for the `magma_generation_type` and `magma_generation_params` properties via the respective YAML frontmatter properties `Magma.system.config` document. The `default_generation_type` key sets the `Magma.Generation` adapter to be used for new prompt documents, while the configuration for the adapter sets the default values for the `magma_generation_params` property of new prompt documents. Note, that you can still adapt them there individually.

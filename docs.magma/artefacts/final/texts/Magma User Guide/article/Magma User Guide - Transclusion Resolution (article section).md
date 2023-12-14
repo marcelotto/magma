@@ -44,7 +44,7 @@ Since Obsidian (and Magma) also support transclusions of section, atomic notes n
 Transclusion resolution in Magma refers to the process of resolving an Obsidian transclusion by replacing it with the referenced content. This is crucial for the composition of LLM prompts, which are defined as compositions of transclusions that must be resolved before the LLM execution, since the LLM can't access the referenced content. The content of the referenced document or document section is not inserted unchanged, however. Instead, it undergoes the following processing steps:
 
 - Comments (`<!-- comment -->`) are removed.
-- Internal links are replaced with the target (or their display text when available) as plain text.
+- Internal links are replaced with the target (or their display text when available) as plain text. (However, the style in which internal links are to be resolved can be customized via the `link_resolution_style` property of the `Magma.system.config` document. Permissible values there are: `plain` (default), `emph`, `strong`, `underline`.)
 - Transclusions within the transcluded content itself are resolved recursively (unless it would result in an infinite recursion)
 - If the transcluded content (after removing the comments), consists exclusively of a heading with no content below it, the transclusion is resolved with the empty string.
 - The level of the transcluded sections is adjusted according to the current level at the point of the transclusion.
@@ -57,7 +57,7 @@ There are three kinds of transclusions in Magma which are resolved slightly diff
 
 Another difference between these transclusion resolution types is how they handle the prologue, i.e., text before the document title, on complete document transclusion resolutions. Both kinds of header transclusions omit prologue, while inline transclusions keep the prologue.
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
 > Unfortunately, the different types of transclusion are not visible in Obsidian, as the first heading is always displayed there. This can become confusing, especially with nested transclusions.
 
@@ -139,7 +139,7 @@ Aliqua ea reprehenderit aliquip aliquip laborum.
 Culpa duis, ut id excepteur.
 ```
 
-> #### warning {: .warning}
+> #### Warning {: .warning}
 >
 > Intra-document transclusions, i.e., transclusions of sections inside the same document, are currently not supported due to a too coarse transclusion recursion detection. However, support for such transclusions is planned for the next version.
 
