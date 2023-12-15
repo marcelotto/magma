@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.2.0 - 2023-12-15
 
 ### Added
 
@@ -29,7 +29,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - encoding issues with the "Copy to clipboard" button when the prompt contained 
   special characters 
 
-[Compare v0.1.1...HEAD](https://github.com/marcelotto/magma/compare/v0.1.1...HEAD)
+[Compare v0.1.1...v0.2.0](https://github.com/marcelotto/magma/compare/v0.1.1...v0.2.0)
 
 
 
