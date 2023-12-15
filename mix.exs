@@ -127,6 +127,14 @@ defmodule Magma.MixProject do
           Magma.Generation,
           Magma.Generation.OpenAI,
           Magma.Generation.Manual
+        ],
+        Config: [
+          Magma.Config,
+          Magma.Config.Document,
+          Magma.Config.System,
+          Magma.Config.Matter,
+          Magma.Config.Artefact,
+          Magma.Config.TextType
         ]
       ]
     ]
