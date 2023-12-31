@@ -15,11 +15,9 @@
 <h1 align="center">Magma</h3>
 
   <p align="center">
-    
 	An integrated knowledge work environment for open source software projects in Elixir
     <br />
-	with GPT4 as an LLM-based assistant.
-
+	  with GPT4 as an LLM-based assistant.
     <br />
     <br />
     <a href="https://hexdocs.pm/magma/magma-user-guide-introduction-to-magma-article-section.html"><strong>Explore the docs »</strong></a>
