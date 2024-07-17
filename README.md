@@ -75,11 +75,17 @@ Don't forget to give the project a star! Thanks!
 Marcel Otto - [@marcelotto (Mastodon)](https://mastodon.social/@marcelotto)  [@marcelotto (X)](https://twitter.com/marcelotto)
 
 
+## Funding
 
-## Acknowledgments
+<table style="border: 0;">  
+<tr>  
+<td><a href="https://nlnet.nl/"><img src="https://nlnet.nl/logo/banner.svg" alt="NLnet foundation Logo" width="150"></a></td>  
+<td>&emsp;</td>  
+<td><a href="https://nlnet.nl/assure"><img src="https://nlnet.nl/image/logos/NGIAssure_tag.svg" alt="NGI Assure Logo" width="150"></a></td>  
+</tr>  
+</table>
 
-A huge thanks to the [NLnet Foundation](https://nlnet.nl/) for funding this project.
-
+This project is funded through [NGI Assure](https://nlnet.nl/assure), a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) program.
 
 
 ## License
