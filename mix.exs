@@ -60,7 +60,7 @@ defmodule Magma.MixProject do
 
   defp deps do
     [
-      {:panpipe, "~> 0.3"},
+      {:panpipe, "~> 0.3.2"},
       {:yaml_front_matter, "~> 1.0"},
       {:jason, "~> 1.4"},
       {:openai, "~> 0.5", optional: true},
