@@ -5,6 +5,7 @@
 [![ExUnit Tests](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml)
 [![Quality Checks](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml)
 
+> ⚠️ **Notice:** This project is no longer actively maintained. No new features or bug fixes will be provided. Feel free to fork the project if you wish to continue its development.
 
 <br />
 <div align="center">
