@@ -32,7 +32,7 @@ defmodule Magma.PromptTest do
 
              ### Context knowledge
 
-             The following sections contain background knowledge you need to be aware of, but which should NOT necessarily be covered in your response as it is documented elsewhere. Only mention absolutely necessary facts from it. Use a reference to the source if necessary.
+             The following sections contain background knowledge you need to be aware of.
 
              ![[Magma.system.config#Context knowledge|]]
 
