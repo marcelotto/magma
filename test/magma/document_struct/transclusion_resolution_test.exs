@@ -93,8 +93,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Module `Nested.Example` does:
 
-             -   x
-             -   y
+             - x
+             - y
              """
 
     assert """
@@ -198,8 +198,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Module `Nested.Example` does:
 
-             -   x
-             -   y
+             - x
+             - y
 
              Some final remarks.
 
@@ -219,8 +219,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Module `Nested.Example` does:
 
-             -   x
-             -   y
+             - x
+             - y
              """
   end
 
@@ -275,8 +275,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Module `Nested.Example` does:
 
-             -   x
-             -   y
+             - x
+             - y
              """
 
     assert """
@@ -359,8 +359,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Module `Nested.Example` does:
 
-             -   x
-             -   y
+             - x
+             - y
              """
 
     assert """
@@ -388,8 +388,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Module `Nested.Example` does:
 
-             -   x
-             -   y
+             - x
+             - y
              """
 
     assert """
@@ -1008,8 +1008,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Module `Nested.Example` does:
 
-             -   x
-             -   y
+             - x
+             - y
 
              Some final remarks.
 

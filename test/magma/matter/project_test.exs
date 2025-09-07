@@ -74,16 +74,16 @@ defmodule Magma.Matter.ProjectTest do
 
              Generate a README for project 'Magma' according to its description and the following information:
 
-             -   Hex package name: magma
-             -   Repo URL: https://github.com/github_username/repo_name
-             -   Documentation URL: https://hexdocs.pm/magma/
-             -   Homepage URL:
-             -   Demo URL:
-             -   Logo path: logo.jpg
-             -   Screenshot path:
-             -   License: MIT License
-             -   Contact: Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - your@email.com
-             -   Acknowledgments:
+             - Hex package name: magma
+             - Repo URL: https://github.com/github_username/repo_name
+             - Documentation URL: https://hexdocs.pm/magma/
+             - Homepage URL:
+             - Demo URL:
+             - Logo path: logo.jpg
+             - Screenshot path:
+             - License: MIT License
+             - Contact: Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - your@email.com
+             - Acknowledgments:
 
              ("n/a" means not applicable and should result in a removal of the respective parts)
              """

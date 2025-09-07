@@ -116,7 +116,7 @@ defmodule Magma.Text.Preview do
           children: [
             %Panpipe.AST.Link{},
             %Panpipe.AST.Space{},
-            %Panpipe.AST.Image{target: target, title: "wikilink"}
+            %Panpipe.AST.Image{target: target, attr: %Panpipe.AST.Attr{classes: ["wikilink"]}}
           ]
         }
       } ->

@@ -393,9 +393,9 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                ## Some special kinds of links
 
-               -   Alternative Title
-               -   Link to#Section
-               -   Link to#\\^block
+               - Alternative Title
+               - Link to#Section
+               - Link to#\\^block
                """
     end
 
@@ -426,9 +426,9 @@ defmodule Magma.DocumentStruct.SectionTest do
 
                ## Some special kinds of links
 
-               -   *Alternative Title*
-               -   *Link to#Section*
-               -   *Link to#\\^block*
+               - *Alternative Title*
+               - *Link to#Section*
+               - *Link to#\\^block*
                """
     end
   end

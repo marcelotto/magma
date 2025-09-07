@@ -52,48 +52,60 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
           children: [
             %Panpipe.AST.Plain{
               children: [
-                %Panpipe.AST.Image{title: "wikilink", target: target}
+                %Panpipe.AST.Image{target: target, attr: %Panpipe.AST.Attr{classes: ["wikilink"]}}
               ]
             }
           ]
         } = transclusion,
         acc ->
-          if extract_document_name(target) in visited do
-            raise "recursive cycle during transclusion resolution of #{target}"
-          end
+          do_resolve_inline_transclusions(transclusion, target, level, visited, acc)
 
-          case transcluded_content(target, level, visited) do
-            nil ->
-              acc_append(acc, transclusion)
-
-            %DocumentStruct{
-              prologue: [],
-              sections: [
-                %Section{content: transcluded_content, sections: transcluded_sections}
-                | more_transcluded_sections
-              ]
-            } ->
-              acc
-              |> acc_append(transcluded_content)
-              |> acc_append(transcluded_sections)
-              |> acc_append(Enum.map(more_transcluded_sections, &Section.shift_level(&1, 1)))
-
-            %DocumentStruct{prologue: transcluded_content, sections: transcluded_sections} ->
-              acc
-              |> acc_append(transcluded_content)
-              |> acc_append(Enum.map(transcluded_sections, &Section.shift_level(&1, 1)))
-
-            %Section{content: transcluded_content, sections: transcluded_sections} ->
-              acc
-              |> acc_append(transcluded_content)
-              |> acc_append(transcluded_sections)
-          end
+        %Panpipe.AST.Para{
+          children: [
+            %Panpipe.AST.Image{target: target, attr: %Panpipe.AST.Attr{classes: ["wikilink"]}}
+          ]
+        } = transclusion,
+        acc ->
+          do_resolve_inline_transclusions(transclusion, target, level, visited, acc)
 
         content, acc ->
           acc_append(acc, content)
       end)
 
     {Enum.reverse(new_content), Enum.reverse(new_sections)}
+  end
+
+  defp do_resolve_inline_transclusions(transclusion, target, level, visited, acc) do
+    if extract_document_name(target) in visited do
+      raise "recursive cycle during transclusion resolution of #{target}"
+    end
+
+    case transcluded_content(target, level, visited) do
+      nil ->
+        acc_append(acc, transclusion)
+
+      %DocumentStruct{
+        prologue: [],
+        sections: [
+          %Section{content: transcluded_content, sections: transcluded_sections}
+          | more_transcluded_sections
+        ]
+      } ->
+        acc
+        |> acc_append(transcluded_content)
+        |> acc_append(transcluded_sections)
+        |> acc_append(Enum.map(more_transcluded_sections, &Section.shift_level(&1, 1)))
+
+      %DocumentStruct{prologue: transcluded_content, sections: transcluded_sections} ->
+        acc
+        |> acc_append(transcluded_content)
+        |> acc_append(Enum.map(transcluded_sections, &Section.shift_level(&1, 1)))
+
+      %Section{content: transcluded_content, sections: transcluded_sections} ->
+        acc
+        |> acc_append(transcluded_content)
+        |> acc_append(transcluded_sections)
+    end
   end
 
   defp acc_append(acc, []), do: acc
@@ -120,7 +132,7 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
 
   defp resolve_transclusion_header(%Section{header: header} = section, visited) do
     case Enum.reverse(header.children) do
-      [%Panpipe.AST.Image{title: "wikilink", target: target} | rest] ->
+      [%Panpipe.AST.Image{target: target, attr: %Panpipe.AST.Attr{classes: ["wikilink"]}} | rest] ->
         if extract_document_name(target) in visited do
           raise "recursive cycle during transclusion resolution of #{target}"
         end

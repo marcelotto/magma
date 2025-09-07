@@ -304,7 +304,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
              The content of the final introduction section.
 
-             ## Next section ![[Some User Guide - Next section (article section)#Some User Guide - Next section (article section)|]]
+             ## Next section ![[Some User Guide - Next section (article section)#Some User Guide - Next section (article section)]]
 
              ## Another section
 

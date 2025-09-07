@@ -269,8 +269,11 @@ defmodule Magma.DocumentStruct.Section do
 
   defp transform_links(ast, style) do
     Panpipe.transform(ast, fn
-      %Panpipe.AST.Link{title: "wikilink", children: children} -> style.(children)
-      _ -> nil
+      %Panpipe.AST.Link{children: children, attr: %Panpipe.AST.Attr{classes: ["wikilink"]}} ->
+        style.(children)
+
+      _ ->
+        nil
     end)
   end
 

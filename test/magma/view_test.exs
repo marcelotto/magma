@@ -100,8 +100,8 @@ defmodule Magma.ViewTest do
 
         Module `Nested.Example` does:
 
-        -   x
-        -   y
+        - x
+        - y
         """
         |> String.trim()
 
@@ -142,8 +142,8 @@ defmodule Magma.ViewTest do
 
                Module `Nested.Example` does:
 
-               -   x
-               -   y
+               - x
+               - y
 
                """
                |> String.trim()

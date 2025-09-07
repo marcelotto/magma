@@ -225,12 +225,11 @@ defmodule Magma.DocumentStruct.ParserTest do
                              %Panpipe.AST.Str{string: "knowledge"},
                              %Panpipe.AST.Space{},
                              %Panpipe.AST.Image{
-                               children: [%Panpipe.AST.Str{string: ""}],
+                               children: [],
                                target: "Document#Title",
-                               title: "wikilink",
                                attr: %Panpipe.AST.Attr{
                                  identifier: "",
-                                 classes: [],
+                                 classes: ["wikilink"],
                                  key_value_pairs: %{}
                                }
                              }
