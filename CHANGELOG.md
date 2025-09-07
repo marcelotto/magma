@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Added
+
+- Support for Elixir v1.16
+
+### Changed
+
+- No longer dependent on Rambo causing troubles in MacOS
+
+
+[Compare v0.2.0...HEAD](https://github.com/marcelotto/magma/compare/v0.2.0...HEAD)
+
+
+
 ## v0.2.0 - 2023-12-15
 
 ### Added
