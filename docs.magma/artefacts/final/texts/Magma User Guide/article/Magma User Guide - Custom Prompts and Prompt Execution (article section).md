@@ -32,7 +32,7 @@ or from within Obsidian using the command palette or the Cmd-Ctrl-P hotkey for t
 >
 > Just like the name of any Obsidian document, the name of the prompt document must be unique. A good practice is to stick to a common naming scheme for prompts, e.g., "Prompt for ...", to ensure that the prompt documents never conflict with non-prompt documents.
 
-This process creates a Magma prompt document, a special type of Magma document. It is saved in the `custom_prompt/` subdirectory of the Magma vault. 
+This process creates a Magma prompt document, a special type of Magma document. It is saved in the `prompts/` subdirectory of the Magma vault. 
 
 > #### Magma documents {: .neutral}
 > 

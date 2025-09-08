@@ -6,7 +6,7 @@ defmodule Magma.Prompt do
   alias Magma.{Vault, Generation, PromptResult}
   alias Magma.Prompt.Template
 
-  @path_prefix "custom_prompts"
+  @path_prefix "prompts"
   def path_prefix, do: @path_prefix
 
   @impl true

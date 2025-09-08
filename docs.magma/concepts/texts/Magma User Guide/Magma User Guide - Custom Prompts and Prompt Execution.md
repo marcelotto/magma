@@ -28,7 +28,7 @@ This will create a Magma prompt document, one of the various kinds of Magma docu
 
 - [At this point Magma documents should be introduced in general as Markdown documents with a special semantics for Magma.]
 
-It is saved in the `custom_prompt/` subdirectory of the Magma vault.
+It is saved in the `prompts/` subdirectory of the Magma vault.
 
 Here's a freshly created custom prompt named "Example prompt" (the code block backticks had to be escaped):
 
@@ -132,7 +132,7 @@ There two ways to execute the prompt:
 - Manual execution via the "Execute manually" button
 	- or the Mix task executes the `magma.prompt.exec` Mix task with the `--manual` option
 
-In both cases the prompt result will be saved in a separate PromptResult Magma document named after the original prompt with a timestamp (e.g. in our example `Example prompt (Prompt result 2023-10-23T04:52:21)`)  in the directory `custom_prompts/__prompt_results__/`.
+In both cases the prompt result will be saved in a separate PromptResult Magma document named after the original prompt with a timestamp (e.g. in our example `Example prompt (Prompt result 2023-10-23T045221)`)  in the directory `prompts/__prompt_results__/`.
 
 
 ### Manual execution

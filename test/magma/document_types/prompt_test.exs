@@ -18,7 +18,7 @@ defmodule Magma.PromptTest do
     assert is_just_now(prompt.created_at)
 
     assert prompt.name == "Foo"
-    assert prompt.path == Vault.path("custom_prompts/#{prompt.name}.md")
+    assert prompt.path == Vault.path("prompts/#{prompt.name}.md")
 
     assert prompt.content ==
              """

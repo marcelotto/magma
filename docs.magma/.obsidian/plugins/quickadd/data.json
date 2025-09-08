@@ -13,7 +13,7 @@
       "folder": {
         "enabled": true,
         "folders": [
-          "custom_prompts"
+          "prompts"
         ],
         "chooseWhenCreatingNote": false,
         "createInSameFolderAsActiveFile": false,

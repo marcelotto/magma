@@ -11,11 +11,12 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - New link resolution style `:at_file_ref` which replaces links with the file path of the linked 
   document in the form `@"path/to/file.md"`, that is used by many coding agents (Claude Code, 
-  Cursor etc.) to reference files  
+  Cursor etc.) to reference files
 - Support for Elixir v1.16
 
 ### Changed
 
+- Change name of custom prompt directory from `custom_prompts/` to `prompts/`
 - No longer dependent on Rambo causing troubles in MacOS
 
 
