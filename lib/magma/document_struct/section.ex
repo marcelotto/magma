@@ -246,6 +246,8 @@ defmodule Magma.DocumentStruct.Section do
   - `:emph` - italic
   - `:strong` - bold
   - `:underline` - underlined
+  - `:at_file_ref` - file path of the linked document in the form `@"path/to/file.md"`, that is
+    used by many coding agents (Claude Code, Cursor etc.) to reference files
   - a function accepting the children of the link AST and returning the
     replacement AST node
   """
@@ -269,23 +271,44 @@ defmodule Magma.DocumentStruct.Section do
 
   defp transform_links(ast, style) do
     Panpipe.transform(ast, fn
-      %Panpipe.AST.Link{children: children, attr: %Panpipe.AST.Attr{classes: ["wikilink"]}} ->
-        style.(children)
-
-      _ ->
-        nil
+      %Panpipe.AST.Link{attr: %Panpipe.AST.Attr{classes: ["wikilink"]}} = link -> style.(link)
+      _ -> nil
     end)
   end
 
   defp link_resolution_style(nil), do: default_link_resolution_style() |> link_resolution_style()
-  defp link_resolution_style(:plain), do: & &1
-  defp link_resolution_style(:emph), do: &%Panpipe.AST.Emph{children: &1}
-  defp link_resolution_style(:strong), do: &%Panpipe.AST.Strong{children: &1}
-  defp link_resolution_style(:underline), do: &%Panpipe.AST.Underline{children: &1}
+  defp link_resolution_style(:plain), do: & &1.children
+  defp link_resolution_style(:emph), do: &%Panpipe.AST.Emph{children: &1.children}
+  defp link_resolution_style(:strong), do: &%Panpipe.AST.Strong{children: &1.children}
+  defp link_resolution_style(:underline), do: &%Panpipe.AST.Underline{children: &1.children}
+  defp link_resolution_style(:at_file_ref), do: &at_file_ref_style(&1)
   defp link_resolution_style(fun) when is_function(fun), do: fun
 
   defp default_link_resolution_style do
     Magma.Config.system(:link_resolution_style)
+  end
+
+  defp at_file_ref_style(%Panpipe.AST.Link{target: target} = link) do
+    {document_name, section} =
+      case String.split(target, "#", parts: 2) do
+        [name, section] -> {name, section}
+        _ -> {target, nil}
+      end
+
+    if path = Magma.Vault.document_path(document_name) do
+      relative_path = Path.relative_to(path, File.cwd!())
+
+      string =
+        if section do
+          ~s[section "#{section}" of @"#{relative_path}"]
+        else
+          ~s[@"#{relative_path}"]
+        end
+
+      %Panpipe.AST.Str{string: string}
+    else
+      link.children
+    end
   end
 
   @doc """

@@ -431,6 +431,60 @@ defmodule Magma.DocumentStruct.SectionTest do
                - *Link to#\\^block*
                """
     end
+
+    @tag vault_files: ["plain/Document.md"]
+    test ":at_file_ref style with existing document" do
+      result =
+        """
+        # Document with Links
+
+        This has a [[Document]] link.
+        """
+        |> section()
+        |> Section.resolve_links(style: :at_file_ref)
+        |> Section.to_markdown()
+
+      assert result == """
+             # Document with Links
+
+             This has a @"test/data/example_vault/plain/Document.md" link.
+             """
+
+      # Test that link with section reference extracts document name correctly
+      result_with_section =
+        """
+        # Test Section
+
+        [[Document#Section]] with section reference.
+        """
+        |> section()
+        |> Section.resolve_links(style: :at_file_ref)
+        |> Section.to_markdown()
+
+      assert result_with_section == """
+             # Test Section
+
+             section "Section" of @"test/data/example_vault/plain/Document.md" with section reference.
+             """
+    end
+
+    test ":at_file_ref style with non-existent document" do
+      result =
+        """
+        # Document with Links
+
+        This has a [[NonExistentDocument]] link.
+        """
+        |> section()
+        |> Section.resolve_links(style: :at_file_ref)
+        |> Section.to_markdown()
+
+      assert result == """
+             # Document with Links
+
+             This has a NonExistentDocument link.
+             """
+    end
   end
 
   test "remove_comments/1" do
