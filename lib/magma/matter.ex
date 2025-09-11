@@ -218,7 +218,7 @@ defmodule Magma.Matter do
       ** (RuntimeError) Invalid Magma.Matter type: NonExisting
 
   """
-  @spec type(type()) :: binary
+  @spec type_name(type(), boolean) :: binary
   def type_name(type, validate \\ true) do
     if not validate or type?(type) do
       case Module.split(type) do
