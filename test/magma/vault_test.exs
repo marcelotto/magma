@@ -9,7 +9,7 @@ defmodule Magma.VaultTest do
          "concepts/modules/Nested/Nested.Example.md",
          "concepts/Project.md",
          "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
-         "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00).md",
+         "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T125300).md",
          "artefacts/final/modules/Nested/Example/ModuleDoc of Nested.Example.md"
        ]
   test "document_type/1", %{

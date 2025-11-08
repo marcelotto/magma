@@ -19,6 +19,9 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 - Change name of custom prompt directory from `custom_prompts/` to `prompts/`
 - No longer dependent on Rambo causing troubles in MacOS
 
+### Fixed
+
+- No longer produce invalid prompt result filenames with colons (in the timestamp)
 
 [Compare v0.2.0...HEAD](https://github.com/marcelotto/magma/compare/v0.2.0...HEAD)
 

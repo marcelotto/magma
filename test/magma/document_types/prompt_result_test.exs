@@ -27,7 +27,7 @@ defmodule Magma.PromptResultTest do
                PromptResult.new(prompt, created_at: created_at)
 
       assert result.name ==
-               "#{prompt.name} (Prompt result #{NaiveDateTime.to_iso8601(naive_datetime())})"
+               "#{prompt.name} (Prompt result #{NaiveDateTime.to_iso8601(naive_datetime()) |> String.replace(":", "")})"
 
       assert result.path ==
                Vault.path("prompts/__prompt_results__/#{result.name}.md")

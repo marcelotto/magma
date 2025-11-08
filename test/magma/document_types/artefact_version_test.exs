@@ -15,7 +15,7 @@ defmodule Magma.Artefact.VersionTest do
 
       missing_prompt_result =
         %Magma.DocumentNotFound{
-          name: "Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)",
+          name: "Generated ModuleDoc of Nested.Example (2023-08-23T125300)",
           document_type: PromptResult
         }
 
@@ -50,7 +50,7 @@ defmodule Magma.Artefact.VersionTest do
               %Artefact.Version{
                 artefact: %ModuleDoc{name: "ModuleDoc of Nested.Example"},
                 draft: %Magma.DocumentNotFound{
-                  name: "Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)"
+                  name: "Generated ModuleDoc of Nested.Example (2023-08-23T125300)"
                 }
               }} = Artefact.Version.load("ModuleDoc of Nested.Example")
     end

@@ -105,7 +105,7 @@ defmodule Magma.Artefacts.ArticleTest do
     assert is_just_now(prompt_result.created_at)
 
     assert prompt_result.name ==
-             "Generated Some User Guide - Introduction (article section) (#{NaiveDateTime.to_iso8601(prompt_result.created_at)})"
+             "Generated Some User Guide - Introduction (article section) (#{NaiveDateTime.to_iso8601(prompt_result.created_at) |> String.replace(":", "")})"
 
     assert prompt_result.path ==
              Vault.path(
@@ -132,7 +132,7 @@ defmodule Magma.Artefacts.ArticleTest do
   end
 
   @tag vault_files: [
-         "artefacts/generated/texts/Some User Guide/article/__prompt_results__/Generated Some User Guide - Introduction (article section) (2023-09-23T00:08:00).md",
+         "artefacts/generated/texts/Some User Guide/article/__prompt_results__/Generated Some User Guide - Introduction (article section) (2023-09-23T000800).md",
          "artefacts/generated/texts/Some User Guide/article/Prompt for Some User Guide - Introduction (article section).md",
          "concepts/texts/Some User Guide/Some User Guide - Introduction.md",
          "concepts/texts/Some User Guide/Some User Guide.md"
@@ -143,7 +143,7 @@ defmodule Magma.Artefacts.ArticleTest do
 
     prompt_result =
       PromptResult.load!(
-        "Generated Some User Guide - Introduction (article section) (2023-09-23T00:08:00)"
+        "Generated Some User Guide - Introduction (article section) (2023-09-23T000800)"
       )
 
     assert {:ok,

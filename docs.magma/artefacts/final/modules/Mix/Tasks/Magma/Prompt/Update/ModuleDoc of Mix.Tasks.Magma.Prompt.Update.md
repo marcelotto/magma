@@ -2,9 +2,10 @@
 magma_type: Artefact.Version
 magma_artefact: ModuleDoc
 magma_concept: "[[Mix.Tasks.Magma.Prompt.Update]]"
-magma_draft: "[[Generated ModuleDoc of Mix.Tasks.Magma.Prompt.Update (2023-11-02T16:40:58)]]"
+magma_draft: "[[Generated ModuleDoc of Mix.Tasks.Magma.Prompt.Update (2023-11-02T164058)]]"
 created_at: 2023-11-02 16:42:15
-tags: [magma-vault]
+tags:
+  - magma-vault
 aliases: []
 ---
 

@@ -24,11 +24,15 @@ defmodule Magma.PromptResult do
   end
 
   def build_name(%__MODULE__{prompt: %Prompt{} = prompt} = result) do
-    "#{prompt.name} (Prompt result #{NaiveDateTime.to_iso8601(result.created_at)})"
+    "#{prompt.name} (Prompt result #{format_timestamp(result.created_at)})"
   end
 
   def build_name(%__MODULE__{} = result) do
-    "#{title(result)} (#{NaiveDateTime.to_iso8601(result.created_at)})"
+    "#{title(result)} (#{format_timestamp(result.created_at)})"
+  end
+
+  defp format_timestamp(datetime) do
+    datetime |> NaiveDateTime.to_iso8601() |> String.replace(":", "")
   end
 
   @impl true

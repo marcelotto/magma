@@ -23,11 +23,11 @@ defmodule Magma.Artefacts.ModuleDocTest do
   describe "get/1" do
     @tag vault_files: [
            "artefacts/final/modules/Nested/Example/ModuleDoc of Nested.Example.md",
-           "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00).md",
+           "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T125300).md",
            "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
            "concepts/modules/Nested/Nested.Example.md",
            "artefacts/final/modules/TopLevelExample/ModuleDoc of TopLevelExample.md",
-           "artefacts/generated/modules/TopLevelExample/__prompt_results__/Generated ModuleDoc of TopLevelExample (2023-09-07T21:17:00).md",
+           "artefacts/generated/modules/TopLevelExample/__prompt_results__/Generated ModuleDoc of TopLevelExample (2023-09-07T211700).md",
            "artefacts/generated/modules/TopLevelExample/Prompt for ModuleDoc of TopLevelExample.md",
            "concepts/modules/TopLevelExample.md"
          ]
@@ -219,7 +219,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
     assert is_just_now(prompt_result.created_at)
 
     assert prompt_result.name ==
-             "Generated ModuleDoc of Nested.Example (#{NaiveDateTime.to_iso8601(prompt_result.created_at)})"
+             "Generated ModuleDoc of Nested.Example (#{NaiveDateTime.to_iso8601(prompt_result.created_at) |> String.replace(":", "")})"
 
     assert prompt_result.path ==
              Vault.path(
@@ -271,7 +271,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
   end
 
   @tag vault_files: [
-         "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00).md",
+         "artefacts/generated/modules/Nested/Example/__prompt_results__/Generated ModuleDoc of Nested.Example (2023-08-23T125300).md",
          "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
          "concepts/modules/Nested/Nested.Example.md"
        ]
@@ -280,7 +280,7 @@ defmodule Magma.Artefacts.ModuleDocTest do
     module_doc_artefact = ModuleDoc.new!(concept)
 
     prompt_result =
-      PromptResult.load!("Generated ModuleDoc of Nested.Example (2023-08-23T12:53:00)")
+      PromptResult.load!("Generated ModuleDoc of Nested.Example (2023-08-23T125300)")
 
     assert {:ok,
             %Artefact.Version{

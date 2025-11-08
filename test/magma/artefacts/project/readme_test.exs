@@ -85,7 +85,7 @@ defmodule Magma.Artefacts.ReadmeTest do
     assert is_just_now(prompt_result.created_at)
 
     assert prompt_result.name ==
-             "Generated README (#{NaiveDateTime.to_iso8601(prompt_result.created_at)})"
+             "Generated README (#{NaiveDateTime.to_iso8601(prompt_result.created_at) |> String.replace(":", "")})"
 
     assert prompt_result.path ==
              Vault.path(
@@ -112,13 +112,13 @@ defmodule Magma.Artefacts.ReadmeTest do
   end
 
   @tag vault_files: [
-         "artefacts/generated/project/README/__prompt_results__/Generated README (2023-10-23T22:59:00).md",
+         "artefacts/generated/project/README/__prompt_results__/Generated README (2023-10-23T225900).md",
          "artefacts/generated/project/README/Prompt for README.md",
          "concepts/Project.md"
        ]
   @tag :tmp_dir
   test "Artefact.Version creation", %{tmp_dir: tmp_dir} do
-    prompt_result = PromptResult.load!("Generated README (2023-10-23T22:59:00)")
+    prompt_result = PromptResult.load!("Generated README (2023-10-23T225900)")
 
     readme_path = Path.join(tmp_dir, "README.md")
 

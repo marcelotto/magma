@@ -92,7 +92,7 @@ defmodule Magma.Artefacts.TableOfContentsTest do
     assert is_just_now(prompt_result.created_at)
 
     assert prompt_result.name ==
-             "Generated Some User Guide ToC (#{NaiveDateTime.to_iso8601(prompt_result.created_at)})"
+             "Generated Some User Guide ToC (#{NaiveDateTime.to_iso8601(prompt_result.created_at) |> String.replace(":", "")})"
 
     assert prompt_result.path ==
              Vault.path(
@@ -119,14 +119,14 @@ defmodule Magma.Artefacts.TableOfContentsTest do
   end
 
   @tag vault_files: [
-         "artefacts/generated/texts/Some User Guide/__prompt_results__/Generated Some User Guide ToC (2023-09-18T12:56:00).md",
+         "artefacts/generated/texts/Some User Guide/__prompt_results__/Generated Some User Guide ToC (2023-09-18T125600).md",
          "artefacts/generated/texts/Some User Guide/Prompt for Some User Guide ToC.md",
          "concepts/texts/Some User Guide/Some User Guide.md"
        ]
   test "Artefact.Version creation and loading" do
     concept = Concept.load!("Some User Guide")
     toc_artefact = TableOfContents.new!(concept)
-    prompt_result = PromptResult.load!("Generated Some User Guide ToC (2023-09-18T12:56:00)")
+    prompt_result = PromptResult.load!("Generated Some User Guide ToC (2023-09-18T125600)")
 
     assert {:ok,
             %Artefact.Version{

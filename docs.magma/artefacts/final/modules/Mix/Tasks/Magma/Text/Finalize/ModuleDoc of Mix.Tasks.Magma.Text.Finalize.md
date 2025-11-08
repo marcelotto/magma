@@ -2,9 +2,10 @@
 magma_type: Artefact.Version
 magma_artefact: ModuleDoc
 magma_concept: "[[Mix.Tasks.Magma.Text.Finalize]]"
-magma_draft: "[[Generated ModuleDoc of Mix.Tasks.Magma.Text.Finalize (2023-11-02T21:30:34)]]"
+magma_draft: "[[Generated ModuleDoc of Mix.Tasks.Magma.Text.Finalize (2023-11-02T213034)]]"
 created_at: 2023-11-02 21:31:39
-tags: [magma-vault]
+tags:
+  - magma-vault
 aliases: []
 ---
 

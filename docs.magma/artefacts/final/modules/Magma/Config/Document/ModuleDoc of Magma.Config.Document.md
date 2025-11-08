@@ -2,9 +2,10 @@
 magma_type: Artefact.Version
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Config.Document]]"
-magma_draft: "[[Generated ModuleDoc of Magma.Config.Document (2023-12-06T21:12:16)]]"
+magma_draft: "[[Generated ModuleDoc of Magma.Config.Document (2023-12-06T211216)]]"
 created_at: 2023-12-06 21:14:36
-tags: [magma-vault]
+tags:
+  - magma-vault
 aliases: []
 ---
 

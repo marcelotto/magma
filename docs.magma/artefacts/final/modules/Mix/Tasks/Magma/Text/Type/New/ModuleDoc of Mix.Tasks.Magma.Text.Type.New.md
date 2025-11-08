@@ -2,9 +2,10 @@
 magma_type: Artefact.Version
 magma_artefact: ModuleDoc
 magma_concept: "[[Mix.Tasks.Magma.Text.Type.New]]"
-magma_draft: "[[Generated ModuleDoc of Mix.Tasks.Magma.Text.Type.New (2023-11-25T22:42:59)]]"
+magma_draft: "[[Generated ModuleDoc of Mix.Tasks.Magma.Text.Type.New (2023-11-25T224259)]]"
 created_at: 2023-11-25 22:47:06
-tags: [magma-vault]
+tags:
+  - magma-vault
 aliases: []
 ---
 

@@ -2,9 +2,10 @@
 magma_type: Artefact.Version
 magma_artefact: ModuleDoc
 magma_concept: "[[Magma.Vault.Migration]]"
-magma_draft: "[[Generated ModuleDoc of Magma.Vault.Migration (2023-12-04T13:57:03)]]"
+magma_draft: "[[Generated ModuleDoc of Magma.Vault.Migration (2023-12-04T135703)]]"
 created_at: 2023-12-04 13:58:57
-tags: [magma-vault]
+tags:
+  - magma-vault
 aliases: []
 ---
 

@@ -2,9 +2,10 @@
 magma_type: Artefact.Version
 magma_artefact: TableOfContents
 magma_concept: "[[Magma User Guide]]"
-magma_draft: "[[Generated Magma User Guide ToC (2023-10-20T09:41:55)]]"
+magma_draft: "[[Generated Magma User Guide ToC (2023-10-20T094155)]]"
 created_at: 2023-10-20 09:49:33
-tags: [magma-vault]
+tags:
+  - magma-vault
 aliases: []
 ---
 
