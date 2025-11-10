@@ -7,5 +7,23 @@
       ],
       "key": "P"
     }
+  ],
+  "quickadd:choice:200e0538-7ac9-4f8c-88bc-8564afc56149": [
+    {
+      "modifiers": [
+        "Ctrl",
+        "Mod"
+      ],
+      "key": "S"
+    }
+  ],
+  "templater-obsidian:templates/session_continuation.md": [
+    {
+      "modifiers": [
+        "Ctrl",
+        "Mod"
+      ],
+      "key": "C"
+    }
   ]
 }

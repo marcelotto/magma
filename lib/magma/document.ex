@@ -12,7 +12,7 @@ defmodule Magma.Document do
   `Magma.DocumentStruct` allows to get the AST of a Markdown document.
   """
 
-  alias Magma.{Vault, View, Concept, Artefact, Prompt, PromptResult, Text}
+  alias Magma.{Vault, View, Concept, Artefact, Prompt, PromptResult, Session, Text}
 
   import Magma.Utils, only: [init_fields: 2]
 
@@ -23,6 +23,7 @@ defmodule Magma.Document do
           | PromptResult.t()
           | Artefact.Version.t()
           | Text.Preview.t()
+          | Session.t()
 
   @type type :: module
 
@@ -324,6 +325,12 @@ defmodule Magma.Document do
   Returns the document type module for the given string.
 
   ## Example
+
+      iex> Magma.Document.type("Prompt")
+      Magma.Prompt
+
+      iex> Magma.Document.type("Session")
+      Magma.Session
 
       iex> Magma.Document.type("Concept")
       Magma.Concept

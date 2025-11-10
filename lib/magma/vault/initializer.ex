@@ -4,7 +4,7 @@ defmodule Magma.Vault.Initializer do
   alias Magma.Vault
   alias Magma.Vault.{BaseVault, CodeSync}
   alias Magma.Matter.Project
-  alias Magma.{Concept, Prompt, Document, Generation}
+  alias Magma.{Concept, Prompt, Session, Document, Generation}
 
   import Magma.MixHelper
 
@@ -21,6 +21,7 @@ defmodule Magma.Vault.Initializer do
       {:ok, project} = create_project(project_name)
 
       create_custom_prompt_template(project)
+      create_session_templates(project)
 
       if Keyword.get(opts, :code_sync, true) do
         CodeSync.sync(opts)
@@ -39,6 +40,10 @@ defmodule Magma.Vault.Initializer do
       Mix.Generator.create_directory(vault_dest_dir)
 
       Prompt.path_prefix()
+      |> Vault.path()
+      |> Mix.Generator.create_directory()
+
+      Session.path_prefix()
       |> Vault.path()
       |> Mix.Generator.create_directory()
 
@@ -92,6 +97,21 @@ defmodule Magma.Vault.Initializer do
 
     Vault.custom_prompt_template_path()
     |> create_file(Prompt.Template.custom_prompt_obsidian_template(project, prompt))
+
+    :ok
+  end
+
+  def create_session_templates(project) do
+    session =
+      "default"
+      |> Session.new!(generation: Generation.default())
+      |> Document.init()
+
+    Vault.session_template_path()
+    |> create_file(Prompt.Template.session_obsidian_template(project, session))
+
+    Vault.session_continuation_template_path()
+    |> create_file(Prompt.Template.session_continuation_obsidian_template())
 
     :ok
   end

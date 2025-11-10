@@ -1,7 +1,7 @@
 defmodule Magma.Prompt.Assembler do
   @moduledoc false
 
-  alias Magma.{Prompt, DocumentStruct}
+  alias Magma.{Prompt, Session, DocumentStruct}
   alias Magma.DocumentStruct.Section
 
   import Magma.Utils.Guards
@@ -21,7 +21,7 @@ defmodule Magma.Prompt.Assembler do
           {:error, "no request prompt section found in #{prompt.path}"}
 
         true ->
-          if Enum.count(section.sections) > 2, do: ignored_section_detected(prompt)
+          if Enum.count(section.sections) > 2, do: ignored_section_detected(prompt.path)
 
           {
             :ok,
@@ -32,23 +32,50 @@ defmodule Magma.Prompt.Assembler do
     end
   end
 
+  def assemble_all(%Session{} = session) do
+    case Session.mode(session) do
+      :initial ->
+        case session.parts do
+          [{:initial, ast_nodes} | _rest] -> assemble_from_ast(ast_nodes, session.path)
+          _ -> {:error, "no initial part found in session"}
+        end
+
+      :continuation ->
+        if ast_nodes = Session.last_prompt_part(session) do
+          assemble_from_ast(ast_nodes, session.path)
+        else
+          {:error, "no prompt sections found in continuation mode"}
+        end
+    end
+  end
+
   def assemble_all(prompt) when is_prompt(prompt) do
     with {:ok, section} <- section(prompt) do
       {:ok, compile(section)}
     end
   end
 
+  @doc false
+  def assemble_from_ast(ast_nodes, path) when is_list(ast_nodes) do
+    with {:ok, document_struct} <- DocumentStruct.Parser.to_section(ast_nodes) do
+      if Enum.count(document_struct.sections) > 1, do: ignored_section_detected(path)
+
+      main_section = DocumentStruct.main_section(document_struct)
+      {:ok, compile(main_section)}
+    end
+  end
+
   defp section(prompt) do
     with {:ok, document_struct} <- DocumentStruct.parse(prompt.content) do
-      if Enum.count(document_struct.sections) > 1, do: ignored_section_detected(prompt)
+      if Enum.count(document_struct.sections) > 1, do: ignored_section_detected(prompt.path)
 
       {:ok, DocumentStruct.main_section(document_struct)}
     end
   end
 
-  defp ignored_section_detected(prompt) do
+  defp ignored_section_detected(path) do
     Logger.warning(
-      "Prompt #{prompt.path} contains subsections which won't be taken into account. Put them under the request section if you want that."
+      "Prompt #{path} contains subsections which won't be taken into account. Put them under the request section if you want that."
     )
   end
 

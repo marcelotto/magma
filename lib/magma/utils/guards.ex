@@ -7,5 +7,7 @@ defmodule Magma.Utils.Guards do
   defguard maybe_module(term) when is_ordinary_atom(term)
 
   defguard is_prompt(prompt)
-           when is_struct(prompt, Magma.Artefact.Prompt) or is_struct(prompt, Magma.Prompt)
+           when is_struct(prompt, Magma.Artefact.Prompt) or
+                  is_struct(prompt, Magma.Prompt) or
+                  is_struct(prompt, Magma.Session)
 end

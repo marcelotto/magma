@@ -38,6 +38,10 @@ defmodule Magma.Vault.InitializerTest do
       assert File.exists?(Vault.path(Magma.Prompt.path_prefix()))
       assert File.exists?(Vault.custom_prompt_template_path())
 
+      assert File.exists?(Vault.path(Magma.Session.path_prefix()))
+      assert File.exists?(Vault.session_template_path())
+      assert File.exists?(Vault.session_continuation_template_path())
+
       assert {:ok, %Concept{}} =
                Matter.Module.new!(Magma)
                |> Concept.new!()

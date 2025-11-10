@@ -25,6 +25,8 @@ defmodule Magma.Vault do
 
   @template_path_prefix "templates"
   @custom_prompt_template_name "custom_prompt.md"
+  @session_template_name "session.md"
+  @session_continuation_template_name "session_continuation.md"
 
   @doc """
   Returns the application configured path to the vault.
@@ -84,6 +86,19 @@ defmodule Magma.Vault do
   """
   @spec custom_prompt_template_path :: Path.t()
   def custom_prompt_template_path, do: template_path(@custom_prompt_template_name)
+
+  @doc """
+  Returns the Vault path for the Session template.
+  """
+  @spec session_template_path :: Path.t()
+  def session_template_path, do: template_path(@session_template_name)
+
+  @doc """
+  Returns the Vault path for the Session continuation template.
+  """
+  @spec session_continuation_template_path :: Path.t()
+  def session_continuation_template_path,
+    do: template_path(@session_continuation_template_name)
 
   @doc """
   Returns the Vault path of the directory for `Magma.Concept` documents.
