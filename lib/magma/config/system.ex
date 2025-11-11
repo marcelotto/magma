@@ -78,7 +78,7 @@ defmodule Magma.Config.System do
   end
 
   def default_link_resolution_style do
-    Application.get_env(:magma, :link_resolution_style, :plain)
+    Application.get_env(:magma, :link_resolution_style, :at_file_ref)
   end
 
   def default_persona(project_name) do

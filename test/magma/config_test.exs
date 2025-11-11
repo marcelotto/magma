@@ -11,7 +11,7 @@ defmodule Magma.ConfigTest do
   test "system/1" do
     assert Magma.Config.system(:default_tags) == ["magma-vault"]
     assert Magma.Config.system(:default_generation) == %Magma.Generation.Mock{}
-    assert Magma.Config.system(:link_resolution_style) == :plain
+    assert Magma.Config.system(:link_resolution_style) == :at_file_ref
   end
 
   @tag vault_files: ["concepts/Project.md"]
