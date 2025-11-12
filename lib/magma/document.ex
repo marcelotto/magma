@@ -233,7 +233,11 @@ defmodule Magma.Document do
   end
 
   defp render_custom_metadata(metadata) do
-    Enum.map_join(metadata, "\n", fn {key, value} -> "#{key}: #{inspect(value)}" end)
+    Enum.map_join(metadata, "\n", fn
+      {key, nil} -> "#{key}: "
+      {key, value} when is_atom(value) -> "#{key}: #{value |> to_string() |> inspect()}"
+      {key, value} -> "#{key}: #{inspect(value)}"
+    end)
   end
 
   @doc """

@@ -11,7 +11,8 @@ defmodule Magma.Config.SystemTest do
               custom_metadata: %{
                 default_tags: ["magma-vault"],
                 default_generation: %Magma.Generation.Mock{},
-                link_resolution_style: :at_file_ref
+                link_resolution_style: :at_file_ref,
+                session_response_mode: :import
               }
             } = config} = Magma.Config.System.load()
 

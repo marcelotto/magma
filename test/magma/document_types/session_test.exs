@@ -5,6 +5,17 @@ defmodule Magma.SessionTest do
 
   alias Magma.{Document, Session}
 
+  test "new/1 initializes document structure" do
+    assert {:ok, %Session{name: "MySession"} = session} = Session.new("MySession")
+    assert session.path == Vault.path("sessions/MySession.md")
+    assert session.name == "MySession"
+  end
+
+  test "new!/1 raises on error" do
+    # This would only raise if there's an error in path building
+    assert %Session{} = Session.new!("ValidSession")
+  end
+
   @tag vault_files: ["concepts/Project.md"]
   test "create/1 and re-load/1 of session" do
     assert {:ok,
@@ -41,28 +52,26 @@ defmodule Magma.SessionTest do
 
              ## Request
 
-
-
-             **Response Instructions:**
-
-             Use the Edit tool to replace the line starting with "WRITE_RESPONSE_HERE" in `test/data/example_vault/sessions/#{session.name}.md`:
-
-             - Pure discussion → Write complete response there (not in chat)
-             - Coding task → Complete work first, then write summary there (files changed, decisions made)
-
-             ALWAYS use Edit tool - do NOT output main response in chat.
-             Do NOT read the file first - it just contains the conversation we're currently having - use Edit tool directly to replace the marker.
-
-
-             ---
+             ----
 
              ***Response***
 
-             ---
-
+             ----
              ## Response
 
-             WRITE_RESPONSE_HERE
+             #{Magma.View.button("Import Response", "magma.session.import_response", color: "blue")}
+
+
+
+
+             ----
+
+             ***Notes***
+
+             ----
+             #{Magma.View.button("Copy last prompt to clipboard", "magma.prompt.copy")}
+             # Notes
+
              """
 
     # Load and verify - parts will be parsed during load
@@ -70,18 +79,29 @@ defmodule Magma.SessionTest do
     assert loaded_session.name == session.name
     assert loaded_session.content == session.content
     assert is_list(loaded_session.parts)
-    assert [{:initial, _}, {:response, _}] = loaded_session.parts
+    assert [initial: _, response: _, notes: _] = loaded_session.parts
   end
 
-  test "new/1 initializes document structure" do
-    assert {:ok, %Session{name: "MySession"} = session} = Session.new("MySession")
-    assert session.path == Vault.path("sessions/MySession.md")
-    assert session.name == "MySession"
-  end
+  @tag vault_files: ["concepts/Project.md"]
+  test "create with session_response_mode" do
+    assert {:ok, session} = Session.create("DefaultSession")
+    assert String.contains?(session.content, "Import Response")
+    assert String.contains?(session.content, "```button")
+    assert String.contains?(session.content, "***Response***")
 
-  test "new!/1 raises on error" do
-    # This would only raise if there's an error in path building
-    assert %Session{} = Session.new!("ValidSession")
+    assert {:ok, session} = Session.create("ImportSession", response_mode: :import)
+    assert String.contains?(session.content, "Import Response")
+    assert String.contains?(session.content, "```button")
+    assert String.contains?(session.content, "***Response***")
+
+    assert {:ok, session} = Session.create("EnabledSession", response_mode: :enabled)
+    assert String.contains?(session.content, "Import Response")
+    assert String.contains?(session.content, "```button")
+    assert String.contains?(session.content, "***Response***")
+
+    assert {:ok, session} = Session.create("DisabledSession", response_mode: :disabled)
+    refute String.contains?(session.content, "***Response***")
+    refute String.contains?(session.content, "Import Response")
   end
 
   describe "mode detection" do
@@ -97,33 +117,41 @@ defmodule Magma.SessionTest do
     test "detects continuation mode when Prompt separators are present" do
       assert {:ok, session} = Session.create("ContinuationSession")
 
-      continuation_content =
-        session.content <>
+      File.write!(
+        session.path,
+        Document.render_front_matter(session) <>
+          session.content <>
           """
 
 
-          ---
+          ----
 
           ***Prompt***
 
-          ---
+          ----
 
           Follow-up request here.
 
-          ---
+          ----
 
           ***Response***
 
-          ---
+          ----
 
           WRITE_RESPONSE_HERE
           """
-
-      File.write!(session.path, Document.render_front_matter(session) <> continuation_content)
+      )
 
       assert {:ok, loaded_session} = Session.load(session.path)
       assert Session.mode(loaded_session) == :continuation
     end
+  end
+
+  @tag vault_files: ["concepts/Project.md"]
+  test "parts parsing" do
+    assert {:ok, session} = Session.create("SessionWithParts")
+    assert {:ok, loaded_session} = Session.load(session.path)
+    assert [initial: _initial, response: _response, notes: _notes] = loaded_session.parts
   end
 
   describe "last_prompt_part/1" do
@@ -144,35 +172,35 @@ defmodule Magma.SessionTest do
           """
 
 
-          ---
+          ----
 
           ***Prompt***
 
-          ---
+          ----
 
           First follow-up request.
 
-          ---
+          ----
 
           ***Response***
 
-          ---
+          ----
 
           First response.
 
-          ---
+          ----
 
           ***Prompt***
 
-          ---
+          ----
 
           Second follow-up request.
 
-          ---
+          ----
 
           ***Response***
 
-          ---
+          ----
 
           WRITE_RESPONSE_HERE
           """
@@ -191,12 +219,161 @@ defmodule Magma.SessionTest do
     end
   end
 
-  describe "parts parsing" do
-    @tag vault_files: ["concepts/Project.md"]
-    test "parses parts when loading session" do
-      assert {:ok, session} = Session.create("SessionWithParts")
-      assert {:ok, loaded_session} = Session.load(session.path)
-      assert [{:initial, _initial}, {:response, _content}] = loaded_session.parts
+  describe "import_response/1" do
+    @describetag vault_files: ["concepts/Project.md"]
+
+    test "successfully imports response from external file" do
+      assert {:ok, session} = Session.create("ImportTest", response_mode: :import)
+
+      response_file_path = Vault.session_response_file_path("ImportTest")
+      File.write!(response_file_path, "This is the imported response content.")
+
+      assert {:ok, updated_session} = Session.import_response("ImportTest")
+
+      expected_content = """
+      #{Magma.Prompt.Template.controls(session)}
+      ```table-of-contents
+      ```
+      # #{session.name}
+
+      ## System prompt
+
+      ![[Magma.system.config#Persona|]]
+
+      ### Context knowledge
+
+      The following sections contain background knowledge you need to be aware of.
+
+      ![[Magma.system.config#Context knowledge|]]
+
+      #### Description of the Some project ![[Project#Description|]]
+
+
+      ## Request
+
+      ----
+
+      ***Response***
+
+      ----
+      ## Response
+
+      This is the imported response content.
+
+
+
+
+      ----
+
+      ***Notes***
+
+      ----
+      #{Magma.View.button("Copy last prompt to clipboard", "magma.prompt.copy")}
+      # Notes
+
+      """
+
+      assert updated_session.content == expected_content
+
+      assert {:ok, reloaded_session} = Session.load("ImportTest")
+      assert reloaded_session.content == expected_content
+
+      refute File.exists?(response_file_path)
+    end
+
+    test "handles missing response file" do
+      assert {:ok, _session} = Session.create("NoResponse", response_mode: :import)
+      assert {:error, :not_found} = Session.import_response("NoResponse")
+    end
+
+    test "handles empty response file" do
+      assert {:ok, _session} = Session.create("EmptyResponse", response_mode: :import)
+
+      response_file_path = Vault.session_response_file_path("EmptyResponse")
+      File.write!(response_file_path, "")
+
+      assert {:error, _} = Session.import_response("EmptyResponse")
+
+      assert File.exists?(response_file_path)
+    end
+
+    test "handles missing button in session" do
+      assert {:ok, _session} = Session.create("NoButton", response_mode: :disabled)
+
+      response_file_path = Vault.session_response_file_path("NoButton")
+      File.write!(response_file_path, "Response content")
+
+      assert {:error, _} = Session.import_response("NoButton")
+
+      assert File.exists?(response_file_path)
+    end
+
+    test "finds latest response file among multiple" do
+      assert {:ok, session} = Session.create("MultipleResponses", response_mode: :import)
+
+      old_timestamp = ~U[2025-01-01 10:00:00Z]
+      new_timestamp = ~U[2025-01-11 15:30:00Z]
+
+      old_file = Vault.session_response_file_path("MultipleResponses", old_timestamp)
+      new_file = Vault.session_response_file_path("MultipleResponses", new_timestamp)
+
+      File.write!(old_file, "Old response")
+      File.write!(new_file, "New response")
+
+      assert {:ok, updated_session} = Session.import_response(session)
+
+      expected_content = """
+      #{Magma.Prompt.Template.controls(session)}
+      ```table-of-contents
+      ```
+      # #{session.name}
+
+      ## System prompt
+
+      ![[Magma.system.config#Persona|]]
+
+      ### Context knowledge
+
+      The following sections contain background knowledge you need to be aware of.
+
+      ![[Magma.system.config#Context knowledge|]]
+
+      #### Description of the Some project ![[Project#Description|]]
+
+
+      ## Request
+
+      ----
+
+      ***Response***
+
+      ----
+      ## Response
+
+      New response
+
+
+
+
+      ----
+
+      ***Notes***
+
+      ----
+      #{Magma.View.button("Copy last prompt to clipboard", "magma.prompt.copy")}
+      # Notes
+
+      """
+
+      assert updated_session.content == expected_content
+
+      assert {:ok, reloaded_session} = Session.load("MultipleResponses")
+      assert reloaded_session.content == expected_content
+
+      refute File.exists?(new_file)
+      assert File.exists?(old_file)
+
+      File.rm!(old_file)
     end
   end
 end

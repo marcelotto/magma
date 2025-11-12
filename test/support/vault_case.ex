@@ -19,6 +19,7 @@ defmodule Magma.Vault.Case do
 
         unless context[:without_vault] do
           File.mkdir!(Vault.path())
+          File.mkdir_p!(Vault.session_response_directory())
           Vault.Initializer.create_config(context[:project_name] || project_matter().name)
           Magma.Vault.Case.setup_files(context[:vault_files])
         end

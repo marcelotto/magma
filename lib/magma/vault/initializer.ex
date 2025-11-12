@@ -47,6 +47,9 @@ defmodule Magma.Vault.Initializer do
       |> Vault.path()
       |> Mix.Generator.create_directory()
 
+      Vault.session_response_directory()
+      |> Mix.Generator.create_directory()
+
       base_vault
       |> Path.join(".obsidian")
       |> copy_directory(vault_dest_dir)
@@ -80,6 +83,9 @@ defmodule Magma.Vault.Initializer do
     |> Path.join(".gitignore")
     |> create_file("""
     #{Magma.PromptResult.dir()}/
+
+    # Session response files are temporary and should not be versioned
+    sessions/.responses/
     """)
   end
 
@@ -108,10 +114,13 @@ defmodule Magma.Vault.Initializer do
       |> Document.init()
 
     Vault.session_template_path()
-    |> create_file(Prompt.Template.session_obsidian_template(project, session))
+    |> create_file(Session.Template.session_obsidian_template(project, session))
 
     Vault.session_continuation_template_path()
-    |> create_file(Prompt.Template.session_continuation_obsidian_template())
+    |> create_file(Session.Template.session_continuation_obsidian_template())
+
+    Vault.session_response_prompt_template_path()
+    |> create_file(Session.Template.session_response_prompt_eex_template())
 
     :ok
   end

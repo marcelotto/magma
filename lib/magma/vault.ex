@@ -17,6 +17,8 @@ defmodule Magma.Vault do
   alias Magma.Document
   alias Magma.Vault.Index
 
+  import Magma.Utils, only: [file_format_timestamp: 1]
+
   @default_path "docs.magma"
   @concept_path_prefix "concepts"
   @artefact_path_prefix "artefacts"
@@ -99,6 +101,34 @@ defmodule Magma.Vault do
   @spec session_continuation_template_path :: Path.t()
   def session_continuation_template_path,
     do: template_path(@session_continuation_template_name)
+
+  @doc """
+  Returns the Vault path for the Session response prompt EEx template.
+  """
+  @spec session_response_prompt_template_path :: Path.t()
+  def session_response_prompt_template_path do
+    Magma.Config.path(["templates", "session_response_prompt.eex.md"])
+  end
+
+  @doc """
+  Returns the Vault path for the Session response files directory.
+  """
+  @spec session_response_directory :: Path.t()
+  def session_response_directory, do: path([Magma.Session.path_prefix(), ".responses"])
+
+  @doc """
+  Generates a timestamped response file path for a session.
+  """
+  @spec session_response_file_path(String.t(), DateTime.t() | binary) :: Path.t()
+  def session_response_file_path(session_name, timestamp \\ DateTime.utc_now())
+
+  def session_response_file_path(session_name, timestamp) when is_binary(timestamp) do
+    Path.join(session_response_directory(), "#{session_name}.response_#{timestamp}.md")
+  end
+
+  def session_response_file_path(session_name, timestamp) do
+    session_response_file_path(session_name, file_format_timestamp(timestamp))
+  end
 
   @doc """
   Returns the Vault path of the directory for `Magma.Concept` documents.

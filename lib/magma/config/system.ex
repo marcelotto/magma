@@ -46,6 +46,7 @@ defmodule Magma.Config.System do
       generation_default_properties() <>
       """
       link_resolution_style: #{default_link_resolution_style()}
+      session_response_mode: #{default_session_response_mode()}
       ---
       # #{title()}
 
@@ -79,6 +80,10 @@ defmodule Magma.Config.System do
 
   def default_link_resolution_style do
     Application.get_env(:magma, :link_resolution_style, :at_file_ref)
+  end
+
+  def default_session_response_mode do
+    Application.get_env(:magma, :session_response_mode, :import)
   end
 
   def default_persona(project_name) do
@@ -120,6 +125,7 @@ defmodule Magma.Config.System do
              config
              |> setup_default_tags()
              |> setup_link_resolution_style()
+             |> setup_session_response_mode()
        }}
     end
   end
@@ -153,6 +159,15 @@ defmodule Magma.Config.System do
       metadata,
       :link_resolution_style,
       default_link_resolution_style(),
+      &String.to_atom/1
+    )
+  end
+
+  defp setup_session_response_mode(metadata) do
+    Map.update(
+      metadata,
+      :session_response_mode,
+      default_session_response_mode(),
       &String.to_atom/1
     )
   end

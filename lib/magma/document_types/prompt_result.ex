@@ -6,7 +6,7 @@ defmodule Magma.PromptResult do
   alias Magma.{Vault, Artefact, Generation, Prompt, View}
   alias Magma.Document.Loader
 
-  import Magma.Utils, only: [init_field: 2]
+  import Magma.Utils, only: [init_field: 2, file_format_timestamp: 1]
 
   require Logger
 
@@ -24,15 +24,11 @@ defmodule Magma.PromptResult do
   end
 
   def build_name(%__MODULE__{prompt: %Prompt{} = prompt} = result) do
-    "#{prompt.name} (Prompt result #{format_timestamp(result.created_at)})"
+    "#{prompt.name} (Prompt result #{file_format_timestamp(result.created_at)})"
   end
 
   def build_name(%__MODULE__{} = result) do
-    "#{title(result)} (#{format_timestamp(result.created_at)})"
-  end
-
-  defp format_timestamp(datetime) do
-    datetime |> NaiveDateTime.to_iso8601() |> String.replace(":", "")
+    "#{title(result)} (#{file_format_timestamp(result.created_at)})"
   end
 
   @impl true

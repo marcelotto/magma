@@ -18,11 +18,10 @@ defmodule Magma.Session.AssemblerTest do
       assert {:ok, compiled} = Assembler.assemble_all(loaded_session)
       assert is_binary(compiled)
 
-      # Should contain the replacement marker instruction (from Request section)
-      assert compiled =~
-               "Use the Edit tool to replace the line starting with \"WRITE_RESPONSE_HERE\""
-
-      assert compiled =~ "test/data/example_vault/sessions/InitialModeSession.md"
+      # With :external_file mode (default), should contain respond-in-file-rule reference
+      assert compiled =~ "respond-in-file-rule"
+      assert compiled =~ "CLAUDE.md"
+      assert compiled =~ ".responses/InitialModeSession.response_"
 
       # Should NOT contain the Response separator (that's in the Session document, not the compiled prompt)
       refute compiled =~ "***Response***"
@@ -159,6 +158,71 @@ defmodule Magma.Session.AssemblerTest do
       # Assemble and verify transclusion resolution
       assert {:ok, compiled} = Assembler.assemble_all(loaded)
       assert compiled =~ "Here's the project description:\n\nThis is the project description."
+    end
+  end
+
+  describe "session_response_mode handling" do
+    @describetag vault_files: ["concepts/Project.md"]
+
+    test "import mode (default) - external file instruction appended by assembler" do
+      assert {:ok, session} = Session.create("DefaultMode")
+      assert {:ok, loaded} = Session.load(session.path)
+      assert {:ok, compiled} = Assembler.assemble_all(loaded)
+
+      # Import mode appends respond-in-file-rule reference with file path (button is present in template)
+      assert compiled =~ "respond-in-file-rule"
+      assert compiled =~ "CLAUDE.md"
+      assert compiled =~ ".responses/DefaultMode.response_"
+    end
+
+    test "disabled mode - no response instruction appended" do
+      assert {:ok, session} = Session.create("DisabledMode", response_mode: :disabled)
+      assert {:ok, loaded} = Session.load(session.path)
+      assert {:ok, compiled} = Assembler.assemble_all(loaded)
+
+      refute compiled =~ "respond-in-file-rule"
+    end
+
+    test "enabled mode - response instruction appended by assembler" do
+      assert {:ok, session} = Session.create("EnabledMode", response_mode: :enabled)
+      assert {:ok, loaded} = Session.load(session.path)
+      assert {:ok, compiled} = Assembler.assemble_all(loaded)
+
+      # Enabled mode appends instruction via EEx template
+      assert compiled =~ "respond-in-file-rule"
+      assert compiled =~ "CLAUDE.md"
+      assert compiled =~ ".responses/EnabledMode.response_"
+    end
+
+    test "import mode - external file instruction appended by assembler when button present" do
+      assert {:ok, session} = Session.create("ImportMode", response_mode: :import)
+      assert {:ok, loaded} = Session.load(session.path)
+      assert {:ok, compiled} = Assembler.assemble_all(loaded)
+
+      # Import mode appends respond-in-file-rule reference with file path (button is present in template)
+      assert compiled =~ "respond-in-file-rule"
+      assert compiled =~ "CLAUDE.md"
+      assert compiled =~ ".responses/ImportMode.response_"
+    end
+
+    test "import mode without button - no response instruction" do
+      assert {:ok, session} = Session.create("ImportNoButton", response_mode: :import)
+
+      # Remove button from content
+      content_without_button =
+        String.replace(session.content, Magma.Session.Template.import_response_button(), "")
+
+      File.write!(
+        session.path,
+        Magma.Document.render_front_matter(session) <> content_without_button
+      )
+
+      assert {:ok, loaded_session} = Session.load(session.path)
+
+      # Button is not present, so no instruction should be appended
+      assert {:ok, assembled} = Assembler.assemble_all(loaded_session)
+
+      refute assembled =~ "respond-in-file-rule"
     end
   end
 end

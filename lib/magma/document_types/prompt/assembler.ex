@@ -33,6 +33,18 @@ defmodule Magma.Prompt.Assembler do
   end
 
   def assemble_all(%Session{} = session) do
+    with {:ok, assembled_content} <- assemble_session(session) do
+      {:ok, append_response_instruction(assembled_content, session)}
+    end
+  end
+
+  def assemble_all(prompt) when is_prompt(prompt) do
+    with {:ok, section} <- section(prompt) do
+      {:ok, compile(section)}
+    end
+  end
+
+  defp assemble_session(session) do
     case Session.mode(session) do
       :initial ->
         case session.parts do
@@ -49,9 +61,32 @@ defmodule Magma.Prompt.Assembler do
     end
   end
 
-  def assemble_all(prompt) when is_prompt(prompt) do
-    with {:ok, section} <- section(prompt) do
-      {:ok, compile(section)}
+  @doc """
+  Appends response instruction to assembled prompt based on session_response_mode.
+
+  Checks the session's `response_mode` field, falling back to system config.
+
+  - `:disabled` - No instruction appended
+  - `:enabled` - Always appends instruction
+  - `:import` - Appends instruction only if import button is present in session content
+  """
+  def append_response_instruction(content, %Session{} = session) do
+    session
+    |> Session.response_mode()
+    |> do_append_response_instruction(content, session)
+  end
+
+  defp do_append_response_instruction(:disabled, content, _session), do: content
+
+  defp do_append_response_instruction(:enabled, content, session) do
+    "#{content}\n\n#{Session.Template.render_session_response_prompt(session)}"
+  end
+
+  defp do_append_response_instruction(:import, content, session) do
+    if String.contains?(session.content, Session.Template.import_response_button()) do
+      do_append_response_instruction(:enabled, content, session)
+    else
+      do_append_response_instruction(:disabled, content, session)
     end
   end
 

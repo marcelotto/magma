@@ -55,6 +55,16 @@ defmodule Magma.Utils do
     end)
   end
 
+  def file_format_timestamp, do: file_format_timestamp(NaiveDateTime.local_now())
+
+  def file_format_timestamp(%NaiveDateTime{} = datetime) do
+    datetime |> NaiveDateTime.to_iso8601() |> String.replace(":", "")
+  end
+
+  def file_format_timestamp(%DateTime{} = datetime) do
+    datetime |> DateTime.to_iso8601() |> String.replace(":", "")
+  end
+
   @doc """
   Extracts the text between double square brackets.
 
