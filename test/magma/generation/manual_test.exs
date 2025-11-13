@@ -61,11 +61,13 @@ defmodule Magma.Generation.ManualTest do
 
     assert Clipboard.paste() ==
              """
-             # #{Prompt.Template.system_prompt_section_title()}
+             # #{prompt.name}
+
+             ## #{Prompt.Template.system_prompt_section_title()}
 
              #{system_prompt}
 
-             # #{Prompt.Template.request_prompt_section_title()}
+             ## #{Prompt.Template.request_prompt_section_title()}
 
              #{request_prompt}
              """

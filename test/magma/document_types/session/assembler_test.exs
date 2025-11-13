@@ -161,6 +161,80 @@ defmodule Magma.Session.AssemblerTest do
     end
   end
 
+  describe "include_prompt_header configuration" do
+    @describetag vault_files: ["concepts/Project.md"]
+
+    test "initial mode includes header by default" do
+      assert {:ok, session} = Session.create("HeaderTest")
+      assert {:ok, loaded} = Session.load(session.path)
+      assert Session.mode(loaded) == :initial
+
+      assert {:ok, compiled} = Assembler.assemble_all(loaded)
+
+      # Header should be included by default (config default is true)
+      assert compiled =~ "# HeaderTest"
+    end
+
+    test "continuation mode excludes header regardless of config" do
+      {:ok, session} = Session.create("ContinuationHeaderTest")
+
+      # Add continuation content
+      content = File.read!(session.path)
+
+      continuation_content =
+        content <>
+          """
+
+
+          ---
+
+          ***Prompt***
+
+          ---
+
+          ## Follow-up prompt
+
+          This is a follow-up.
+          """
+
+      File.write!(session.path, continuation_content)
+
+      {:ok, loaded} = Session.load(session.path)
+      assert Session.mode(loaded) == :continuation
+
+      assert {:ok, compiled} = Assembler.assemble_all(loaded)
+
+      # Header should NOT be included for continuations
+      refute compiled =~ "# Follow-up prompt"
+      # But content should be there
+      assert compiled =~ "This is a follow-up."
+    end
+
+    test "document-level override disables header" do
+      assert {:ok, session} = Session.create("NoHeaderSession")
+
+      # Update frontmatter to disable header
+      content = File.read!(session.path)
+
+      # Insert include_prompt_header: false after the opening ---
+      updated_content =
+        String.replace(
+          content,
+          "---\nmagma_type:",
+          "---\ninclude_prompt_header: false\nmagma_type:",
+          global: false
+        )
+
+      File.write!(session.path, updated_content)
+
+      assert {:ok, loaded} = Session.load(session.path)
+      assert {:ok, compiled} = Assembler.assemble_all(loaded)
+
+      # Header should NOT be included when explicitly disabled
+      refute compiled =~ "# NoHeaderSession"
+    end
+  end
+
   describe "session_response_mode handling" do
     @describetag vault_files: ["concepts/Project.md"]
 

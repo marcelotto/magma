@@ -25,8 +25,8 @@ defmodule Magma.Prompt.Assembler do
 
           {
             :ok,
-            compile(system_prompt_section),
-            compile(request_prompt_section)
+            compile(system_prompt_section, include_header: false),
+            compile(request_prompt_section, include_header: false)
           }
       end
     end
@@ -40,7 +40,7 @@ defmodule Magma.Prompt.Assembler do
 
   def assemble_all(prompt) when is_prompt(prompt) do
     with {:ok, section} <- section(prompt) do
-      {:ok, compile(section)}
+      {:ok, compile(section, include_header: include_header?(prompt))}
     end
   end
 
@@ -48,13 +48,16 @@ defmodule Magma.Prompt.Assembler do
     case Session.mode(session) do
       :initial ->
         case session.parts do
-          [{:initial, ast_nodes} | _rest] -> assemble_from_ast(ast_nodes, session.path)
-          _ -> {:error, "no initial part found in session"}
+          [{:initial, ast} | _] ->
+            assemble_from_ast(ast, session.path, include_header: include_header?(session))
+
+          _ ->
+            {:error, "no initial part found in session"}
         end
 
       :continuation ->
         if ast_nodes = Session.last_prompt_part(session) do
-          assemble_from_ast(ast_nodes, session.path)
+          assemble_from_ast(ast_nodes, session.path, include_header: false)
         else
           {:error, "no prompt sections found in continuation mode"}
         end
@@ -91,12 +94,12 @@ defmodule Magma.Prompt.Assembler do
   end
 
   @doc false
-  def assemble_from_ast(ast_nodes, path) when is_list(ast_nodes) do
+  def assemble_from_ast(ast_nodes, path, opts \\ []) when is_list(ast_nodes) do
     with {:ok, document_struct} <- DocumentStruct.Parser.to_section(ast_nodes) do
       if Enum.count(document_struct.sections) > 1, do: ignored_section_detected(path)
 
       main_section = DocumentStruct.main_section(document_struct)
-      {:ok, compile(main_section)}
+      {:ok, compile(main_section, opts)}
     end
   end
 
@@ -114,12 +117,23 @@ defmodule Magma.Prompt.Assembler do
     )
   end
 
-  defp compile(section) do
+  defp include_header?(document) do
+    Map.get(
+      document.custom_metadata,
+      :include_prompt_header,
+      Magma.Config.system(:include_prompt_header)
+    )
+  end
+
+  defp compile(section, opts) do
+    include_header =
+      Keyword.get(opts, :include_header, Magma.Config.system(:include_prompt_header))
+
     section
     |> Section.resolve_transclusions()
     |> Section.resolve_links()
     |> Section.remove_comments()
-    |> Section.to_markdown(header: false, level: 0)
+    |> Section.to_markdown(header: include_header, level: if(include_header, do: 1, else: 0))
   end
 
   def copy_to_clipboard(prompt) when is_prompt(prompt) do

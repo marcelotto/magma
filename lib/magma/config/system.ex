@@ -47,6 +47,7 @@ defmodule Magma.Config.System do
       """
       link_resolution_style: #{default_link_resolution_style()}
       session_response_mode: #{default_session_response_mode()}
+      include_prompt_header: #{default_include_prompt_header()}
       ---
       # #{title()}
 
@@ -84,6 +85,10 @@ defmodule Magma.Config.System do
 
   def default_session_response_mode do
     Application.get_env(:magma, :session_response_mode, :import)
+  end
+
+  def default_include_prompt_header do
+    Application.get_env(:magma, :include_prompt_header, true)
   end
 
   def default_persona(project_name) do
@@ -126,6 +131,7 @@ defmodule Magma.Config.System do
              |> setup_default_tags()
              |> setup_link_resolution_style()
              |> setup_session_response_mode()
+             |> setup_include_prompt_header()
        }}
     end
   end
@@ -170,6 +176,10 @@ defmodule Magma.Config.System do
       default_session_response_mode(),
       &String.to_atom/1
     )
+  end
+
+  defp setup_include_prompt_header(metadata) do
+    Map.put_new(metadata, :include_prompt_header, default_include_prompt_header())
   end
 
   def load, do: load(@name)
