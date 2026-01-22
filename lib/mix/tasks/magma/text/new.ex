@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Text.New do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.Text
 
@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Magma.Text.New do
 
   def run(args) do
     with_valid_options(args, @options, fn
-      _opts, [] -> error("text name missing")
+      _opts, [] -> abort("text name missing")
       _opts, [text_name] -> create(text_name)
       _opts, [text_name, text_type_name] -> create(text_name, text_type_name)
     end)

@@ -97,7 +97,7 @@ defmodule Magma.PromptResultTest do
       prompt_with_manual_generation = struct(prompt, generation: Generation.Manual.new!())
       answer = "awesome"
 
-      send(self(), {:mix_shell_input, :prompt, answer})
+      send(self(), {:shell_input, :prompt, answer})
 
       assert {:ok,
               %PromptResult{
@@ -110,7 +110,7 @@ defmodule Magma.PromptResultTest do
               } = prompt_result} =
                PromptResult.create(prompt_with_manual_generation)
 
-      assert_receive {:mix_shell, :prompt, [_]}
+      assert_receive {:shell, :prompt, [_]}
 
       assert is_just_now(prompt_result.created_at)
 
@@ -207,7 +207,7 @@ defmodule Magma.PromptResultTest do
 
       generation = Generation.Manual.new!()
 
-      send(self(), {:mix_shell_input, :prompt, answer})
+      send(self(), {:shell_input, :prompt, answer})
 
       assert {:ok,
               %PromptResult{
@@ -230,7 +230,7 @@ defmodule Magma.PromptResultTest do
                #{answer}
                """
 
-      assert_receive {:mix_shell, :prompt, [_]}
+      assert_receive {:shell, :prompt, [_]}
 
       assert PromptResult.load(prompt_result.path) == {:ok, prompt_result}
     end

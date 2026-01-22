@@ -2,6 +2,7 @@ defmodule Magma.Generation.Manual do
   use Magma.Generation
 
   alias Magma.Prompt.Assembler
+  alias Magma.CLI.IO, as: CLI
 
   import Magma.Utils.Guards
 
@@ -36,6 +37,6 @@ defmodule Magma.Generation.Manual do
     The prompt was copied to the clipboard.
     Please paste back the result of the manual execution and press Enter:
     """
-    |> Mix.shell().prompt()
+    |> CLI.prompt()
   end
 end

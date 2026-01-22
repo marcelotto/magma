@@ -142,7 +142,7 @@ defmodule Magma.Config.System do
 
     with {:ok, default_generation} <-
            (cond do
-              Mix.env() == :test || !default_generation_type_name ->
+              Application.get_env(:magma, :env) == :test || !default_generation_type_name ->
                 {:ok, default_generation()}
 
               default_generation_type = Generation.type(default_generation_type_name) ->

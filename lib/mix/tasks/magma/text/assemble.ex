@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Text.Assemble do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.Text.Assembler
 
@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Magma.Text.Assemble do
 
   def run(args) do
     with_valid_options(args, @options, fn
-      _opts, [] -> error("concept or toc name missing")
+      _opts, [] -> abort("concept or toc name missing")
       opts, [document_name] -> Assembler.assemble(document_name, opts) |> handle_error()
     end)
   end

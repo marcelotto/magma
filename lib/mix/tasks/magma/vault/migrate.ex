@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Magma.Vault.Migrate do
 
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
   alias Magma.Vault.Migration
 
   @options []

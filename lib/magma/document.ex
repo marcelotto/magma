@@ -183,7 +183,7 @@ defmodule Magma.Document do
        """
   def create(%_document_type{} = document, opts \\ []) do
     cond do
-      Magma.MixHelper.create_file(document.path, full_content(document), opts) ->
+      Magma.CLI.FileOps.create_file(document.path, full_content(document), opts) ->
         Vault.index(document)
 
         {:ok, document}
@@ -200,7 +200,7 @@ defmodule Magma.Document do
   Saves the changes on a document.
   """
   def save(%_document_type{} = document, opts \\ []) do
-    with :ok <- Magma.MixHelper.save_file(document.path, full_content(document), opts) do
+    with :ok <- Magma.CLI.FileOps.save_file(document.path, full_content(document), opts) do
       {:ok, document}
     end
   end

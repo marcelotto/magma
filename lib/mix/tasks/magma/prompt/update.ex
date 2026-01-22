@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Prompt.Update do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.{Artefact, Document, Vault}
 
@@ -17,7 +17,7 @@ defmodule Mix.Tasks.Magma.Prompt.Update do
   def run(args) do
     with_valid_options(args, @options, fn
       [all: true], [] -> update_all()
-      _opts, [] -> error("prompt name or path missing")
+      _opts, [] -> abort("prompt name or path missing")
       _opts, [prompt_name] -> update(prompt_name)
     end)
   end

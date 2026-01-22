@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Text.Type.New do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   @shortdoc "Generates a new text type"
 
@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Magma.Text.Type.New do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        error("text type name missing")
+        abort("text type name missing")
 
       _opts, [text_type_name] ->
         Magma.Config.TextType.create(text_type_name)

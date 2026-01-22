@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.{Generation, PromptResult}
   alias Magma.Document.Loader
@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        error("prompt name or path missing")
+        abort("prompt name or path missing")
 
       opts, [prompt_name] ->
         {attrs, opts} =

@@ -15,11 +15,11 @@ defmodule Magma.ConceptTest do
 
       {:ok, existing_document} = Concept.load(document_path)
 
-      send(self(), {:mix_shell_input, :yes?, false})
+      send(self(), {:shell_input, :yes?, false})
 
       assert {:skipped, _} = Concept.create(existing_document)
 
-      assert_receive {:mix_shell, :yes?, [_]}
+      assert_receive {:shell, :yes?, [_]}
     end
   end
 

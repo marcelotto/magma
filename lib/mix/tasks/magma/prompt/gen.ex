@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.{Artefact, Prompt, Concept}
 
@@ -17,7 +17,7 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        error("artefact type missing")
+        abort("artefact type missing")
 
       _opts, [concept_name, artefact_type] ->
         if artefact_module = Artefact.type(artefact_type) do
@@ -28,7 +28,7 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
             error -> handle_error(error)
           end
         else
-          error("unknown artefact type: #{artefact_type}")
+          abort("unknown artefact type: #{artefact_type}")
         end
 
       _opts, [prompt_name] ->

@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Text.Finalize do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.Artefact
   alias Magma.Text.Preview
@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Magma.Text.Finalize do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        error("preview document name missing")
+        abort("preview document name missing")
 
       _opts, [preview_name] ->
         with {:ok, preview} <- Preview.load(preview_name),

@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Prompt.Copy do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.Document.Loader
   alias Magma.Prompt.Assembler
@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Magma.Prompt.Copy do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        error("prompt name or path missing")
+        abort("prompt name or path missing")
 
       _opts, [prompt_name] ->
         prompt_name

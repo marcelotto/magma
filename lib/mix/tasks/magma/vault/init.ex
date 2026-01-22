@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Vault.Init do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.Vault.Initializer
 
@@ -20,7 +20,7 @@ defmodule Mix.Tasks.Magma.Vault.Init do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        error("project name missing")
+        abort("project name missing")
 
       opts, [project_name] ->
         project_name

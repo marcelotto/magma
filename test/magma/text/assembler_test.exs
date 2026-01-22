@@ -55,11 +55,11 @@ defmodule Magma.Text.AssemblerTest do
     test "when concepts are already present and not overwritten" do
       version = Artefact.Version.load!("Some User Guide ToC")
 
-      send(self(), {:mix_shell_input, :yes?, false})
+      send(self(), {:shell_input, :yes?, false})
 
       assert {:ok, %Concept{}} = Assembler.assemble(version)
 
-      assert_receive {:mix_shell, :yes?, [_]}
+      assert_receive {:shell, :yes?, [_]}
     end
 
     @tag vault_files: [

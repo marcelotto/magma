@@ -1,6 +1,7 @@
 import Config
 
 config :magma,
+  env: :test,
   dir: "test/data/example_vault",
   default_generation: Magma.Generation.Mock
 

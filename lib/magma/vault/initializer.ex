@@ -5,8 +5,9 @@ defmodule Magma.Vault.Initializer do
   alias Magma.Vault.{BaseVault, CodeSync}
   alias Magma.Matter.Project
   alias Magma.{Concept, Prompt, Session, Document, Generation}
+  alias Magma.CLI.FileOps
 
-  import Magma.MixHelper
+  import FileOps, only: [copy_directory: 2, create_file: 2]
 
   @bin_dir ".bin"
   def bin_dir, do: @bin_dir
@@ -37,18 +38,18 @@ defmodule Magma.Vault.Initializer do
     if File.exists?(vault_dest_dir) && !Keyword.get(opts, :force) do
       {:error, :vault_already_existing}
     else
-      Mix.Generator.create_directory(vault_dest_dir)
+      FileOps.create_directory(vault_dest_dir)
 
       Prompt.path_prefix()
       |> Vault.path()
-      |> Mix.Generator.create_directory()
+      |> FileOps.create_directory()
 
       Session.path_prefix()
       |> Vault.path()
-      |> Mix.Generator.create_directory()
+      |> FileOps.create_directory()
 
       Vault.session_response_directory()
-      |> Mix.Generator.create_directory()
+      |> FileOps.create_directory()
 
       base_vault
       |> Path.join(".obsidian")

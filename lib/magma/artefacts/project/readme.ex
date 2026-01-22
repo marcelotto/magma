@@ -18,10 +18,10 @@ defmodule Magma.Artefacts.Readme do
 
     version.path
     |> Path.dirname()
-    |> Magma.MixHelper.create_directory()
+    |> Magma.CLI.FileOps.create_directory()
 
     cond do
-      Magma.MixHelper.create_file(readme_path, version.content, opts) ->
+      Magma.CLI.FileOps.create_file(readme_path, version.content, opts) ->
         with :ok <- File.ln_s(readme_path, version.path) do
           Vault.index(version)
 

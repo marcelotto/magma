@@ -14,13 +14,13 @@ defmodule Magma.Generation.ManualTest do
 
     answer = "awesome"
 
-    send(self(), {:mix_shell_input, :prompt, answer})
+    send(self(), {:shell_input, :prompt, answer})
 
     assert Generation.Manual.new!()
            |> Generation.Manual.execute(prompt) ==
              {:ok, answer}
 
-    assert_receive {:mix_shell, :prompt, [_]}
+    assert_receive {:shell, :prompt, [_]}
   end
 
   test "without shell interaction" do
@@ -50,7 +50,7 @@ defmodule Magma.Generation.ManualTest do
 
     answer = "awesome"
 
-    send(self(), {:mix_shell_input, :prompt, answer})
+    send(self(), {:shell_input, :prompt, answer})
 
     assert Generation.Manual.new!()
            |> Generation.Manual.execute(prompt) ==
@@ -72,6 +72,6 @@ defmodule Magma.Generation.ManualTest do
              #{request_prompt}
              """
 
-    assert_receive {:mix_shell, :prompt, [_]}
+    assert_receive {:shell, :prompt, [_]}
   end
 end

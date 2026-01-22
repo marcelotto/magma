@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Magma.Session.ImportResponse do
   use Magma
   use Mix.Task
 
-  import Magma.MixHelper
+  import Magma.CLI.Helper
 
   alias Magma.Session
 
@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Magma.Session.ImportResponse do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        error("session name or path missing")
+        abort("session name or path missing")
 
       _opts, [session_name] ->
         session_name
