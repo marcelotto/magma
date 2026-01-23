@@ -1,27 +1,8 @@
 defmodule Mix.Tasks.Magma.Prompt.Copy do
-  use Magma
   use Mix.Task
 
-  import Magma.CLI.Helper
-
-  alias Magma.Document.Loader
-  alias Magma.Prompt.Assembler
-
-  @shortdoc "Copies the given prompt in compiled form to the clipboard"
-
-  @options []
-
+  @shortdoc Magma.CLI.Command.CopyPrompt.description()
   @requirements ["app.start"]
 
-  def run(args) do
-    with_valid_options(args, @options, fn
-      _opts, [] ->
-        abort("prompt name or path missing")
-
-      _opts, [prompt_name] ->
-        prompt_name
-        |> Loader.with_prompt(&Assembler.copy_to_clipboard/1)
-        |> handle_error()
-    end)
-  end
+  def run(args), do: Magma.CLI.Command.CopyPrompt.run(args)
 end
