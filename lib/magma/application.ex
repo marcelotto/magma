@@ -5,6 +5,8 @@ defmodule Magma.Application do
 
   @impl true
   def start(_type, _args) do
+    Magma.Vault.Discovery.apply()
+
     children = [
       Magma.Vault.Index,
       Magma.Config

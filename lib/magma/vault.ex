@@ -19,7 +19,7 @@ defmodule Magma.Vault do
 
   import Magma.Utils, only: [file_format_timestamp: 1]
 
-  @default_path "docs.magma"
+  @default_path "magma"
   @concept_path_prefix "concepts"
   @artefact_path_prefix "artefacts"
   @artefact_generation_path_prefix Path.join(@artefact_path_prefix, "generated")

@@ -1,5 +1,8 @@
 import Config
 
+config :magma,
+  dir: "docs.magma"
+
 config :magma, Magma.Generation.OpenAI,
   model: "gpt-4-1106-preview",
   temperature: 0.6
