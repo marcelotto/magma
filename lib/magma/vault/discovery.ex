@@ -7,22 +7,23 @@ defmodule Magma.Vault.Discovery do
 
   The discovery follows this priority order:
   1. Environment variable (`#{@env_var}`)
-  2. Project-local config file (`#{@config_file}`)
+  2. Current directory if it contains a `magma.config/` subdirectory (i.e., is a vault)
+  3. Project-local config file (`#{@config_file}`)
 
-  If neither is found, returns `nil` and lets the existing application
+  If none is found, returns `nil` and lets the existing application
   config or default in `Magma.Vault.path/0` take effect.
   """
 
   require Logger
 
   @doc """
-  Resolves the vault path from environment variable or `#{@config_file}`.
+  Resolves the vault path from environment variable, current directory, or `#{@config_file}`.
 
   Returns the discovered path or `nil` if not found.
   """
   @spec resolve() :: Path.t() | nil
   def resolve do
-    from_env() || from_config_file()
+    from_env() || from_current_directory() || from_config_file()
   end
 
   @doc """
@@ -45,6 +46,11 @@ defmodule Magma.Vault.Discovery do
 
   defp from_env do
     @env_var |> System.get_env() |> validate_path()
+  end
+
+  defp from_current_directory do
+    cwd = File.cwd!()
+    if File.dir?(Path.join(cwd, "magma.config")), do: cwd
   end
 
   defp from_config_file do

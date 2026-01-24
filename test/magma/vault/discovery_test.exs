@@ -8,8 +8,11 @@ defmodule Magma.Vault.DiscoveryTest do
   setup do
     original_dir = Application.get_env(:magma, :dir)
     original_env = System.get_env("MAGMA_VAULT_PATH")
+    original_cwd = File.cwd!()
 
     on_exit(fn ->
+      File.cd!(original_cwd)
+
       if original_dir do
         Application.put_env(:magma, :dir, original_dir)
       else
@@ -42,12 +45,45 @@ defmodule Magma.Vault.DiscoveryTest do
       assert Discovery.resolve() == vault_path
     end
 
-    test ".magma.yaml is second priority" do
-      vault_path = create_temp_vault()
+    test "current directory with magma.config is second priority" do
+      vault_path = create_temp_vault_with_config()
+      File.cd!(vault_path)
 
-      config_file = Path.expand(".magma.yaml")
+      # File.cwd!/0 returns the canonical path (resolves symlinks like /var -> /private/var on macOS)
+      canonical_path = File.cwd!()
+
+      assert Discovery.resolve() == canonical_path
+    end
+
+    test "environment variable takes priority over current directory vault" do
+      env_vault = create_temp_vault()
+      cwd_vault = create_temp_vault_with_config()
+
+      System.put_env("MAGMA_VAULT_PATH", env_vault)
+      File.cd!(cwd_vault)
+
+      assert Discovery.resolve() == env_vault
+    end
+
+    test "current directory vault takes priority over .magma.yaml" do
+      cwd_vault = create_temp_vault_with_config()
+      yaml_vault = create_temp_vault()
+
+      File.cd!(cwd_vault)
+      canonical_path = File.cwd!()
+      config_file = Path.join(canonical_path, ".magma.yaml")
+      File.write!(config_file, "vault: #{yaml_vault}\n")
+
+      assert Discovery.resolve() == canonical_path
+    end
+
+    test ".magma.yaml is third priority" do
+      vault_path = create_temp_vault()
+      non_vault_dir = create_temp_vault()
+
+      File.cd!(non_vault_dir)
+      config_file = Path.join(non_vault_dir, ".magma.yaml")
       File.write!(config_file, "vault: #{vault_path}\n")
-      on_exit(fn -> File.rm(config_file) end)
 
       assert Discovery.resolve() == vault_path
     end
@@ -147,6 +183,12 @@ defmodule Magma.Vault.DiscoveryTest do
     path = Path.join(System.tmp_dir!(), "magma_test_vault_#{:rand.uniform(1_000_000)}")
     File.mkdir_p!(path)
     on_exit(fn -> File.rm_rf!(path) end)
+    path
+  end
+
+  defp create_temp_vault_with_config do
+    path = create_temp_vault()
+    File.mkdir_p!(Path.join(path, "magma.config"))
     path
   end
 end
