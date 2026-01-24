@@ -1,6 +1,6 @@
 /*
  * 'Shell commands' plugin for Obsidian.
- * Copyright (C) 2021 - 2023 Jarkko Linnanvirta
+ * Copyright (C) 2021 - 2024 Jarkko Linnanvirta
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,9 +92,10 @@ div.SC-setting-group div.setting-item.SC-wide-description div.setting-item-contr
 }
 
 div.SC-setting-group div.setting-item input[type=text],
+div.SC-setting-group div.setting-item input[type=password],
 div.SC-setting-group div.setting-item input[type=search],
 div.SC-setting-group div.setting-item textarea,
-div.SC-setting-group div.setting-item select {
+div.SC-setting-group div.setting-item:not(.setting-item-heading) select {
     width: 100%; /* Enlarge fields. */
     max-width: 100%; /* Remove a maximum width limitation, at least <select> elements had one. */
 }
@@ -331,6 +332,13 @@ a.SC-autocomplete-link-icon {
 
 a.SC-autocomplete-link-icon svg {
     vertical-align: middle; /* Not middle but close enough. */
+}
+
+/*
+ * OUTPUT CHANNEL: NOTIFICATION/ERROR BALLOON.
+ */
+code.SC-output-channel-notification-monospace {
+    font-family: var(--font-monospace), monospace;
 }
 
 /*

@@ -1,5 +1,5 @@
 {
-  "settings_version": "0.23.0",
+  "settings_version": "0.20.0",
   "debug": false,
   "obsidian_command_palette_prefix": "Execute: ",
   "preview_variables_in_command_palette": false,
@@ -9,7 +9,6 @@
   "environment_variable_path_augmentations": {
     "darwin": "/opt/homebrew/bin/"
   },
-  "show_installation_warnings": true,
   "error_message_duration": 20,
   "notification_message_duration": 10,
   "execution_notification_mode": "disabled",
@@ -58,9 +57,7 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     },
     {
       "id": "iilr0trw8n",
@@ -95,9 +92,7 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     },
     {
       "id": "gak0hbrikz",
@@ -132,9 +127,7 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     },
     {
       "id": "wmfuky7ntk",
@@ -169,9 +162,7 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     },
     {
       "id": "oodytpoyh0",
@@ -206,9 +197,7 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     },
     {
       "id": "vixt2mv7ba",
@@ -243,9 +232,7 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     },
     {
       "id": "uznqfcc7bt",
@@ -280,9 +267,7 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     },
     {
       "id": "jsvbg4hdll",
@@ -317,18 +302,12 @@
       "events": {},
       "command_palette_availability": "enabled",
       "preactions": [],
-      "variable_default_values": {},
-      "execution_notification_mode": null,
-      "debounce": null
+      "variable_default_values": {}
     }
   ],
   "prompts": [],
   "builtin_variables": {},
   "custom_variables": [],
-  "custom_variables_notify_changes_via": {
-    "obsidian_uri": true,
-    "output_assignment": true
-  },
   "custom_shells": [],
   "output_wrappers": []
 }
