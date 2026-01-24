@@ -17,23 +17,21 @@ defmodule Mix.Tasks.Magma.Prompt.Gen do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        abort("artefact type missing")
+        {:error, "artefact type missing"}
 
       _opts, [concept_name, artefact_type] ->
         if artefact_module = Artefact.type(artefact_type) do
           with {:ok, concept} <- Concept.load(concept_name),
                {:ok, _} <- Artefact.Prompt.create(concept, artefact_module) do
             :ok
-          else
-            error -> handle_error(error)
           end
         else
-          abort("unknown artefact type: #{artefact_type}")
+          {:error, "unknown artefact type: #{artefact_type}"}
         end
 
       _opts, [prompt_name] ->
         Prompt.create(prompt_name)
-        |> handle_error()
     end)
+    |> handle_mix_result()
   end
 end

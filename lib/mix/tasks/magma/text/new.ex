@@ -16,15 +16,10 @@ defmodule Mix.Tasks.Magma.Text.New do
 
   def run(args) do
     with_valid_options(args, @options, fn
-      _opts, [] -> abort("text name missing")
-      _opts, [text_name] -> create(text_name)
-      _opts, [text_name, text_type_name] -> create(text_name, text_type_name)
+      _opts, [] -> {:error, "text name missing"}
+      _opts, [text_name] -> Text.create(text_name)
+      _opts, [text_name, text_type_name] -> Text.create(text_name, text_type_name)
     end)
-  end
-
-  defp create(text_name, text_type \\ nil) do
-    text_name
-    |> Text.create(text_type)
-    |> handle_error()
+    |> handle_mix_result()
   end
 end

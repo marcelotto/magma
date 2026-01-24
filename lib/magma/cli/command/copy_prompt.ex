@@ -13,13 +13,8 @@ defmodule Magma.CLI.Command.CopyPrompt do
   @impl true
   def run(args) do
     with_valid_options(args, [], fn
-      _opts, [] ->
-        abort("prompt name or path missing")
-
-      _opts, [prompt_name] ->
-        prompt_name
-        |> Loader.with_prompt(&Assembler.copy_to_clipboard/1)
-        |> handle_error()
+      _opts, [] -> {:error, "prompt name or path missing"}
+      _opts, [prompt_name] -> Loader.with_prompt(prompt_name, &Assembler.copy_to_clipboard/1)
     end)
   end
 end

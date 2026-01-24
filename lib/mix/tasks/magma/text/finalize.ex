@@ -16,15 +16,14 @@ defmodule Mix.Tasks.Magma.Text.Finalize do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        abort("preview document name missing")
+        {:error, "preview document name missing"}
 
       _opts, [preview_name] ->
         with {:ok, preview} <- Preview.load(preview_name),
              {:ok, %Artefact.Version{}} <- Artefact.Version.create(preview, [], force: true) do
           :ok
-        else
-          error -> handle_error(error)
         end
     end)
+    |> handle_mix_result()
   end
 end

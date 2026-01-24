@@ -13,6 +13,13 @@ defmodule Magma.Application do
     ]
 
     opts = [strategy: :one_for_one, name: Magma.Supervisor]
-    Supervisor.start_link(children, opts)
+
+    with {:ok, pid} <- Supervisor.start_link(children, opts) do
+      if System.get_env("__BURRITO") == "1" do
+        spawn(fn -> Magma.CLI.main() end)
+      end
+
+      {:ok, pid}
+    end
   end
 end

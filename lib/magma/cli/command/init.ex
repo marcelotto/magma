@@ -19,13 +19,8 @@ defmodule Magma.CLI.Command.Init do
   @impl true
   def run(args) do
     with_valid_options(args, @options, fn
-      _opts, [] ->
-        abort("project name missing")
-
-      opts, [project_name] ->
-        project_name
-        |> Initializer.initialize(base_vault(opts), opts)
-        |> handle_error()
+      _opts, [] -> {:error, "project name missing"}
+      opts, [project_name] -> Initializer.initialize(project_name, base_vault(opts), opts)
     end)
   end
 

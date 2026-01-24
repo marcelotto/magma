@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Magma.Text.Type.New do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        abort("text type name missing")
+        {:error, "text type name missing"}
 
       _opts, [text_type_name] ->
         Magma.Config.TextType.create(text_type_name)
@@ -23,6 +23,6 @@ defmodule Mix.Tasks.Magma.Text.Type.New do
       _opts, [text_type_name, text_type_label] ->
         Magma.Config.TextType.create(text_type_name, label: text_type_label)
     end)
-    |> handle_error()
+    |> handle_mix_result()
   end
 end

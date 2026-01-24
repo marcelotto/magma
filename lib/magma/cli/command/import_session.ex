@@ -12,13 +12,8 @@ defmodule Magma.CLI.Command.ImportSession do
   @impl true
   def run(args) do
     with_valid_options(args, [], fn
-      _opts, [] ->
-        abort("session name or path missing")
-
-      _opts, [session_name] ->
-        session_name
-        |> Session.import_response()
-        |> handle_error()
+      _opts, [] -> {:error, "session name or path missing"}
+      _opts, [session_name] -> Session.import_response(session_name)
     end)
   end
 end

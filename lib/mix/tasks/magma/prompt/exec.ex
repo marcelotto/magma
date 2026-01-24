@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
   def run(args) do
     with_valid_options(args, @options, fn
       _opts, [] ->
-        abort("prompt name or path missing")
+        {:error, "prompt name or path missing"}
 
       opts, [prompt_name] ->
         {attrs, opts} =
@@ -30,9 +30,8 @@ defmodule Mix.Tasks.Magma.Prompt.Exec do
             {_, opts} -> {[], opts}
           end
 
-        prompt_name
-        |> Loader.with_prompt(&PromptResult.create(&1, attrs, opts))
-        |> handle_error()
+        Loader.with_prompt(prompt_name, &PromptResult.create(&1, attrs, opts))
     end)
+    |> handle_mix_result()
   end
 end

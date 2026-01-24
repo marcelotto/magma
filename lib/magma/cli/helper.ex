@@ -1,12 +1,12 @@
 defmodule Magma.CLI.Helper do
   @moduledoc """
-  Helper functions for CLI tasks.
+  Helper functions for CLI commands.
   """
 
   @doc """
   Parses command line arguments and calls the given function on success.
 
-  On invalid options, prints an error and exits.
+  Returns `{:error, message}` on invalid options.
   """
   def with_valid_options(args, options_spec, fun) do
     case OptionParser.parse(args, strict: options_spec) do
@@ -14,14 +14,14 @@ defmodule Magma.CLI.Helper do
         fun.(opts, remaining)
 
       {_opts, _remaining, invalid} ->
-        """
-        Invalid args: #{inspect(invalid)}
+        {:error,
+         """
+         Invalid args: #{inspect(invalid)}
 
-        Available options:
+         Available options:
 
-        #{Enum.map(options_spec, fn {opt, type} -> "- #{opt} : #{type}\n" end)}
-        """
-        |> abort()
+         #{Enum.map(options_spec, fn {opt, type} -> "- #{opt} : #{type}\n" end)}\
+         """}
 
       undefined ->
         raise "Undefined result: #{inspect(undefined)}"
@@ -29,17 +29,11 @@ defmodule Magma.CLI.Helper do
   end
 
   @doc """
-  Prints an error message and exits with status 1.
-  """
-  def abort(message) do
-    Magma.CLI.IO.error(message)
-    exit({:shutdown, 1})
-  end
+  Handles result tuples for Mix tasks.
 
-  @doc """
-  Handles ok/error tuples, aborting on error.
+  Raises on error, returns `:ok` on success.
   """
-  def handle_error({:ok, _}), do: :ok
-  def handle_error(:ok), do: :ok
-  def handle_error({:error, error}), do: error |> to_string() |> abort()
+  def handle_mix_result(:ok), do: :ok
+  def handle_mix_result({:ok, _}), do: :ok
+  def handle_mix_result({:error, error}), do: Mix.raise(to_string(error))
 end

@@ -28,7 +28,10 @@ defmodule Magma.MixProject do
 
       # Docs
       name: "Magma",
-      docs: docs()
+      docs: docs(),
+
+      # Releases
+      releases: releases()
     ]
   end
 
@@ -51,6 +54,19 @@ defmodule Magma.MixProject do
     ]
   end
 
+  defp releases do
+    [
+      magma: [
+        steps: [:assemble, &Burrito.wrap/1],
+        burrito: [
+          targets: [
+            macos_arm: [os: :darwin, cpu: :aarch64]
+          ]
+        ]
+      ]
+    ]
+  end
+
   def application do
     [
       extra_applications: [:logger, :eex],
@@ -61,10 +77,12 @@ defmodule Magma.MixProject do
   defp deps do
     [
       {:panpipe, "~> 0.3.2"},
+      {:yaml_elixir, "~> 2.12"},
       {:yaml_front_matter, "~> 1.0"},
       {:jason, "~> 1.4"},
       {:openai, "~> 0.5", optional: true},
       {:clipboard, "~> 0.2"},
+      {:burrito, "~> 1.0"},
       {:exvcr, "~> 0.15", only: [:dev, :test]},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false}
     ]

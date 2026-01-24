@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Magma.Prompt.Update do
 
   alias Magma.{Artefact, Document, Vault}
 
-  @shortdoc "Regenerates a artefact prompt"
+  @shortdoc "Regenerates an artefact prompt"
 
   @options [
     all: :boolean
@@ -17,9 +17,10 @@ defmodule Mix.Tasks.Magma.Prompt.Update do
   def run(args) do
     with_valid_options(args, @options, fn
       [all: true], [] -> update_all()
-      _opts, [] -> abort("prompt name or path missing")
+      _opts, [] -> {:error, "prompt name or path missing"}
       _opts, [prompt_name] -> update(prompt_name)
     end)
+    |> handle_mix_result()
   end
 
   def update_all do
@@ -31,7 +32,6 @@ defmodule Mix.Tasks.Magma.Prompt.Update do
          {:ok, _} <- Document.recreate(prompt) do
       :ok
     end
-    |> handle_error()
   end
 
   def all_prompt_files(path \\ Vault.artefact_generation_path()) do
