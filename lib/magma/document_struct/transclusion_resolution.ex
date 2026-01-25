@@ -130,7 +130,10 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
     %Section{section | sections: List.update_at(section.sections, -1, &append(&1, ast))}
   end
 
-  defp resolve_transclusion_header(%Section{header: header} = section, visited) do
+  defp resolve_transclusion_header(
+         %Section{header: %Panpipe.AST.Header{} = header} = section,
+         visited
+       ) do
     case Enum.reverse(header.children) do
       [%Panpipe.AST.Image{target: target, attr: %Panpipe.AST.Attr{classes: ["wikilink"]}} | rest] ->
         if extract_document_name(target) in visited do
@@ -220,7 +223,7 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
 
       {:ok, document} ->
         with {:ok, document_struct} <- DocumentStruct.parse(document.content) do
-          {:ok, %DocumentStruct{document_struct | prologue: []}}
+          {:ok, %{document_struct | prologue: []}}
         end
 
       {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->

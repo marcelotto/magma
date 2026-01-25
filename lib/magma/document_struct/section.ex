@@ -198,7 +198,7 @@ defmodule Magma.DocumentStruct.Section do
 
   def shift_level(%__MODULE__{} = section, 0), do: section
 
-  def shift_level(%__MODULE__{} = section, shift_level) do
+  def shift_level(%__MODULE__{header: %Panpipe.AST.Header{}} = section, shift_level) do
     %__MODULE__{
       section
       | level: section.level + shift_level,
@@ -262,7 +262,7 @@ defmodule Magma.DocumentStruct.Section do
   end
 
   defp do_resolve_links(section, style) do
-    %__MODULE__{
+    %{
       section
       | content: Enum.map(section.content, &transform_links(&1, style)),
         sections: Enum.map(section.sections, &do_resolve_links(&1, style))

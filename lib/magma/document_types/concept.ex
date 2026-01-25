@@ -133,7 +133,7 @@ defmodule Magma.Concept do
   defp parse(concept) do
     with {:ok, document_struct} <- DocumentStruct.parse(concept.content) do
       {:ok,
-       %__MODULE__{
+       %{
          concept
          | title: DocumentStruct.title(document_struct),
            prologue: document_struct.prologue,
@@ -153,7 +153,7 @@ defmodule Magma.Concept do
     with {:ok, concept} <- parse(concept),
          {:ok, matter, custom_metadata} <-
            Matter.extract_from_metadata(concept.name, concept.title, concept.custom_metadata) do
-      {:ok, %__MODULE__{concept | subject: matter, custom_metadata: custom_metadata}}
+      {:ok, %{concept | subject: matter, custom_metadata: custom_metadata}}
     end
   end
 

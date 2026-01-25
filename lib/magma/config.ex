@@ -46,7 +46,7 @@ defmodule Magma.Config do
   def artefacts_path, do: path(@artefacts_path)
 
   @doc """
-  Constructs a complete path to a artefact config document by joining the specified `segments` to the `artefacts_path/0`.
+  Constructs a complete path to an artefact config document by joining the specified `segments` to the `artefacts_path/0`.
   """
   def artefacts_path(segments), do: Path.join([artefacts_path() | List.wrap(segments)])
 
@@ -270,7 +270,7 @@ defmodule Magma.Config do
   defp init_matter(config) do
     with {:ok, files} <- File.ls(matter_path()) do
       {:ok,
-       %__MODULE__{
+       %{
          config
          | matter:
              files
@@ -288,7 +288,7 @@ defmodule Magma.Config do
   defp init_artefacts(config) do
     with {:ok, files} <- File.ls(artefacts_path()) do
       {:ok,
-       %__MODULE__{
+       %{
          config
          | artefacts:
              files
@@ -306,7 +306,7 @@ defmodule Magma.Config do
   defp init_text_types(config) do
     with {:ok, files} <- File.ls(text_types_path()) do
       {:ok,
-       %__MODULE__{
+       %{
          config
          | text_types:
              files

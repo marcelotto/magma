@@ -72,7 +72,7 @@ defmodule Magma.Config.TextType do
   end
 
   defp render(document) do
-    %__MODULE__{
+    %{
       document
       | content: """
         # #{title(document)}
@@ -91,7 +91,7 @@ defmodule Magma.Config.TextType do
   def load_document(%__MODULE__{} = document) do
     with {:ok, document} <- super(document) do
       {:ok,
-       %__MODULE__{
+       %{
          document
          | text_type: document |> type_name() |> Magma.Matter.Text.type(false)
        }}

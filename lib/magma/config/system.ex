@@ -124,7 +124,7 @@ defmodule Magma.Config.System do
     with {:ok, document} <- super(document),
          {:ok, config} <- setup_default_generation(document.custom_metadata) do
       {:ok,
-       %__MODULE__{
+       %{
          document
          | custom_metadata:
              config

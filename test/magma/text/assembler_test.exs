@@ -111,7 +111,7 @@ defmodule Magma.Text.AssemblerTest do
 
     # check that only the content was changed
     assert %Concept{updated_text_concept | content: nil, sections: nil} ==
-             %Concept{Concept.load!("Some User Guide") | content: nil, sections: nil}
+             %{Concept.load!("Some User Guide") | content: nil, sections: nil}
 
     # check that the 'Assemble' button in the preview was replaced with callout
     updated_toc_version = Artefact.Version.load!("Some User Guide ToC")
