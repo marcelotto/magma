@@ -1,5 +1,10 @@
 defmodule Mix.Tasks.Magma.Artefact.SelectDraft do
-  use Magma
+  @moduledoc """
+  Selects a prompt result as a draft version.
+
+      $ mix magma.artefact.select_draft "Name of prompt result"
+  """
+
   use Mix.Task
 
   import Magma.CLI.Helper

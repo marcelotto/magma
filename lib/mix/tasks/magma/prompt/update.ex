@@ -1,5 +1,16 @@
 defmodule Mix.Tasks.Magma.Prompt.Update do
-  use Magma
+  @moduledoc """
+  Regenerates an artefact prompt document.
+
+  Useful when a module's code has changed since the prompt was created.
+
+      $ mix magma.prompt.update "Name of a Prompt"
+
+  ## Options
+
+  - `--all` - Update all prompts in the vault
+  """
+
   use Mix.Task
 
   import Magma.CLI.Helper

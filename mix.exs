@@ -49,8 +49,7 @@ defmodule Magma.MixProject do
         "GitHub" => @scm_url,
         "Changelog" => @scm_url <> "/blob/main/CHANGELOG.md"
       },
-      files:
-        ~w[lib priv mix.exs .formatter.exs VERSION *.md docs.magma/artefacts/final/modules/**/*.md]
+      files: ~w[lib priv mix.exs .formatter.exs VERSION *.md]
     ]
   end
 

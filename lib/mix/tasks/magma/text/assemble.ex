@@ -1,5 +1,17 @@
 defmodule Mix.Tasks.Magma.Text.Assemble do
-  use Magma
+  @moduledoc """
+  Generates section documents from a final table of contents.
+
+  Creates concept and artefact prompt documents for each section and assembles
+  the preview document.
+
+      $ mix magma.text.assemble "Name of ToC document"
+
+  ## Options
+
+  - `--force` - Overwrite existing documents without confirmation
+  """
+
   use Mix.Task
 
   import Magma.CLI.Helper

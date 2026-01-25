@@ -1,5 +1,15 @@
 defmodule Mix.Tasks.Magma.Text.Type.New do
-  use Magma
+  @moduledoc """
+  Generates a configuration document for a new text type.
+
+      $ mix magma.text.type.new MyTextType
+      $ mix magma.text.type.new MyTextType "My Custom Text Type"
+
+  ## Options
+
+  - `--force` - Overwrite existing configuration without confirmation
+  """
+
   use Mix.Task
 
   import Magma.CLI.Helper

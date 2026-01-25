@@ -1,5 +1,10 @@
 defmodule Mix.Tasks.Magma.Text.Finalize do
-  use Magma
+  @moduledoc """
+  Generates the final text from a preview document.
+
+      $ mix magma.text.finalize "Name of preview document"
+  """
+
   use Mix.Task
 
   import Magma.CLI.Helper

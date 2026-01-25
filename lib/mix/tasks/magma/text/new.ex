@@ -1,5 +1,17 @@
 defmodule Mix.Tasks.Magma.Text.New do
-  use Magma
+  @moduledoc """
+  Generates concept and artefact prompt documents for a new text.
+
+  The first argument is the title, optionally followed by a text type that
+  determines the system prompt details.
+
+      $ mix magma.text.new "Example User Guide" UserGuide
+
+  ## Options
+
+  - `--force` - Overwrite existing documents without confirmation
+  """
+
   use Mix.Task
 
   import Magma.CLI.Helper

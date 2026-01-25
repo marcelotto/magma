@@ -63,7 +63,6 @@ Facts, problems and properties etc. - your knowledge - about the module.
 ```elixir
 defmodule TopLevelExample do
   # , "Short description"
-  use Magma
 
   def module_doc, do: @moduledoc
 

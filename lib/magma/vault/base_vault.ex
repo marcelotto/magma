@@ -1,5 +1,24 @@
 defmodule Magma.Vault.BaseVault do
-  use Magma
+  @moduledoc """
+  Utilities for interacting with predefined and custom base vaults.
+
+  A base vault is a preconfigured Obsidian vault that serves as a template when
+  initializing a new Magma vault.
+
+  ## Creating a new base vault
+
+  If you are looking to create a new base vault (either a local one or as a
+  contribution to the Magma project), ensure you include the required plugins
+  from the default base vault:
+
+  - [Buttons](https://github.com/shabegom/buttons)
+  - [Shell commands](https://github.com/Taitava/obsidian-shellcommands)
+  - [QuickAdd](https://github.com/chhoumann/quickadd)
+  - [Dataview](https://github.com/blacksmithgu/obsidian-dataview)
+
+  Also, it's vital to copy the configurations of the Shell Commands and QuickAdd
+  plugins, as they include the integration with the respective Magma mix tasks.
+  """
 
   @path :code.priv_dir(:magma) |> Path.join("base_vault")
   @default_theme :default
