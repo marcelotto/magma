@@ -74,14 +74,12 @@ defmodule Magma.Matter.Text.Section do
   def new!(attrs) do
     case new(attrs) do
       {:ok, matter} -> matter
-      {:error, error} -> raise error
     end
   end
 
   def new!(main_text, name) do
     case new(main_text, name) do
       {:ok, matter} -> matter
-      {:error, error} -> raise error
     end
   end
 

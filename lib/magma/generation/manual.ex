@@ -17,7 +17,6 @@ defmodule Magma.Generation.Manual do
   def new!(description \\ nil) do
     case new(description) do
       {:ok, manual} -> manual
-      {:error, error} -> raise error
     end
   end
 

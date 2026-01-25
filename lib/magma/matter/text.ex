@@ -87,7 +87,6 @@ defmodule Magma.Matter.Text do
   def new!(name, attrs \\ []) do
     case new(name, attrs) do
       {:ok, matter} -> matter
-      {:error, error} -> raise error
     end
   end
 
