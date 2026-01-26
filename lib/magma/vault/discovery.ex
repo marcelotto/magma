@@ -17,6 +17,12 @@ defmodule Magma.Vault.Discovery do
   require Logger
 
   @doc """
+  Returns the config file name (`.magma.yaml`).
+  """
+  @spec config_file() :: String.t()
+  def config_file, do: @config_file
+
+  @doc """
   Resolves the vault path from environment variable, current directory, or `#{@config_file}`.
 
   Returns the discovered path or `nil` if not found.
