@@ -79,8 +79,15 @@ defmodule Magma.Document.Loader do
 
   defp extract_type(metadata) do
     case Map.pop(metadata, :magma_type) do
-      {nil, _} -> {:error, :magma_type_missing}
-      {magma_type, metadata} -> {:ok, Document.type(magma_type), metadata}
+      {nil, _} ->
+        {:error, :magma_type_missing}
+
+      {magma_type, metadata} ->
+        if document_type = Document.type(magma_type) do
+          {:ok, document_type, metadata}
+        else
+          {:error, :invalid_magma_type}
+        end
     end
   end
 
@@ -93,7 +100,7 @@ defmodule Magma.Document.Loader do
         {:error,
          InvalidDocumentType.exception(
            document: invalid_document.path,
-           expected: [Magma.Prompt, Magma.Artefact.Prompt],
+           expected: [Magma.Prompt],
            actual: invalid_document.__struct__
          )}
 

@@ -2,9 +2,8 @@ defmodule Magma.Vault.Initializer do
   @moduledoc false
 
   alias Magma.Vault
-  alias Magma.Vault.{BaseVault, CodeSync}
-  alias Magma.Matter.Project
-  alias Magma.{Concept, Prompt, Session, Document, Generation}
+  alias Magma.Vault.BaseVault
+  alias Magma.{Prompt, Session, Document, Generation}
   alias Magma.CLI.FileOps
 
   import FileOps, only: [copy_directory: 2, create_file: 2]
@@ -15,24 +14,16 @@ defmodule Magma.Vault.Initializer do
   @bin_dir_path :code.priv_dir(:magma) |> Path.join(@bin_dir)
   def bin_dir_path, do: @bin_dir_path
 
-  @spec initialize(binary, base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
+  @spec initialize(base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
           :ok | {:error, any}
-  def initialize(project_name, base_vault \\ nil, opts \\ []) do
-    with :ok <- base_vault |> BaseVault.path!() |> create_vault(project_name, opts) do
-      {:ok, project} = create_project(project_name)
-
-      create_custom_prompt_template(project)
-      create_session_templates(project)
-
-      if Keyword.get(opts, :code_sync, true) do
-        CodeSync.sync(opts)
-      else
-        :ok
-      end
+  def initialize(base_vault \\ nil, opts \\ []) do
+    with :ok <- base_vault |> BaseVault.path!() |> create_vault(opts) do
+      create_custom_prompt_template()
+      create_session_templates()
     end
   end
 
-  defp create_vault(base_vault, project_name, opts) do
+  defp create_vault(base_vault, opts) do
     vault_dest_dir = Vault.path()
 
     if File.exists?(vault_dest_dir) && !Keyword.get(opts, :force) do
@@ -55,7 +46,7 @@ defmodule Magma.Vault.Initializer do
       |> Path.join(".obsidian")
       |> copy_directory(vault_dest_dir)
 
-      create_config(project_name, vault_dest_dir)
+      create_config()
 
       Magma.Vault.Version.save(Magma.version())
 
@@ -67,12 +58,9 @@ defmodule Magma.Vault.Initializer do
     end
   end
 
-  def create_config(project_name, vault_dest_dir \\ Vault.path()) do
-    Magma.Config.template_path()
-    |> copy_directory(vault_dest_dir)
-
+  def create_config do
     Magma.Config.System.path()
-    |> create_file(Magma.Config.System.template(project_name))
+    |> create_file(Magma.Config.System.template())
 
     Vault.Index.index()
 
@@ -83,6 +71,7 @@ defmodule Magma.Vault.Initializer do
     vault_dest_dir
     |> Path.join(".gitignore")
     |> create_file("""
+    # we ignore prompt results by default, feel free to version them by removing this
     #{Magma.PromptResult.dir()}/
 
     # Session response files are temporary and should not be versioned
@@ -90,32 +79,26 @@ defmodule Magma.Vault.Initializer do
     """)
   end
 
-  defp create_project(project_name) do
-    project_name
-    |> Project.new!()
-    |> Concept.create()
-  end
-
-  def create_custom_prompt_template(project) do
+  def create_custom_prompt_template do
     prompt =
       "default"
       |> Prompt.new!(generation: Generation.default())
       |> Document.init()
 
     Vault.custom_prompt_template_path()
-    |> create_file(Prompt.Template.custom_prompt_obsidian_template(project, prompt))
+    |> create_file(Prompt.Template.custom_prompt_obsidian_template(prompt))
 
     :ok
   end
 
-  def create_session_templates(project) do
+  def create_session_templates do
     session =
       "default"
       |> Session.new!(generation: Generation.default())
       |> Document.init()
 
     Vault.session_template_path()
-    |> create_file(Session.Template.session_obsidian_template(project, session))
+    |> create_file(Session.Template.session_obsidian_template(session))
 
     Vault.session_continuation_template_path()
     |> create_file(Session.Template.session_continuation_obsidian_template())

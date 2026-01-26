@@ -22,9 +22,6 @@ defmodule Magma.Session do
     {:ok, [@path_prefix, name <> ".md"] |> Vault.path()}
   end
 
-  @impl true
-  def from(%__MODULE__{} = session), do: session
-
   def new(name, attrs \\ []) do
     struct(__MODULE__, Keyword.put(attrs, :name, name))
     |> Document.init_path()
@@ -68,7 +65,7 @@ defmodule Magma.Session do
   end
 
   def render(%__MODULE__{} = session) do
-    %__MODULE__{session | content: Template.render(session, Magma.Config.project())}
+    %__MODULE__{session | content: Template.render(session)}
   end
 
   @impl true

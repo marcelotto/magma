@@ -5,7 +5,7 @@ defmodule Magma.Session.AssemblerTest do
   alias Magma.Prompt.Assembler
 
   describe "assemble_all/1 - Initial Mode" do
-    @describetag vault_files: ["concepts/Project.md"]
+    @describetag vault_files: ["plain/Project.md"]
     test "compiles session like a regular Prompt" do
       # Create a new session (initial mode - no Prompt separators)
       assert {:ok, session} = Session.create("InitialModeSession")
@@ -36,10 +36,10 @@ defmodule Magma.Session.AssemblerTest do
 
       # Manually edit to add transclusion
       content_with_transclusion =
-        String.replace(
+        Regex.replace(
+          ~r/## Request\n+/,
           original_content,
-          "## Request\n\n\n",
-          "## Request\n\nTest request with transclusion: \n\n![[Project#Description]]\n\n"
+          "## Request\n\nTest request with transclusion:\n\n![[Project#Description]]\n\n"
         )
 
       File.write!(session.path, content_with_transclusion)
@@ -54,7 +54,7 @@ defmodule Magma.Session.AssemblerTest do
   end
 
   describe "assemble_all/1 - Continuation Mode" do
-    @describetag vault_files: ["concepts/Project.md"]
+    @describetag vault_files: ["plain/Project.md"]
     setup do
       # Create a session with continuation content (multiple Prompt sections)
       {:ok, session} = Session.create("ContinuationSession")
@@ -157,13 +157,13 @@ defmodule Magma.Session.AssemblerTest do
 
       # Assemble and verify transclusion resolution
       assert {:ok, compiled} = Assembler.assemble_all(loaded)
-      assert compiled =~ "Here's the project description:\n\nThis is the project description."
+
+      assert compiled =~
+               "Here's the project description:\n\nThis is the project description."
     end
   end
 
   describe "include_prompt_header configuration" do
-    @describetag vault_files: ["concepts/Project.md"]
-
     test "initial mode includes header by default" do
       assert {:ok, session} = Session.create("HeaderTest")
       assert {:ok, loaded} = Session.load(session.path)
@@ -236,8 +236,6 @@ defmodule Magma.Session.AssemblerTest do
   end
 
   describe "session_response_mode handling" do
-    @describetag vault_files: ["concepts/Project.md"]
-
     test "import mode (default) - external file instruction appended by assembler" do
       assert {:ok, session} = Session.create("DefaultMode")
       assert {:ok, loaded} = Session.load(session.path)

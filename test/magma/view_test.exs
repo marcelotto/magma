@@ -5,8 +5,7 @@ defmodule Magma.ViewTest do
 
   alias Magma.View
 
-  alias Magma.{Concept, Document}
-  alias Magma.DocumentStruct.Section
+  alias Magma.Document
 
   describe "include/3" do
     test "with section" do
@@ -88,117 +87,35 @@ defmodule Magma.ViewTest do
                |> String.trim()
     end
 
-    @tag vault_files: ["concepts/modules/Nested/Nested.Example.md"]
-    test "with concept" do
-      concept = Concept.load!("Nested.Example")
-
-      description =
-        """
-        ## Description
-
-        This is an example description of the module:
-
-        Module `Nested.Example` does:
-
-        - x
-        - y
-        """
-        |> String.trim()
-
-      assert View.include(concept) == description
-
-      assert View.include(concept, :title) ==
-               """
-               # `Nested.Example`
-
-               #{description}
-               """
-               |> String.trim()
-
-      assert View.include(concept, "Description") == description
-
-      assert View.include(concept, "Context knowledge") ==
-               concept
-               |> Concept.context_knowledge_section()
-               |> Section.to_markdown()
-               |> String.trim()
-
-      assert View.include(concept, "Some background knowledge") ==
-               """
-               ## Some background knowledge
-
-               Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
-               """
-               |> String.trim()
-
-      assert View.include(concept, "Some background knowledge", header: false) ==
-               "Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod"
-
-      assert View.include(concept, nil, level: 1) ==
-               """
-               # Description
-
-               This is an example description of the module:
-
-               Module `Nested.Example` does:
-
-               - x
-               - y
-
-               """
-               |> String.trim()
-
-      assert View.include(concept, "Context knowledge",
-               header: false,
-               level: 3,
-               remove_comments: true
-             ) ==
-               """
-               #### Some background knowledge
-
-               Nostrud qui magna officia consequat consectetur dolore sed amet eiusmod
-
-               #### Transcluded background knowledge ![[Document#Title|]]
-               """
-               |> String.trim()
-    end
-
-    @tag vault_files: [
-           "artefacts/final/texts/Some User Guide/Some User Guide ToC.md",
-           "concepts/texts/Some User Guide/Some User Guide.md"
-         ]
+    @tag vault_files: ["prompts/Foo-Prompt.md"]
     test "with document" do
-      {:ok, document} = Document.Loader.load("Some User Guide ToC")
+      {:ok, document} = Document.Loader.load("Foo-Prompt")
 
       body =
         """
-        # Some User Guide ToC
+        # Foo-Prompt
 
-        ## Introduction
+        ## System prompt
 
-        Abstract: Abstract of the introduction.
+        You are an assistent for the Elixir language. You always answer very short with at most three words.
 
-        ## Next section
+        ## Request
 
-        Abstract: Abstract of the next section.
-
-        ## Another section
-
-        Abstract: Abstract of the another section.
+        Elixir is ...
         """
         |> String.trim()
 
       assert View.include(document) == body
 
       assert View.include(document, :title) == body
-      assert View.include(document, "Some User Guide ToC") == body
+      assert View.include(document, "Foo-Prompt") == body
 
       assert View.include(document, :all) ==
                """
                ``` button
-               name Assemble sections
+               name Execute
                type command
-               action Shell commands: Execute: magma.text.assemble
+               action Shell commands: Execute: magma.prompt.exec
                color blue
                ```
 
@@ -206,52 +123,44 @@ defmodule Magma.ViewTest do
                """
                |> String.trim()
 
-      assert View.include(document, "Introduction") ==
+      assert View.include(document, "System prompt") ==
                """
-               ## Introduction
+               ## System prompt
 
-               Abstract: Abstract of the introduction.
+               You are an assistent for the Elixir language. You always answer very short with at most three words.
                """
                |> String.trim()
 
-      assert View.include(document, "Introduction", header: false) ==
-               "Abstract: Abstract of the introduction."
+      assert View.include(document, "System prompt", header: false) ==
+               "You are an assistent for the Elixir language. You always answer very short with at most three words."
 
       assert View.include(document, nil, level: 3) ==
                """
-               ### Some User Guide ToC
+               ### Foo-Prompt
 
-               #### Introduction
+               #### System prompt
 
-               Abstract: Abstract of the introduction.
+               You are an assistent for the Elixir language. You always answer very short with at most three words.
 
-               #### Next section
+               #### Request
 
-               Abstract: Abstract of the next section.
-
-               #### Another section
-
-               Abstract: Abstract of the another section.
+               Elixir is ...
                """
                |> String.trim()
 
-      assert View.include(document, "Some User Guide ToC",
+      assert View.include(document, "Foo-Prompt",
                header: false,
                level: 2,
                remove_comments: true
              ) ==
                """
-               ### Introduction
+               ### System prompt
 
-               Abstract: Abstract of the introduction.
+               You are an assistent for the Elixir language. You always answer very short with at most three words.
 
-               ### Next section
+               ### Request
 
-               Abstract: Abstract of the next section.
-
-               ### Another section
-
-               Abstract: Abstract of the another section.
+               Elixir is ...
                """
                |> String.trim()
     end

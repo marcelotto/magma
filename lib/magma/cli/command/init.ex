@@ -6,8 +6,7 @@ defmodule Magma.CLI.Command.Init do
   @options [
     force: :boolean,
     base_vault: :string,
-    base_vault_path: :string,
-    code_sync: :boolean
+    base_vault_path: :string
   ]
 
   @impl true
@@ -19,8 +18,7 @@ defmodule Magma.CLI.Command.Init do
   @impl true
   def run(args) do
     with_valid_options(args, @options, fn
-      _opts, [] -> {:error, "project name missing"}
-      opts, [project_name] -> Initializer.initialize(project_name, base_vault(opts), opts)
+      opts, _ -> Initializer.initialize(base_vault(opts), opts)
     end)
   end
 

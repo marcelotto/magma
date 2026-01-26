@@ -6,7 +6,7 @@ defmodule Magma.Vault do
 
   Main functions of this module include:
 
-  - Retrieving paths within the vault, like the base path, template paths, concept paths, etc.
+  - Retrieving paths within the vault, like the base path, template paths, etc.
   - Creating and initializing a new vault (`create/3`).
   - Synchronizing the vault with the project's codebase (`sync/1`).
   - Indexing documents by name (`index/1`).
@@ -20,11 +20,6 @@ defmodule Magma.Vault do
   import Magma.Utils, only: [file_format_timestamp: 1]
 
   @default_path "magma"
-  @concept_path_prefix "concepts"
-  @artefact_path_prefix "artefacts"
-  @artefact_generation_path_prefix Path.join(@artefact_path_prefix, "generated")
-  @artefact_version_path_prefix Path.join(@artefact_path_prefix, "final")
-
   @template_path_prefix "templates"
   @custom_prompt_template_name "custom_prompt.md"
   @session_template_name "session.md"
@@ -131,47 +126,8 @@ defmodule Magma.Vault do
   end
 
   @doc """
-  Returns the Vault path of the directory for `Magma.Concept` documents.
-  """
-  @spec concept_path :: Path.t()
-  def concept_path, do: path(@concept_path_prefix)
-
-  @doc """
-  Constructs a complete path for `Magma.Concept` documents by joining the specified `segments` to the `concept_path/0`.
-  """
-  @spec concept_path(binary | [binary]) :: Path.t()
-  def concept_path(segments), do: Path.join([concept_path() | List.wrap(segments)])
-
-  @doc """
-  Returns the Vault path of the directory for `Magma.Artefact.Prompt` documents.
-  """
-  @spec artefact_generation_path :: Path.t()
-  def artefact_generation_path, do: path(@artefact_generation_path_prefix)
-
-  @doc """
-  Constructs a complete path for `Magma.Artefact.Prompt` documents by joining the specified `segments` to the `artefact_generation_path/0`.
-  """
-  @spec artefact_generation_path(binary | [binary]) :: Path.t()
-  def artefact_generation_path(segments),
-    do: Path.join([artefact_generation_path() | List.wrap(segments)])
-
-  @doc """
-  Returns the Vault path of the directory for `Magma.Artefact.Version` documents.
-  """
-  @spec artefact_version_path :: Path.t()
-  def artefact_version_path, do: path(@artefact_version_path_prefix)
-
-  @doc """
-  Constructs a complete path for `Magma.Artefact.Version` documents by joining the specified `segments` to the `artefact_generation_path/0`.
-  """
-  @spec artefact_version_path(binary | [binary]) :: Path.t()
-  def artefact_version_path(segments),
-    do: Path.join([artefact_version_path() | List.wrap(segments)])
-
-  @doc """
   Creates and initializes a new vault.
 
-  The `project_name` is a mandatory parameter.
   The `base_vault` specifies the `Magma.Vault.BaseVault` to be used for
   initializing the new Magma vault. It can be specified with any of arguments
   accepted by `Magma.Vault.BaseVault.path/1`.
@@ -179,37 +135,16 @@ defmodule Magma.Vault do
   Available `opts`:
 
   - `:force` (default: `false`): allow to force creation even if a vault already exists
-  - `:code_sync` (default: `true`): perform an initial code `sync/1`
 
 
   Returns `:ok` if the vault is successfully created or an error tuple if
   there's an error during the vault creation process.
   """
-  @spec create(binary, base_vault :: Magma.Vault.BaseVault.theme() | Path.t() | nil, keyword) ::
+  @spec create(base_vault :: Magma.Vault.BaseVault.theme() | Path.t() | nil, keyword) ::
           :ok | {:error, any}
-  defdelegate create(project_name, base_vault \\ nil, opts \\ []),
+  defdelegate create(base_vault \\ nil, opts \\ []),
     to: Magma.Vault.Initializer,
     as: :initialize
-
-  @doc """
-  Synchronizes the `Magma.Matter.Module` related documents with the latest state of the codebase.
-
-  All modules in the code base are determined and for each one the following
-  `Magma.Document`s created (unless they exist already or the `:all` option is set):
-
-  - a `Magma.Concept`
-  - `Magma.Artefact.Prompt`s for all `Magma.Artefact`s for `Magma.Matter.Module`
-    (as specified by `Magma.Matter.Module.artefacts/0`)
-
-  Available options:
-
-  - `:all` (default: `false`) - when set to `true` also syncs modules for
-    already existing documents
-  - `force` (default: `false`) - when set to `true` overwrites all existing
-    documents without asking the user
-  """
-  @spec sync(keyword) :: :ok | {:error, any}
-  defdelegate sync(opts \\ []), to: Magma.Vault.CodeSync
 
   @doc """
   Indexes the provided document by its name.

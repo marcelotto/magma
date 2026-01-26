@@ -3,7 +3,7 @@ defmodule Magma.Prompt do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Generation, PromptResult}
+  alias Magma.{Vault, Generation}
   alias Magma.Prompt.Template
 
   @path_prefix "prompts"
@@ -16,10 +16,6 @@ defmodule Magma.Prompt do
   def build_path(%__MODULE__{name: name}) do
     {:ok, [@path_prefix, name <> ".md"] |> Vault.path()}
   end
-
-  @impl true
-  def from(%__MODULE__{} = prompt), do: prompt
-  def from(%PromptResult{prompt: %__MODULE__{}} = result), do: result.prompt
 
   def new(name, attrs \\ []) do
     struct(__MODULE__, Keyword.put(attrs, :name, name))
@@ -58,7 +54,7 @@ defmodule Magma.Prompt do
   end
 
   def render(%__MODULE__{} = prompt) do
-    %__MODULE__{prompt | content: Template.render(prompt, Magma.Config.project())}
+    %__MODULE__{prompt | content: Template.render(prompt)}
   end
 
   @impl true

@@ -7,7 +7,7 @@ defmodule Magma.Generation.ManualTest do
 
   test "shell interaction" do
     prompt =
-      custom_artefact_prompt(
+      custom_prompt(
         "Elixir is ...",
         "You are an assistent for the Elixir language and answer short in one sentence."
       )
@@ -25,7 +25,7 @@ defmodule Magma.Generation.ManualTest do
 
   test "without shell interaction" do
     prompt =
-      custom_artefact_prompt(
+      custom_prompt(
         "Elixir is ...",
         "You are an assistent for the Elixir language and answer short in one sentence."
       )
@@ -43,7 +43,7 @@ defmodule Magma.Generation.ManualTest do
       "You are an assistent for the Elixir language and answer short in one sentence."
 
     prompt =
-      custom_artefact_prompt(
+      custom_prompt(
         system_prompt,
         request_prompt
       )

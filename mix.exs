@@ -110,35 +110,12 @@ defmodule Magma.MixProject do
           Magma.Prompt,
           Magma.Prompt.Template,
           Magma.PromptResult,
-          Magma.Concept,
-          Magma.Concept.Template,
-          Magma.Artefact.Prompt,
-          Magma.Artefact.Version
+          Magma.Session,
+          Magma.Session.Template
         ],
         DocumentStruct: [
           Magma.DocumentStruct,
           Magma.DocumentStruct.Section
-        ],
-        Matter: [
-          Magma.Matter,
-          Magma.Matter.Module,
-          Magma.Matter.Project
-        ],
-        Artefacts: [
-          Magma.Artefact,
-          Magma.Artefacts.ModuleDoc,
-          Magma.Artefacts.Readme,
-          Magma.Artefacts.Article
-        ],
-        Text: [
-          Magma.Text,
-          Magma.Text.Preview,
-          Magma.Matter.Text,
-          Magma.Matter.Text.Section,
-          Magma.Matter.Text.Type,
-          Magma.Matter.Texts.Generic,
-          Magma.Matter.Texts.UserGuide,
-          Magma.Artefacts.TableOfContents
         ],
         Generation: [
           Magma.Generation,
@@ -148,10 +125,7 @@ defmodule Magma.MixProject do
         Config: [
           Magma.Config,
           Magma.Config.Document,
-          Magma.Config.System,
-          Magma.Config.Matter,
-          Magma.Config.Artefact,
-          Magma.Config.TextType
+          Magma.Config.System
         ]
       ]
     ]

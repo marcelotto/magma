@@ -8,36 +8,20 @@ defmodule Magma.Document do
   are stored.
 
   Note, that in general the content under the YAML frontmatter of a document
-  is not further interpreted (except `Magma.Concept`).
+  is not further interpreted.
   `Magma.DocumentStruct` allows to get the AST of a Markdown document.
   """
 
-  alias Magma.{Vault, View, Concept, Artefact, Prompt, PromptResult, Session, Text}
+  alias Magma.{Vault, View, Prompt, PromptResult, Session}
 
   import Magma.Utils, only: [init_fields: 2]
 
   @type t ::
-          Concept.t()
-          | Prompt.t()
-          | Artefact.Prompt.t()
+          Prompt.t()
           | PromptResult.t()
-          | Artefact.Version.t()
-          | Text.Preview.t()
           | Session.t()
 
   @type type :: module
-
-  @doc """
-  Fetches a document from a related document.
-
-  For example, `Concept.from(prompt)` will return the `Magma.Concept` document from the given `prompt`.
-
-  Implementation should implement clauses for all document types for which it is possible.
-
-  For `Magma.Artefact`-specific documents from a `Magma.Concept`, the concept must be given in a
-  `{Concept.t(), Artefact.t()}` tuple.
-  """
-  @callback from(t() | {Concept.t(), Artefact.t()}) :: t() | binary
 
   @doc """
   Builds the path of a new document during its creation.
@@ -93,20 +77,6 @@ defmodule Magma.Document do
 
       defstruct Magma.Document.fields() ++ unquote(additional_fields)
 
-      @impl true
-      def from(%__MODULE__{} = system_prompts), do: system_prompts
-
-      @doc """
-      Fetches a document from a related document and immediately loads it with `load!/1`
-      """
-      def from!(document) do
-        case from(document) do
-          %_{} = result -> result
-          name when is_binary(name) -> load!(name)
-          other -> other
-        end
-      end
-
       @doc """
       Loads a document from the given `path` or `document`.
 
@@ -137,8 +107,7 @@ defmodule Magma.Document do
       @impl true
       def render_front_matter(%__MODULE__{}), do: nil
 
-      defoverridable from: 1,
-                     render_front_matter: 1
+      defoverridable render_front_matter: 1
     end
   end
 
@@ -240,33 +209,6 @@ defmodule Magma.Document do
     end)
   end
 
-  @doc """
-  Creates the file for document, overwriting the existing one.
-
-  This function is used by the `Mix.Tasks.Magma.Prompt.Update` Mix task.
-  """
-  def recreate(%document_type{} = document) do
-    document
-    |> reset_document()
-    |> document_type.create(force: true)
-  end
-
-  @doc """
-  Creates the file for document, overwriting the existing one.
-
-  This function is used by the `Mix.Tasks.Magma.Prompt.Update` Mix task.
-  """
-  def recreate!(document) do
-    case recreate(document) do
-      {:ok, document} -> document
-      {:error, error} -> raise error
-    end
-  end
-
-  defp reset_document(document) do
-    %{document | content: nil, created_at: nil}
-  end
-
   @doc !"""
        Returns the content of the document with any content before the initial header
        (which is usually used for document controls) stripped off.
@@ -289,23 +231,14 @@ defmodule Magma.Document do
 
   ## Example
 
-      iex> Magma.Document.type_name(Magma.Concept)
-      "Concept"
-
       iex> Magma.Document.type_name(Magma.Prompt)
       "Prompt"
-
-      iex> Magma.Document.type_name(Magma.Artefact.Prompt)
-      "Artefact.Prompt"
 
       iex> Magma.Document.type_name(Magma.PromptResult)
       "PromptResult"
 
-      iex> Magma.Document.type_name(Magma.Artefact.Version)
-      "Artefact.Version"
-
-      iex> Magma.Document.type_name(Magma.Text.Preview)
-      "Text.Preview"
+      iex> Magma.Document.type_name(Magma.Session)
+      "Session"
 
       iex> Magma.Document.type_name(Magma.Vault)
       ** (RuntimeError) Invalid Magma.Document type: Magma.Vault
@@ -336,11 +269,8 @@ defmodule Magma.Document do
       iex> Magma.Document.type("Session")
       Magma.Session
 
-      iex> Magma.Document.type("Concept")
-      Magma.Concept
-
-      iex> Magma.Document.type("Artefact.Prompt")
-      Magma.Artefact.Prompt
+      iex> Magma.Document.type("PromptResult")
+      Magma.PromptResult
 
       iex> Magma.Document.type("Config.System")
       Magma.Config.System

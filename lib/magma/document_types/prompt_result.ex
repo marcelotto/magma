@@ -3,7 +3,7 @@ defmodule Magma.PromptResult do
 
   @type t :: %__MODULE__{}
 
-  alias Magma.{Vault, Artefact, Generation, Prompt, View}
+  alias Magma.{Vault, Generation, Prompt, View}
   alias Magma.Document.Loader
 
   import Magma.Utils, only: [init_field: 2, file_format_timestamp: 1]
@@ -16,11 +16,6 @@ defmodule Magma.PromptResult do
   @impl true
   def title(%__MODULE__{prompt: %Prompt{} = prompt}) do
     "Prompt result of '#{prompt.name}'"
-  end
-
-  @impl true
-  def title(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact}}) do
-    "Generated #{artefact.name}"
   end
 
   def build_name(%__MODULE__{prompt: %Prompt{} = prompt} = result) do
@@ -37,21 +32,6 @@ defmodule Magma.PromptResult do
      [Prompt.path_prefix(), @dir, "#{build_name(result)}.md"]
      |> Vault.path()}
   end
-
-  @impl true
-  def build_path(%__MODULE__{prompt: %Artefact.Prompt{artefact: artefact}} = result) do
-    {:ok,
-     [
-       artefact |> Artefact.relative_prompt_path() |> Path.dirname(),
-       @dir,
-       "#{build_name(result)}.md"
-     ]
-     |> Vault.artefact_generation_path()}
-  end
-
-  @impl true
-  def from(%__MODULE__{} = result), do: result
-  def from(%Artefact.Version{} = version), do: version.draft
 
   def new(prompt, attrs \\ []) do
     struct(__MODULE__, [{:prompt, prompt} | attrs])
@@ -121,11 +101,6 @@ defmodule Magma.PromptResult do
   end
 
   defp trim_header(result, _), do: result
-
-  defp trim_header?(%__MODULE__{prompt: %Artefact.Prompt{artefact: %artefact_type{}}}) do
-    artefact_type.trim_prompt_result_header?()
-  end
-
   defp trim_header?(_), do: false
 
   defp render(prompt_result, execution_result) do
@@ -143,18 +118,6 @@ defmodule Magma.PromptResult do
     View.delete_current_file_button()
   end
 
-  def controls(%__MODULE__{prompt: %Artefact.Prompt{}} = prompt_result) do
-    """
-    #{View.button("Select as draft version", "magma.artefact.select_draft", color: "blue")}
-    #{View.delete_current_file_button()}
-
-    Final version: #{View.link_to_version(prompt_result)}
-
-    #{View.callout("This document should be treated as read-only. If you want to make changes, select it as a draft and make your changes there.", :attention)}
-    """
-    |> String.trim_trailing()
-  end
-
   @impl true
   def render_front_matter(%__MODULE__{} = document) do
     """
@@ -170,7 +133,7 @@ defmodule Magma.PromptResult do
     {prompt_link, metadata} = Map.pop(prompt_result.custom_metadata, :magma_prompt)
 
     if prompt_link do
-      with {:ok, prompt} <- Loader.load_linked([Prompt, Artefact.Prompt], prompt_link),
+      with {:ok, prompt} <- Loader.load_linked(Prompt, prompt_link),
            {:ok, generation, metadata} <- Generation.extract_from_metadata(metadata) do
         {:ok,
          %__MODULE__{

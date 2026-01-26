@@ -46,8 +46,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
   end
 
   @tag vault_files: [
-         "concepts/modules/Nested/Nested.Example.md",
-         "concepts/Project.md"
+         "plain/Project.md",
+         "plain/Nested.Example.md"
        ]
   test "inline transclusion" do
     assert """
@@ -66,11 +66,15 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Foo:
 
-             ### Description
+             This is the prologue of the project document.
+
+             ### Some project
+
+             #### Description
 
              This is the project description.
 
-             ### Knowledge Base
+             #### Knowledge Base
              """
 
     assert """
@@ -124,7 +128,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
-  @tag vault_files: ["concepts/Project.md"]
+  @tag vault_files: ["plain/Project.md"]
   test "transclusion of cached documents" do
     assert """
            ## Example title
@@ -137,7 +141,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
              ## Example title
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.default_persona()}
              """
 
     assert """
@@ -158,9 +162,10 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
   end
 
   @tag vault_files: [
-         "concepts/modules/Nested/Nested.Example.md",
-         "concepts/modules/Some/Some.DocumentWithTransclusion.md",
-         "concepts/Project.md"
+         "plain/Nested.Example.md",
+         "plain/Some.DocumentWithTransclusion.md",
+         "plain/Project.md",
+         "plain/Document.md"
        ]
   test "multiple inline transclusions" do
     assert """
@@ -180,15 +185,23 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
              ## Example title
 
-             ### Description
+             This is the prologue of the project document.
+
+             ### Some project
+
+             #### Description
 
              This is the project description.
 
-             ### Knowledge Base
+             #### Knowledge Base
 
              Foo:
 
-             ### Description
+             Prologue of Some.DocumentWithTransclusion.
+
+             ### `Some.DocumentWithTransclusion`
+
+             #### Description
 
              This is an example description of the module:
 
@@ -203,17 +216,17 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              Some final remarks.
 
-             ### Background knowledge about the project
+             #### Background knowledge about the project
 
-             #### Description
+             ##### Description
 
              This is the project description.
 
-             #### Knowledge Base
+             ##### Knowledge Base
 
              Again, some final remarks.
 
-             #### Subsection after transclusion
+             ##### Subsection after transclusion
 
              This is an example description of the module:
 
@@ -225,8 +238,9 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
   end
 
   @tag vault_files: [
-         "concepts/modules/Nested/Nested.Example.md",
-         "concepts/Project.md"
+         "plain/Nested.Example.md",
+         "plain/Project.md",
+         "plain/Document.md"
        ]
   test "custom header transclusion" do
     assert """
@@ -309,8 +323,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
   end
 
   @tag vault_files: [
-         "concepts/modules/Nested/Nested.Example.md",
-         "concepts/Project.md"
+         "plain/Nested.Example.md",
+         "plain/Project.md"
        ]
   test "empty header transclusion" do
     assert """
@@ -453,7 +467,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
-  @tag vault_files: ["concepts/Project.md"]
+  @tag vault_files: ["plain/Project.md"]
   test "custom header transclusion with empty content" do
     assert """
            ## Example title
@@ -473,7 +487,7 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
-  @tag vault_files: ["concepts/Project.md"]
+  @tag vault_files: ["plain/Project.md"]
   test "empty header transclusion with empty content" do
     assert """
            ## Example title
@@ -912,15 +926,14 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
-  @tag vault_files: [
-         "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
-         "concepts/modules/Nested/Nested.Example.md"
-       ]
+  @tag vault_files: ["prompts/Foo-Prompt.md"]
   test "prologue of Magma.Documents is ignored" do
+    # For Magma documents, prologue (button code blocks) is ignored during transclusion
+    # and content starts from the first section
     assert """
            ## Example title
 
-           ![[Prompt for ModuleDoc of Nested.Example]]
+           ![[Foo-Prompt]]
 
            """
            |> section()
@@ -931,15 +944,18 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
 
              ### System prompt
 
-             You are an assistent for writing Elixir moduledocs.
+             You are an assistent for the Elixir language. You always answer very short with at most three words.
 
              ### Request
 
-             Generate a moduledoc for `Nested.Example`.
+             Elixir is ...
              """
   end
 
-  @tag vault_files: ["concepts/Project.md"]
+             """
+  end
+
+  @tag vault_files: ["plain/Project.md"]
   test "when the same document is transcluded multiple times" do
     assert """
            ## Example title
@@ -979,9 +995,10 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
   end
 
   @tag vault_files: [
-         "concepts/modules/Nested/Nested.Example.md",
-         "concepts/modules/Some/Some.DocumentWithTransclusion.md",
-         "concepts/Project.md"
+         "plain/Nested.Example.md",
+         "plain/Some.DocumentWithTransclusion.md",
+         "plain/Project.md",
+         "plain/Document.md"
        ]
   test "recursive transclusion resolution" do
     assert """
@@ -1028,8 +1045,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
   end
 
   @tag vault_files: [
-         "concepts/modules/Some/Some.DocumentWithDirectCycle.md",
-         "concepts/modules/Some/Some.DocumentWithDirectCycle2.md"
+         "plain/Some.DocumentWithDirectCycle.md",
+         "plain/Some.DocumentWithDirectCycle2.md"
        ]
   test "recursive transclusion resolution with direct cycle" do
     assert_raise RuntimeError,
@@ -1060,8 +1077,8 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
   end
 
   @tag vault_files: [
-         "concepts/modules/Some/Some.DocumentWithIndirectCycle1.md",
-         "concepts/modules/Some/Some.DocumentWithIndirectCycle2.md"
+         "plain/Some.DocumentWithIndirectCycle1.md",
+         "plain/Some.DocumentWithIndirectCycle2.md"
        ]
   test "recursive transclusion resolution with indirect cycle" do
     assert_raise RuntimeError,

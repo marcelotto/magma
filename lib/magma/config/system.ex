@@ -9,6 +9,8 @@ defmodule Magma.Config.System do
 
   alias Magma.{Generation, View}
 
+  @default_persona "You are a knowledgeable assistant helping with software development, documentation, and technical writing tasks."
+
   @name "Magma.system.config"
   def name, do: @name
 
@@ -36,7 +38,7 @@ defmodule Magma.Config.System do
     end
   end
 
-  def template(project_name) do
+  def template do
     """
     ---
     magma_type: Config.System
@@ -53,7 +55,7 @@ defmodule Magma.Config.System do
 
       ## #{@persona_section_title}
 
-      #{default_persona(project_name)}
+      #{default_persona()}
 
 
       ## Context knowledge
@@ -91,14 +93,8 @@ defmodule Magma.Config.System do
     Application.get_env(:magma, :include_prompt_header, true)
   end
 
-  def default_persona(project_name) do
-    Application.get_env(
-      :magma,
-      :persona,
-      """
-      You are MagmaGPT, an assistant who helps the developers of the "#{project_name}" project during documentation and development. Your responses are in plain and clear English.
-      """
-    )
+  def default_persona do
+    Application.get_env(:magma, :persona, @default_persona)
     |> String.trim_trailing()
   end
 

@@ -5,7 +5,6 @@ defmodule Magma.PromptTest do
 
   alias Magma.{Generation, Prompt}
 
-  @tag vault_files: ["concepts/Project.md"]
   test "create/1 and re-load/1 of custom prompt" do
     assert {:ok,
             %Prompt{
@@ -35,8 +34,6 @@ defmodule Magma.PromptTest do
              The following sections contain background knowledge you need to be aware of.
 
              ![[Magma.system.config#Context knowledge|]]
-
-             #### Description of the Some project ![[Project#Description|]]
 
 
              ## Request

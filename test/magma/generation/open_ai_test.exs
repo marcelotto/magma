@@ -1,5 +1,5 @@
 defmodule Magma.Generation.OpenAITest do
-  use Magma.TestCase
+  use Magma.Vault.Case, async: false
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
   doctest Magma.Generation.OpenAI
@@ -11,20 +11,6 @@ defmodule Magma.Generation.OpenAITest do
   setup_all do
     HTTPoison.start()
     :ok
-  end
-
-  test "with artefact prompt" do
-    use_cassette "openai/simple_example" do
-      assert Generation.OpenAI.new!()
-             |> Generation.OpenAI.execute(
-               custom_artefact_prompt(
-                 "Elixir is ...",
-                 "You are an assistent for the Elixir language and answer short in one sentence."
-               )
-             ) ==
-               {:ok,
-                "a dynamic, functional programming language designed for building scalable and maintainable applications."}
-    end
   end
 
   test "with custom prompt" do
@@ -41,12 +27,24 @@ defmodule Magma.Generation.OpenAITest do
     end
   end
 
+  #  test "token limit exceeded" do
+  #    use_cassette "openai/token_limit_exceeded" do
+  #      assert Generation.OpenAI.new!()
+  #             |> Generation.OpenAI.execute(
+  ##               "Elixir is ...",
+  ##               "You are an assistent for the Elixir language and answer short in one sentence."
+  #             ) ==
+  #               {:ok,
+  #                "a dynamic, functional programming language designed for building scalable and maintainable applications."}
+  #    end
+  #  end
+
   test "without quota" do
     use_cassette "openai/without_quota" do
       # TODO: Should this produce a more specific error?
       assert Generation.OpenAI.new!()
              |> Generation.OpenAI.execute(
-               custom_artefact_prompt(
+               custom_prompt(
                  "Elixir is ...",
                  "You are an assistent for the Elixir language and answer short in one sentence."
                )

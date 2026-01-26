@@ -8,11 +8,11 @@ defmodule Magma.Session.Template do
 
   @replacement_marker "WRITE_RESPONSE_HERE"
 
-  def render(%Session{} = session, project) do
-    session_body(session, Session.title(session), project)
+  def render(%Session{} = session) do
+    session_body(session, Session.title(session))
   end
 
-  defp session_body(session, title, project) do
+  defp session_body(session, title) do
     """
     #{Prompt.Template.controls(session)}
     ```table-of-contents
@@ -23,7 +23,7 @@ defmodule Magma.Session.Template do
 
     #{Prompt.Template.persona()}
 
-    #{Prompt.Template.context_knowledge(project)}
+    #{Prompt.Template.context_knowledge()}
 
 
     ## #{Prompt.Template.request_prompt_section_title()}
@@ -64,7 +64,7 @@ defmodule Magma.Session.Template do
     button("Import Response", "magma.session.import_response", color: "blue")
   end
 
-  def session_obsidian_template(project, session) do
+  def session_obsidian_template(session) do
     """
     ---
     magma_type: Session
@@ -73,7 +73,7 @@ defmodule Magma.Session.Template do
     aliases: []
     #{Session.render_front_matter(session)}
     ---
-    #{session_body(session, "{{NAME}}", project)}
+    #{session_body(session, "{{NAME}}")}
     """
   end
 

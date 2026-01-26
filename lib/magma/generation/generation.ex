@@ -36,7 +36,7 @@ defmodule Magma.Generation do
   have to provide the values differing from the application configured ones.
   """
 
-  alias Magma.{Artefact, View}
+  alias Magma.View
 
   import Magma.Utils.Guards
 
@@ -47,7 +47,8 @@ defmodule Magma.Generation do
   @type system_prompt :: prompt
   @type result :: binary
 
-  @callback execute(t(), Artefact.Prompt.t(), options) :: {:ok, result} | {:error, any}
+  @callback execute(t(), Magma.Prompt.t(), options) ::
+              {:ok, result} | {:error, any}
 
   @callback default_params :: keyword
 

@@ -3,7 +3,7 @@ defmodule Magma.View do
   Utility module with helper functions for creating the content of Magma documents.
   """
 
-  alias Magma.{Concept, PromptResult, Artefact, Text, DocumentStruct}
+  alias Magma.DocumentStruct
   alias Magma.DocumentStruct.Section
 
   @doc """
@@ -27,21 +27,6 @@ defmodule Magma.View do
   def link_to(%_{name: name}, label), do: link_to(name, label)
   def link_to(target, nil) when is_binary(target), do: "[[#{target}]]"
   def link_to(target, label) when is_binary(target), do: "[[#{target}|#{label}]]"
-
-  def link_to_concept(document, section \\ nil),
-    do: document |> Concept.from() |> link_to(section)
-
-  def link_to_prompt(document, section \\ nil),
-    do: document |> Artefact.Prompt.from() |> link_to(section)
-
-  def link_to_prompt_result(document, section \\ nil),
-    do: document |> PromptResult.from() |> link_to(section)
-
-  def link_to_version(document, section \\ nil),
-    do: document |> Artefact.Version.from() |> link_to(section)
-
-  def link_to_preview(document, section \\ nil),
-    do: document |> Text.Preview.from() |> link_to(section)
 
   @doc """
   Creates an Obsidian transclusion of the given document or section.
@@ -68,21 +53,6 @@ defmodule Magma.View do
   def transclude(target, nil), do: "![[#{target}|]]"
   def transclude(target, section), do: "![[#{target}##{section}|]]"
 
-  def transclude_concept(document, section \\ nil),
-    do: document |> Concept.from() |> transclude(section)
-
-  def transclude_prompt(document, section \\ nil),
-    do: document |> Artefact.Prompt.from() |> transclude(section)
-
-  def transclude_prompt_result(document, section \\ nil),
-    do: document |> PromptResult.from() |> transclude(section)
-
-  def transclude_version(document, section \\ nil),
-    do: document |> Artefact.Version.from() |> transclude(section)
-
-  def transclude_preview(document, section \\ nil),
-    do: document |> Text.Preview.from() |> transclude(section)
-
   def include(document_or_section, subsection \\ nil, opts \\ [])
   def include(nil, _, _), do: nil
 
@@ -100,22 +70,6 @@ defmodule Magma.View do
     if subsection = Section.section_by_title(section, subsection) do
       include(subsection, nil, opts)
     end
-  end
-
-  def include(%Concept{} = concept, nil, opts) do
-    concept
-    |> Concept.description_section()
-    |> include(nil, opts)
-  end
-
-  def include(%Concept{} = concept, :title, opts) do
-    include(concept, concept.title, opts)
-  end
-
-  def include(%Concept{} = concept, subsection, opts) do
-    concept
-    |> DocumentStruct.section_by_title(subsection)
-    |> include(nil, opts)
   end
 
   def include(%_document_type{content: content}, subsection, opts) do
@@ -141,12 +95,6 @@ defmodule Magma.View do
       {:error, error} ->
         raise error
     end
-  end
-
-  def include_context_knowledge(%Concept{} = concept) do
-    concept
-    |> Concept.context_knowledge_section()
-    |> include(nil, header: false, level: 3, remove_comments: true)
   end
 
   def comment(text) do

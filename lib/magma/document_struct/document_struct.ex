@@ -27,12 +27,10 @@ defmodule Magma.DocumentStruct do
           sections: [Section.t()]
         }
 
-  @type compatible ::
-          %{
-            prologue: [Panpipe.AST.Node.t()],
-            sections: [Section.t()]
-          }
-          | Magma.Concept.t()
+  @type compatible :: %{
+          prologue: [Panpipe.AST.Node.t()],
+          sections: [Section.t()]
+        }
 
   @doc false
   @pandoc_extension {:markdown,

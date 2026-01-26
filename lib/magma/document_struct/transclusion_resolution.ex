@@ -1,7 +1,7 @@
 defmodule Magma.DocumentStruct.TransclusionResolution do
   @moduledoc false
 
-  alias Magma.{DocumentStruct, Document, Concept, Vault}
+  alias Magma.{DocumentStruct, Document, Vault}
   alias Magma.DocumentStruct.Section
 
   require Logger
@@ -208,25 +208,19 @@ defmodule Magma.DocumentStruct.TransclusionResolution do
     end
   end
 
-  defp transcluded_document_struct("Project") do
-    {:ok, %DocumentStruct{prologue: [], sections: Magma.Config.project().sections}}
-  end
-
   defp transcluded_document_struct("magma_config") do
     {:ok, %DocumentStruct{prologue: [], sections: Magma.Config.system().sections}}
   end
 
   defp transcluded_document_struct(document_name) do
     case Document.Loader.load(document_name) do
-      {:ok, %Concept{} = concept} ->
-        {:ok, %DocumentStruct{prologue: [], sections: concept.sections}}
-
       {:ok, document} ->
         with {:ok, document_struct} <- DocumentStruct.parse(document.content) do
           {:ok, %{document_struct | prologue: []}}
         end
 
-      {:error, error} when error in [:magma_type_missing, :invalid_front_matter] ->
+      {:error, error}
+      when error in [:magma_type_missing, :invalid_magma_type, :invalid_front_matter] ->
         with {:ok, body} <-
                document_name
                # We can assume here that the file exists, because the initial loader has found the file already

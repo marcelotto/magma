@@ -16,7 +16,6 @@ defmodule Magma.SessionTest do
     assert %Session{} = Session.new!("ValidSession")
   end
 
-  @tag vault_files: ["concepts/Project.md"]
   test "create/1 and re-load/1 of session" do
     assert {:ok,
             %Session{
@@ -46,8 +45,6 @@ defmodule Magma.SessionTest do
              The following sections contain background knowledge you need to be aware of.
 
              ![[Magma.system.config#Context knowledge|]]
-
-             #### Description of the Some project ![[Project#Description|]]
 
 
              ## Request
@@ -82,7 +79,6 @@ defmodule Magma.SessionTest do
     assert [initial: _, response: _, notes: _] = loaded_session.parts
   end
 
-  @tag vault_files: ["concepts/Project.md"]
   test "create with session_response_mode" do
     assert {:ok, session} = Session.create("DefaultSession")
     assert String.contains?(session.content, "Import Response")
@@ -105,7 +101,6 @@ defmodule Magma.SessionTest do
   end
 
   describe "mode detection" do
-    @tag vault_files: ["concepts/Project.md"]
     test "detects initial mode for newly created session" do
       assert {:ok, session} = Session.create("InitialSession")
       assert {:ok, loaded_session} = Session.load(session.path)
@@ -113,7 +108,6 @@ defmodule Magma.SessionTest do
       assert Session.mode(loaded_session) == :initial
     end
 
-    @tag vault_files: ["concepts/Project.md"]
     test "detects continuation mode when Prompt separators are present" do
       assert {:ok, session} = Session.create("ContinuationSession")
 
@@ -147,7 +141,6 @@ defmodule Magma.SessionTest do
     end
   end
 
-  @tag vault_files: ["concepts/Project.md"]
   test "parts parsing" do
     assert {:ok, session} = Session.create("SessionWithParts")
     assert {:ok, loaded_session} = Session.load(session.path)
@@ -155,7 +148,6 @@ defmodule Magma.SessionTest do
   end
 
   describe "last_prompt_part/1" do
-    @tag vault_files: ["concepts/Project.md"]
     test "returns nil in initial mode" do
       assert {:ok, session} = Session.create("InitialSession")
       assert {:ok, loaded_session} = Session.load(session.path)
@@ -163,7 +155,6 @@ defmodule Magma.SessionTest do
       assert Session.last_prompt_part(loaded_session) == nil
     end
 
-    @tag vault_files: ["concepts/Project.md"]
     test "extracts last Prompt section in continuation mode" do
       assert {:ok, session} = Session.create("ContinuationSession")
 
@@ -220,8 +211,6 @@ defmodule Magma.SessionTest do
   end
 
   describe "import_response/1" do
-    @describetag vault_files: ["concepts/Project.md"]
-
     test "successfully imports response from external file" do
       assert {:ok, session} = Session.create("ImportTest", response_mode: :import)
 
@@ -245,8 +234,6 @@ defmodule Magma.SessionTest do
       The following sections contain background knowledge you need to be aware of.
 
       ![[Magma.system.config#Context knowledge|]]
-
-      #### Description of the Some project ![[Project#Description|]]
 
 
       ## Request
@@ -337,8 +324,6 @@ defmodule Magma.SessionTest do
       The following sections contain background knowledge you need to be aware of.
 
       ![[Magma.system.config#Context knowledge|]]
-
-      #### Description of the Some project ![[Project#Description|]]
 
 
       ## Request

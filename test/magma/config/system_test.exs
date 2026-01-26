@@ -22,7 +22,7 @@ defmodule Magma.Config.SystemTest do
 
              ## Persona
 
-             You are MagmaGPT, an assistant who helps the developers of the "Some" project during documentation and development. Your responses are in plain and clear English.
+             #{Magma.Config.System.default_persona()}
 
 
              ## Context knowledge
@@ -34,7 +34,7 @@ defmodule Magma.Config.SystemTest do
 
   test "system config roundtrip: template -> write -> read -> verify" do
     # Create template content with all default values
-    template_content = Magma.Config.System.template("RoundtripTest")
+    template_content = Magma.Config.System.template()
 
     # Write to the system config path
     config_path = Magma.Config.System.path()
@@ -62,7 +62,7 @@ defmodule Magma.Config.SystemTest do
   end
 
   test "system config roundtrip with false boolean value" do
-    template_content = Magma.Config.System.template("RoundtripTest")
+    template_content = Magma.Config.System.template()
 
     modified_content =
       String.replace(

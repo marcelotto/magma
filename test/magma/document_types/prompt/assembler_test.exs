@@ -3,29 +3,28 @@ defmodule Magma.Prompt.AssemblerTest do
 
   doctest Magma.Prompt.Assembler
 
-  alias Magma.Artefact
+  alias Magma.Prompt
   alias Magma.Prompt.Assembler
 
   import ExUnit.CaptureLog
 
   describe "assemble_parts/1" do
     @describetag vault_files: [
-                   "artefacts/generated/modules/Nested/Example/Prompt for ModuleDoc of Nested.Example.md",
-                   "concepts/modules/Nested/Nested.Example.md",
-                   "concepts/Project.md"
+                   "prompts/Foo-Prompt.md",
+                   "plain/Document.md"
                  ]
 
     test "with one setup and one request section", %{vault_files: [prompt_file | _]} do
       prompt =
         prompt_file
         |> Vault.path()
-        |> Artefact.Prompt.load!()
+        |> Prompt.load!()
 
       assert Assembler.assemble_parts(prompt) ==
                {
                  :ok,
-                 "You are an assistent for writing Elixir moduledocs.\n",
-                 "Generate a moduledoc for `Nested.Example`.\n"
+                 "You are an assistent for the Elixir language. You always answer very short with at most three words.\n",
+                 "Elixir is ...\n"
                }
     end
 
@@ -33,7 +32,7 @@ defmodule Magma.Prompt.AssemblerTest do
       prompt =
         prompt_file
         |> Vault.path()
-        |> Artefact.Prompt.load!()
+        |> Prompt.load!()
         |> Map.update!(
           :content,
           &(&1 <>
@@ -49,8 +48,8 @@ defmodule Magma.Prompt.AssemblerTest do
                assert Assembler.assemble_parts(prompt) ==
                         {
                           :ok,
-                          "You are an assistent for writing Elixir moduledocs.\n",
-                          "Generate a moduledoc for `Nested.Example`.\n"
+                          "You are an assistent for the Elixir language. You always answer very short with at most three words.\n",
+                          "Elixir is ...\n"
                         }
              end) =~
                "Prompt #{prompt.path} contains subsections which won't be taken into account"
@@ -60,7 +59,7 @@ defmodule Magma.Prompt.AssemblerTest do
       prompt =
         prompt_file
         |> Vault.path()
-        |> Artefact.Prompt.load!()
+        |> Prompt.load!()
         |> Map.update!(
           :content,
           &(&1 <>
@@ -76,8 +75,8 @@ defmodule Magma.Prompt.AssemblerTest do
                assert Assembler.assemble_parts(prompt) ==
                         {
                           :ok,
-                          "You are an assistent for writing Elixir moduledocs.\n",
-                          "Generate a moduledoc for `Nested.Example`.\n"
+                          "You are an assistent for the Elixir language. You always answer very short with at most three words.\n",
+                          "Elixir is ...\n"
                         }
              end) =~
                "Prompt #{prompt.path} contains subsections which won't be taken into account"
@@ -87,26 +86,26 @@ defmodule Magma.Prompt.AssemblerTest do
       prompt =
         prompt_file
         |> Vault.path()
-        |> Artefact.Prompt.load!()
+        |> Prompt.load!()
         |> Map.update!(
           :content,
           &(&1 <>
               """
 
-              ### Background knowledge of the Some project ![[Project#Description]]
+              ### Background knowledge ![[Document#Section]]
               """)
         )
 
       assert Assembler.assemble_parts(prompt) ==
                {
                  :ok,
-                 "You are an assistent for writing Elixir moduledocs.\n",
+                 "You are an assistent for the Elixir language. You always answer very short with at most three words.\n",
                  """
-                 Generate a moduledoc for `Nested.Example`.
+                 Elixir is ...
 
-                 # Background knowledge of the Some project
+                 # Background knowledge
 
-                 This is the project description.
+                 Deserunt amet velit consequat exercitation cillum nisi nisi.
                  """
                }
     end
@@ -115,7 +114,7 @@ defmodule Magma.Prompt.AssemblerTest do
       prompt =
         prompt_file
         |> Vault.path()
-        |> Artefact.Prompt.load!()
+        |> Prompt.load!()
         |> Map.update!(
           :content,
           &(&1 <>
@@ -129,9 +128,9 @@ defmodule Magma.Prompt.AssemblerTest do
       assert Assembler.assemble_parts(prompt) ==
                {
                  :ok,
-                 "You are an assistent for writing Elixir moduledocs.\n",
+                 "You are an assistent for the Elixir language. You always answer very short with at most three words.\n",
                  """
-                 Generate a moduledoc for `Nested.Example`.
+                 Elixir is ...
 
                  Some link
                  """
@@ -142,7 +141,7 @@ defmodule Magma.Prompt.AssemblerTest do
       prompt =
         prompt_file
         |> Vault.path()
-        |> Artefact.Prompt.load!()
+        |> Prompt.load!()
         |> Map.update!(
           :content,
           &(&1 <>
@@ -163,8 +162,8 @@ defmodule Magma.Prompt.AssemblerTest do
       assert Assembler.assemble_parts(prompt) ==
                {
                  :ok,
-                 "You are an assistent for writing Elixir moduledocs.\n",
-                 "Generate a moduledoc for `Nested.Example`.\n\nThis is a document with comments.\n"
+                 "You are an assistent for the Elixir language. You always answer very short with at most three words.\n",
+                 "Elixir is ...\n\nThis is a document with comments.\n"
                }
     end
   end
