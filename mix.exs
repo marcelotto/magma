@@ -14,14 +14,6 @@ defmodule Magma.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
 
-      # ExVCR
-      preferred_cli_env: [
-        vcr: :test,
-        "vcr.delete": :test,
-        "vcr.check": :test,
-        "vcr.show": :test
-      ],
-
       # Hex
       package: package(),
       description: description(),
@@ -32,6 +24,17 @@ defmodule Magma.MixProject do
 
       # Releases
       releases: releases()
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        vcr: :test,
+        "vcr.delete": :test,
+        "vcr.check": :test,
+        "vcr.show": :test
+      ]
     ]
   end
 
