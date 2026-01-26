@@ -15,5 +15,6 @@ defmodule Mix.Tasks.Magma.Vault.Migrate do
     with_valid_options(args, @options, fn
       _opts, _ -> Migration.migrate()
     end)
+    |> handle_mix_result()
   end
 end

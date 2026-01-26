@@ -38,6 +38,18 @@ defmodule Magma.Vault.Migration do
     end
   end
 
-  defp do_migrate(%Version{major: 0, minor: 1} = version),
-    do: Vault.Migration.V0_2.migrate(version)
+  defp do_migrate(%Version{major: 0, minor: minor}) when minor < 3 do
+    {:error,
+     """
+     Magma v0.3 removed the Matter/Artefact system and requires a fresh vault initialization.
+
+     Your vault is at version 0.#{minor}.x which is incompatible with Magma v0.3.
+
+     To migrate:
+     1. Back up any custom content from your current vault
+     2. Delete or rename the existing vault directory
+     3. Run `magma init` (or `mix magma.vault.init`) to create a new vault
+     4. Restore your backed-up content manually
+     """}
+  end
 end
