@@ -7,12 +7,12 @@
   "working_directory": "",
   "default_shells": {},
   "environment_variable_path_augmentations": {
-    "darwin": "/opt/homebrew/bin/"
+    "darwin": "/usr/local/bin:/opt/homebrew/bin/"
   },
   "show_installation_warnings": true,
   "error_message_duration": 20,
   "notification_message_duration": 10,
-  "execution_notification_mode": "disabled",
+  "execution_notification_mode": "permanent",
   "output_channel_clipboard_also_outputs_to_notification": true,
   "output_channel_notification_decorates_output": true,
   "enable_events": true,
@@ -28,8 +28,8 @@
     {
       "id": "iilr0trw8n",
       "platform_specific_commands": {
-        "default": ".bin/magma.sh magma.prompt.exec {{title}}",
-        "win32": ".bin/magma.bat magma.prompt.exec {{title}}"
+        "default": "LC_CTYPE=UTF-8 magma exec-prompt {{title}}",
+        "win32": "magma exec-prompt {{title}}"
       },
       "shells": {},
       "alias": "magma.prompt.exec",
@@ -65,8 +65,8 @@
     {
       "id": "gak0hbrikz",
       "platform_specific_commands": {
-        "default": ".bin/magma.sh magma.prompt.exec --manual --no-interactive {{title}}",
-        "win32": ".bin/magma.bat magma.prompt.exec --manual --no-interactive {{title}}"
+        "default": "LC_CTYPE=UTF-8 magma exec-prompt --manual --no-interactive {{title}}",
+        "win32": "magma exec-prompt --manual --no-interactive {{title}}"
       },
       "shells": {},
       "alias": "magma.prompt.exec-manual",
@@ -102,8 +102,8 @@
     {
       "id": "wmfuky7ntk",
       "platform_specific_commands": {
-        "default": ".bin/magma.sh magma.prompt.copy {{title}}",
-        "win32": ".bin/magma.bat magma.prompt.copy {{title}}"
+        "default": "LC_CTYPE=UTF-8 magma copy-prompt {{title}}",
+        "win32": "magma copy-prompt {{title}}"
       },
       "shells": {},
       "alias": "magma.prompt.copy",
@@ -139,8 +139,8 @@
     {
       "id": "oodytpoyh0",
       "platform_specific_commands": {
-        "default": ".bin/magma.sh magma.session.import_response {{title}}",
-        "win32": ".bin/magma.bat magma.session.import_response {{title}}"
+        "default": "LC_CTYPE=UTF-8 magma import-session {{title}}",
+        "win32": "magma import-session {{title}}"
       },
       "shells": {},
       "alias": "magma.session.import_response",

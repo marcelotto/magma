@@ -8,12 +8,6 @@ defmodule Magma.Vault.Initializer do
 
   import FileOps, only: [copy_directory: 2, create_file: 2]
 
-  @bin_dir ".bin"
-  def bin_dir, do: @bin_dir
-
-  @bin_dir_path :code.priv_dir(:magma) |> Path.join(@bin_dir)
-  def bin_dir_path, do: @bin_dir_path
-
   @spec initialize(base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
           :ok | {:error, any}
   def initialize(base_vault \\ nil, opts \\ []) do
@@ -51,8 +45,6 @@ defmodule Magma.Vault.Initializer do
       Magma.Vault.Version.save(Magma.version())
 
       create_gitignore_file(vault_dest_dir)
-
-      copy_directory(@bin_dir_path, vault_dest_dir)
 
       :ok
     end
