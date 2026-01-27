@@ -4,7 +4,13 @@ defmodule Magma.CLI do
   alias Magma.CLI.Command
   alias Magma.CLI.IO, as: CLI
 
-  @commands [Command.Init, Command.Help, Command.CopyPrompt, Command.ImportSession]
+  @commands [
+              Command.Init,
+              Command.Help,
+              Command.CopyPrompt,
+              Command.ImportSession,
+              Command.ExecPrompt
+            ]
             |> Map.new(&{&1.name(), &1})
 
   @doc "Returns the map of registered commands."
