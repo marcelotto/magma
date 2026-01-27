@@ -11,7 +11,7 @@ defmodule Magma.CLI.Command.Help do
 
   @impl true
   def run(_args) do
-    IO.puts("Magma\n")
+    IO.puts("Magma v#{CLI.version()}\n")
     IO.puts("Usage: magma <command> [options] [arguments]\n")
     IO.puts("Commands:")
 

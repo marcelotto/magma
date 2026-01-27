@@ -7,6 +7,7 @@ defmodule Magma.CLI do
   @commands [
               Command.Init,
               Command.Help,
+              Command.Version,
               Command.CopyPrompt,
               Command.ImportSession,
               Command.ExecPrompt
@@ -15,6 +16,9 @@ defmodule Magma.CLI do
 
   @doc "Returns the map of registered commands."
   def commands, do: @commands
+
+  @doc "Returns the application version."
+  def version, do: Application.spec(:magma, :vsn) |> to_string()
 
   @doc "Main entry point for Burrito."
   def main do
