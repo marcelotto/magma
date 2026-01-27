@@ -447,7 +447,7 @@ defmodule Magma.DocumentStruct.SectionTest do
       assert result == """
              # Document with Links
 
-             This has a @"test/data/example_vault/plain/Document.md" link.
+             This has a @"example_vault/plain/Document.md" link.
              """
 
       # Test that link with section reference extracts document name correctly
@@ -464,7 +464,7 @@ defmodule Magma.DocumentStruct.SectionTest do
       assert result_with_section == """
              # Test Section
 
-             section "Section" of @"test/data/example_vault/plain/Document.md" with section reference.
+             section "Section" of @"example_vault/plain/Document.md" with section reference.
              """
     end
 

@@ -135,19 +135,17 @@ defmodule Magma.Session.Template do
   """
   @spec render_session_response_prompt(Session.t()) :: String.t()
   def render_session_response_prompt(%Session{} = session) do
+    vault_path = Path.dirname(Magma.Vault.path())
     template_path = Magma.Vault.session_response_prompt_template_path()
     timestamp = file_format_timestamp()
 
     assigns = [
       session_name: session.name,
-      session_file:
-        Magma.Vault.path()
-        |> Path.relative_to_cwd()
-        |> Path.join(Path.relative_to(session.path, Magma.Vault.path())),
+      session_file: Path.relative_to(session.path, vault_path),
       response_file_path:
         session.name
         |> Magma.Vault.session_response_file_path(timestamp)
-        |> Path.relative_to_cwd(),
+        |> Path.relative_to(vault_path),
       timestamp: timestamp,
       replacement_marker: @replacement_marker,
       vault_path: Magma.Vault.path()

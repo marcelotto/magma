@@ -296,7 +296,7 @@ defmodule Magma.DocumentStruct.Section do
       end
 
     if path = Magma.Vault.document_path(document_name) do
-      relative_path = Path.relative_to(path, File.cwd!())
+      relative_path = Path.relative_to(path, Path.dirname(Magma.Vault.path()))
 
       string =
         if section do

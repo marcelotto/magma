@@ -361,4 +361,13 @@ defmodule Magma.SessionTest do
       File.rm!(old_file)
     end
   end
+
+  describe "render_session_response_prompt/1" do
+    test "paths are relative to vault parent" do
+      assert {:ok, session} = Session.create("PathTest")
+
+      assert Session.Template.render_session_response_prompt(session) =~
+               "`example_vault/sessions/.responses/"
+    end
+  end
 end
