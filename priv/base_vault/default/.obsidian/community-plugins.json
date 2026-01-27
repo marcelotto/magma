@@ -8,5 +8,6 @@
   "obsidian-shellcommands",
   "dataview",
   "quickadd",
-  "templater-obsidian"
+  "templater-obsidian",
+  "automatic-table-of-contents"
 ]
