@@ -2,7 +2,7 @@ defmodule Magma.Vault do
   @moduledoc """
   A specialized Obsidian vault with directories for the Magma-specific documents.
 
-  The `Magma.Vault` module serves as a representation and utility module for a Magma vault - a specialized Obsidian vault that resides in an Elixir project. This vault is more than just a collection of Markdown documents; it houses Magma documents, which are special kinds of Markdown documents with specific paths and purposes. The vault itself can be stored by default in the `docs.magma/` directory of an Elixir project but can be reconfigured as needed (see `path/0`).
+  The `Magma.Vault` module serves as a representation and utility module for a Magma vault - a specialized Obsidian vault that resides in an Elixir project. This vault is more than just a collection of Markdown documents; it houses Magma documents, which are special kinds of Markdown documents with specific paths and purposes. The vault itself can be stored by default in the `magma/` directory of a project but can be reconfigured as needed (see `path/0`).
 
   Main functions of this module include:
 
