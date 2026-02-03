@@ -19,7 +19,7 @@ defmodule Magma.SessionTest do
   test "create/1 and re-load/1 of session" do
     assert {:ok,
             %Session{
-              tags: ["magma-vault"],
+              tags: [],
               aliases: [],
               custom_metadata: %{}
             } = session} = Session.create("Foo")

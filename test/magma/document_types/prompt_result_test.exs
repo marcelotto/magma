@@ -41,7 +41,7 @@ defmodule Magma.PromptResultTest do
                 prompt: ^prompt,
                 generation: %Generation.Mock{},
                 name: "Foo-Prompt (" <> _,
-                tags: ["magma-vault"],
+                tags: [],
                 aliases: [],
                 custom_metadata: %{}
               } = prompt_result} = PromptResult.create(prompt)
@@ -78,7 +78,7 @@ defmodule Magma.PromptResultTest do
                 prompt: ^prompt,
                 generation: ^generation,
                 name: "Foo-Prompt (" <> _,
-                tags: ["magma-vault"],
+                tags: [],
                 aliases: [],
                 custom_metadata: %{}
               }} = PromptResult.create(prompt, generation: generation)
@@ -95,7 +95,7 @@ defmodule Magma.PromptResultTest do
                 prompt: ^prompt_with_manual_generation,
                 generation: %Generation.Manual{},
                 name: "Foo-Prompt (" <> _,
-                tags: ["magma-vault"],
+                tags: [],
                 aliases: [],
                 custom_metadata: %{}
               } = prompt_result} =
@@ -128,7 +128,7 @@ defmodule Magma.PromptResultTest do
                 prompt: ^prompt,
                 generation: ^generation,
                 name: "Foo-Prompt (" <> _,
-                tags: ["magma-vault"],
+                tags: [],
                 aliases: [],
                 custom_metadata: %{}
               } = prompt_result} =

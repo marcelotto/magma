@@ -9,7 +9,7 @@ defmodule Magma.PromptTest do
     assert {:ok,
             %Prompt{
               generation: %Generation.Mock{},
-              tags: ["magma-vault"],
+              tags: [],
               aliases: [],
               custom_metadata: %{}
             } = prompt} = Prompt.create("Foo")

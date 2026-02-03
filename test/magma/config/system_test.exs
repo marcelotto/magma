@@ -9,7 +9,7 @@ defmodule Magma.Config.SystemTest do
               name: "Magma.system.config",
               tags: ["magma-config"],
               custom_metadata: %{
-                default_tags: ["magma-vault"],
+                default_tags: [],
                 default_generation: %Magma.Generation.Mock{},
                 link_resolution_style: :at_file_ref,
                 session_response_mode: :import
