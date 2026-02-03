@@ -236,12 +236,12 @@ defmodule Magma.Session.AssemblerTest do
   end
 
   describe "session_response_mode handling" do
-    test "import mode (default) - external file instruction appended by assembler" do
+    test "auto mode (default) - external file instruction appended by assembler" do
       assert {:ok, session} = Session.create("DefaultMode")
       assert {:ok, loaded} = Session.load(session.path)
       assert {:ok, compiled} = Assembler.assemble_all(loaded)
 
-      # Import mode appends respond-in-file-rule reference with file path (button is present in template)
+      # Auto mode appends respond-in-file-rule reference with file path (button is present in template)
       assert compiled =~ "respond-in-file-rule"
       assert compiled =~ "CLAUDE.md"
       assert compiled =~ ".responses/DefaultMode.response_"
@@ -266,19 +266,19 @@ defmodule Magma.Session.AssemblerTest do
       assert compiled =~ ".responses/EnabledMode.response_"
     end
 
-    test "import mode - external file instruction appended by assembler when button present" do
-      assert {:ok, session} = Session.create("ImportMode", response_mode: :import)
+    test "auto mode - external file instruction appended by assembler when button present" do
+      assert {:ok, session} = Session.create("ImportMode", response_mode: :auto)
       assert {:ok, loaded} = Session.load(session.path)
       assert {:ok, compiled} = Assembler.assemble_all(loaded)
 
-      # Import mode appends respond-in-file-rule reference with file path (button is present in template)
+      # Auto mode appends respond-in-file-rule reference with file path (button is present in template)
       assert compiled =~ "respond-in-file-rule"
       assert compiled =~ "CLAUDE.md"
       assert compiled =~ ".responses/ImportMode.response_"
     end
 
-    test "import mode without button - no response instruction" do
-      assert {:ok, session} = Session.create("ImportNoButton", response_mode: :import)
+    test "auto mode without button - no response instruction" do
+      assert {:ok, session} = Session.create("ImportNoButton", response_mode: :auto)
 
       # Remove button from content
       content_without_button =

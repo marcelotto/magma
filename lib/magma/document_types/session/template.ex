@@ -44,7 +44,7 @@ defmodule Magma.Session.Template do
 
   defp build_response_section(:disabled), do: ""
   defp build_response_section(:enabled), do: response_block(import_response_button())
-  defp build_response_section(:import), do: response_block(import_response_button())
+  defp build_response_section(:auto), do: response_block(import_response_button())
 
   defp response_block(content) do
     """

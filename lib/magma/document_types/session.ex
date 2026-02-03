@@ -1,7 +1,7 @@
 defmodule Magma.Session do
   use Magma.Document, fields: [:parts, :response_mode]
 
-  @type response_mode :: :disabled | :enabled | :import
+  @type response_mode :: :disabled | :enabled | :auto
 
   @type t :: %__MODULE__{
           parts: Magma.Session.Parser.parts(),

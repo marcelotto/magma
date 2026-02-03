@@ -12,7 +12,7 @@ defmodule Magma.Config.SystemTest do
                 default_tags: [],
                 default_generation: %Magma.Generation.Mock{},
                 link_resolution_style: :at_file_ref,
-                session_response_mode: :import
+                session_response_mode: :auto
               }
             } = config} = Magma.Config.System.load()
 

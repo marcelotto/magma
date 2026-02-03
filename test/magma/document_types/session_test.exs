@@ -85,7 +85,7 @@ defmodule Magma.SessionTest do
     assert String.contains?(session.content, "```button")
     assert String.contains?(session.content, "***Response***")
 
-    assert {:ok, session} = Session.create("ImportSession", response_mode: :import)
+    assert {:ok, session} = Session.create("AutoSession", response_mode: :auto)
     assert String.contains?(session.content, "Import Response")
     assert String.contains?(session.content, "```button")
     assert String.contains?(session.content, "***Response***")
@@ -212,7 +212,7 @@ defmodule Magma.SessionTest do
 
   describe "import_response/1" do
     test "successfully imports response from external file" do
-      assert {:ok, session} = Session.create("ImportTest", response_mode: :import)
+      assert {:ok, session} = Session.create("ImportTest", response_mode: :auto)
 
       response_file_path = Vault.session_response_file_path("ImportTest")
       File.write!(response_file_path, "This is the imported response content.")
@@ -269,12 +269,12 @@ defmodule Magma.SessionTest do
     end
 
     test "handles missing response file" do
-      assert {:ok, _session} = Session.create("NoResponse", response_mode: :import)
+      assert {:ok, _session} = Session.create("NoResponse", response_mode: :auto)
       assert {:error, :not_found} = Session.import_response("NoResponse")
     end
 
     test "handles empty response file" do
-      assert {:ok, _session} = Session.create("EmptyResponse", response_mode: :import)
+      assert {:ok, _session} = Session.create("EmptyResponse", response_mode: :auto)
 
       response_file_path = Vault.session_response_file_path("EmptyResponse")
       File.write!(response_file_path, "")
@@ -296,7 +296,7 @@ defmodule Magma.SessionTest do
     end
 
     test "finds latest response file among multiple" do
-      assert {:ok, session} = Session.create("MultipleResponses", response_mode: :import)
+      assert {:ok, session} = Session.create("MultipleResponses", response_mode: :auto)
 
       old_timestamp = ~U[2025-01-01 10:00:00Z]
       new_timestamp = ~U[2025-01-11 15:30:00Z]

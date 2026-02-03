@@ -86,7 +86,7 @@ defmodule Magma.Config.System do
   end
 
   def default_session_response_mode do
-    Application.get_env(:magma, :session_response_mode, :import)
+    Application.get_env(:magma, :session_response_mode, :auto)
   end
 
   def default_include_prompt_header do

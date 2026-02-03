@@ -71,7 +71,7 @@ defmodule Magma.Prompt.Assembler do
 
   - `:disabled` - No instruction appended
   - `:enabled` - Always appends instruction
-  - `:import` - Appends instruction only if import button is present in session content
+  - `:auto` - Appends instruction only if import button is present in session content
   """
   def append_response_instruction(content, %Session{} = session) do
     session
@@ -85,7 +85,7 @@ defmodule Magma.Prompt.Assembler do
     "#{content}\n\n#{Session.Template.render_session_response_prompt(session)}"
   end
 
-  defp do_append_response_instruction(:import, content, session) do
+  defp do_append_response_instruction(:auto, content, session) do
     if String.contains?(session.content, Session.Template.import_response_button()) do
       do_append_response_instruction(:enabled, content, session)
     else
