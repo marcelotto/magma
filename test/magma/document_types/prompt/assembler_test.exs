@@ -52,7 +52,7 @@ defmodule Magma.Prompt.AssemblerTest do
                           "Elixir is ...\n"
                         }
              end) =~
-               "Prompt #{prompt.path} contains subsections which won't be taken into account"
+               "Prompt #{prompt.path} contains subsections which won't be taken into account. Put them under the task section"
     end
 
     test "with other sections under the prompt section", %{vault_files: [prompt_file | _]} do
@@ -79,7 +79,7 @@ defmodule Magma.Prompt.AssemblerTest do
                           "Elixir is ...\n"
                         }
              end) =~
-               "Prompt #{prompt.path} contains subsections which won't be taken into account"
+               "Prompt #{prompt.path} contains subsections which won't be taken into account. Put them under the task section"
     end
 
     test "transclusion are resolved", %{vault_files: [prompt_file | _]} do

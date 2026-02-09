@@ -36,18 +36,15 @@ defmodule Magma.SessionTest do
              ```
              # #{session.name}
 
-             ## System prompt
+             ## Context
 
-             ![[Magma.system.config#Persona|]]
+             ### Knowledge Base
 
-             ### Context knowledge
+             Read the following documents carefully:
 
-             The following sections contain background knowledge you need to be aware of.
+             -
 
-             ![[Magma.system.config#Context knowledge|]]
-
-
-             ## Request
+             ## Task
 
              ----
 
@@ -225,18 +222,15 @@ defmodule Magma.SessionTest do
       ```
       # #{session.name}
 
-      ## System prompt
+      ## Context
 
-      ![[Magma.system.config#Persona|]]
+      ### Knowledge Base
 
-      ### Context knowledge
+      Read the following documents carefully:
 
-      The following sections contain background knowledge you need to be aware of.
+      -
 
-      ![[Magma.system.config#Context knowledge|]]
-
-
-      ## Request
+      ## Task
 
       ----
 
@@ -315,18 +309,15 @@ defmodule Magma.SessionTest do
       ```
       # #{session.name}
 
-      ## System prompt
+      ## Context
 
-      ![[Magma.system.config#Persona|]]
+      ### Knowledge Base
 
-      ### Context knowledge
+      Read the following documents carefully:
 
-      The following sections contain background knowledge you need to be aware of.
+      -
 
-      ![[Magma.system.config#Context knowledge|]]
-
-
-      ## Request
+      ## Task
 
       ----
 

@@ -5,10 +5,15 @@ defmodule Magma.Prompt.Template do
 
   import Magma.View
 
-  @system_prompt_section_title "System prompt"
-  def system_prompt_section_title, do: @system_prompt_section_title
-  @request_prompt_section_title "Request"
-  def request_prompt_section_title, do: @request_prompt_section_title
+  @context_section_title "Context"
+  def context_section_title, do: @context_section_title
+  @context_section_fallback_title "System prompt"
+  def context_section_fallback_title, do: @context_section_fallback_title
+
+  @task_section_title "Task"
+  def task_section_title, do: @task_section_title
+  @task_section_fallback_title "Request"
+  def task_section_fallback_title, do: @task_section_fallback_title
 
   def custom_prompt_obsidian_template(prompt) do
     """
@@ -35,14 +40,15 @@ defmodule Magma.Prompt.Template do
 
     # #{title}
 
-    ## #{@system_prompt_section_title}
+    ## #{@context_section_title}
 
-    #{persona()}
+    ### Knowledge Base
 
-    #{context_knowledge()}
+    Read the following documents carefully:
 
+    -
 
-    ## #{@request_prompt_section_title}
+    ## #{@task_section_title}
 
     """
   end

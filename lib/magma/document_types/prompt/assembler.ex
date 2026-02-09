@@ -10,24 +10,26 @@ defmodule Magma.Prompt.Assembler do
 
   def assemble_parts(prompt) when is_prompt(prompt) do
     with {:ok, section} <- section(prompt) do
-      system_prompt_section = section[Prompt.Template.system_prompt_section_title()]
-      request_prompt_section = section[Prompt.Template.request_prompt_section_title()]
+      context_section =
+        section[Prompt.Template.context_section_title()] ||
+          section[Prompt.Template.context_section_fallback_title()]
 
-      cond do
-        !system_prompt_section ->
-          {:error, "no system prompt section found in #{prompt.path}"}
+      task_section =
+        section[Prompt.Template.task_section_title()] ||
+          section[Prompt.Template.task_section_fallback_title()]
 
-        !request_prompt_section ->
-          {:error, "no request prompt section found in #{prompt.path}"}
+      if task_section do
+        if Enum.count(section.sections) > if(context_section, do: 2, else: 1),
+          do: ignored_section_detected(prompt.path)
 
-        true ->
-          if Enum.count(section.sections) > 2, do: ignored_section_detected(prompt.path)
+        system_prompt =
+          if context_section,
+            do: compile(context_section, include_header: false),
+            else: nil
 
-          {
-            :ok,
-            compile(system_prompt_section, include_header: false),
-            compile(request_prompt_section, include_header: false)
-          }
+        {:ok, system_prompt, compile(task_section, include_header: false)}
+      else
+        {:error, "no task section found in #{prompt.path}"}
       end
     end
   end
@@ -113,7 +115,7 @@ defmodule Magma.Prompt.Assembler do
 
   defp ignored_section_detected(path) do
     Logger.warning(
-      "Prompt #{path} contains subsections which won't be taken into account. Put them under the request section if you want that."
+      "Prompt #{path} contains subsections which won't be taken into account. Put them under the task section if you want that."
     )
   end
 

@@ -37,7 +37,7 @@ defmodule Magma.Session.AssemblerTest do
       # Manually edit to add transclusion
       content_with_transclusion =
         Regex.replace(
-          ~r/## Request\n+/,
+          ~r/## Task\n+/,
           original_content,
           "## Request\n\nTest request with transclusion:\n\n![[Project#Description]]\n\n"
         )

@@ -21,6 +21,10 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 - Change name of custom prompt directory from `custom_prompts/` to `prompts/`
 - No longer dependent on Rambo causing troubles in MacOS
+- Default prompt/session template now uses "Context" (with "Knowledge Base" subsection) and "Task"
+  sections instead of "System prompt" and "Request". The old section names are still recognized as
+  fallbacks. The "Context" section is now optional. Persona and context knowledge transclusions are
+  no longer included by default but can be added to templates manually.
 - Prompts and initial session prompts now include the top-level header by default (previously
   always removed) for better context visibility in coding agent history previews (e.g., Claude Code)
 

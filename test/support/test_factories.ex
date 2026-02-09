@@ -32,11 +32,11 @@ defmodule Magma.TestFactories do
 
         # #{prompt_type.title(prompt)}
 
-        ## #{Prompt.Template.system_prompt_section_title()}
+        ## #{Prompt.Template.context_section_title()}
 
         #{system_prompt}
 
-        ## #{Prompt.Template.request_prompt_section_title()}
+        ## #{Prompt.Template.task_section_title()}
 
         #{request_prompt}
         """

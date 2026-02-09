@@ -19,14 +19,15 @@ defmodule Magma.Session.Template do
     ```
     # #{title}
 
-    ## #{Prompt.Template.system_prompt_section_title()}
+    ## #{Prompt.Template.context_section_title()}
 
-    #{Prompt.Template.persona()}
+    ### Knowledge Base
 
-    #{Prompt.Template.context_knowledge()}
+    Read the following documents carefully:
 
+    -
 
-    ## #{Prompt.Template.request_prompt_section_title()}
+    ## #{Prompt.Template.task_section_title()}
     #{build_response_section(Session.response_mode(session))}
 
 
