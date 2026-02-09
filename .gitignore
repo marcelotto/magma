@@ -27,7 +27,4 @@ magma-*.tar
 
 .envrc
 
-/docs.magma/.obsidian/workspace.json
-/docs.magma/.obsidian/plugins/recent-files-obsidian/data.json
-
 /test/data/example_vault/
