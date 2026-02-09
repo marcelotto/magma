@@ -1,1 +1,0 @@
-/Users/marcelotto/Projects/priv/Magma/src/magma/README.md
