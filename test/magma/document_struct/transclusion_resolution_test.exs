@@ -952,9 +952,6 @@ defmodule Magma.DocumentStruct.TransclusionResolutionTest do
              """
   end
 
-             """
-  end
-
   @tag vault_files: ["plain/Project.md"]
   test "when the same document is transcluded multiple times" do
     assert """
