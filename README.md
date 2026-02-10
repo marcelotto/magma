@@ -5,23 +5,19 @@
 [![ExUnit Tests](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-build-and-test.yml)
 [![Quality Checks](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml/badge.svg)](https://github.com/marcelotto/magma/actions/workflows/elixir-quality-checks.yml)
 
-> ⚠️ **Notice:** This project is no longer actively maintained. No new features or bug fixes will be provided. Feel free to fork the project if you wish to continue its development.
-
 <br />
 <div align="center">
   <a href="https://github.com/marcelotto/magma">
-    <img src="docs.magma/attachments/logo.png" alt="Logo" width="256" height="256">
+    <img src="logo.png" alt="Logo" width="256" height="256">
   </a>
 
-<h1 align="center">Magma</h3>
+<h1 align="center">Magma</h1>
 
   <p align="center">
-	An integrated knowledge work environment for open source software projects in Elixir
-    <br />
-	  with GPT4 as an LLM-based assistant.
+	An IDE for prompts.
     <br />
     <br />
-    <a href="https://hexdocs.pm/magma/magma-user-guide-introduction-to-magma-article-section.html"><strong>Explore the docs »</strong></a>
+    <a href="https://hexdocs.pm/magma/01-introduction.html"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/marcelotto/magma/blob/main/CHANGELOG.md">Changelog</a>
@@ -35,29 +31,51 @@
 </div>
 
 
-
 ## About the Project
 
-<img src="docs.magma/attachments/screenshot.png" align="center" />
+Magma is a prompt development environment designed for working with coding agents like Claude Code, Codex, Gemini CLI, OpenCode and similar AI-powered development tools. While these tools are primarily designed for software development, they are increasingly used for a broader range of knowledge work tasks, making Magma useful beyond just coding.
 
-Magma is an environment for writing and executing complex prompts. It is designed primarily to support developers, especially those using Elixir, in collecting project knowledge, generating documentation, and solving problems through LLM prompts. However, it can also be useful outside this context, e.g. for generating longer texts.
+At its core, Magma provides a knowledge base system built on Obsidian-compatible markdown documents that enables rapid composition of prompts through transclusions. This allows you to build reusable prompt libraries where complex prompts are assembled from smaller, well-defined pieces of knowledge.
 
-_Read on in the [User Guide](https://hexdocs.pm/magma/magma-user-guide-introduction-to-magma-article-section.html)_
+_Read on in the [User Guide](https://hexdocs.pm/magma/01-introduction.html)_
+
+
+## Installation
+
+Download the latest release for your platform from the [Releases page](https://github.com/marcelotto/magma/releases).
+
+Place the binary in your PATH (e.g., `/usr/local/bin/`):
+
+```bash
+chmod +x magma_macos_arm
+mv magma_macos_arm /usr/local/bin/magma
+```
+
+## Quick Start
+
+Initialize a new vault:
+
+```bash
+magma init
+```
+
+Then open the vault folder in Obsidian. See the [User Guide](https://hexdocs.pm/magma/01-introduction.html) for detailed usage instructions.
 
 
 ## Features
 
-- A transclusion resolution system for quick prompt composition from existing content.
-- Extendible workflows with predefined prompts for generating various artefacts such as a project README, module docs, and larger texts.
-- Support for automatic prompt execution via the OpenAI API or manual execution via the chat interface of the LLM of your choice (ChatGPT, Bard, Claude etc.).
-- Well-organised folder structure for all created files.
-- Adaptability to many use cases, thanks to Obsidian's vast plugin ecosystem.
+- **Transclusion resolution system** for rapid prompt composition from existing knowledge fragments
+- **Session-based workflow** for iterative conversations with coding agents that maintain conversation history
+- **Coding agent integration** with support for file reference syntax (`@"path/to/file.md"`)
+- **Organized vault structure** with templates for different document types (Prompts and Sessions)
+- **Clean separation** of prompts, responses, and notes within Session documents
+- **Obsidian integration** with adaptability to many use cases through Obsidian's vast plugin ecosystem
 
 
 
-## Roadmap
+## Known Limitations
 
-See the [open issues](https://github.com/marcelotto/magma/issues) or [this page](https://hexdocs.pm/magma/magma-user-guide-current-limitations-and-roadmap-article-section.html) for a list of proposed features and known issues.
+See the [open issues](https://github.com/marcelotto/magma/issues) or the [Limitations section](https://hexdocs.pm/magma/07-limitations.html) in the User Guide.
 
 
 
@@ -71,11 +89,6 @@ Don't forget to give the project a star! Thanks!
 
 
 
-## Contact
-
-Marcel Otto - [@marcelotto (Mastodon)](https://mastodon.social/@marcelotto)  [@marcelotto (X)](https://twitter.com/marcelotto)
-
-
 ## Funding
 
 <table style="border: 0;">  
@@ -86,7 +99,7 @@ Marcel Otto - [@marcelotto (Mastodon)](https://mastodon.social/@marcelotto)  [@m
 </tr>  
 </table>
 
-This project is funded through [NGI Assure](https://nlnet.nl/assure), a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) program.
+This project was funded through [NGI Assure](https://nlnet.nl/assure), a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) program.
 
 
 ## License
