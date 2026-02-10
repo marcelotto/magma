@@ -25,7 +25,6 @@ jobs:
     runs-on: macos-14
     env:
       MIX_ENV: prod
-      ERL_COMPILER_OPTIONS: deterministic
     steps:
       - uses: actions/checkout@v4
 
@@ -69,7 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MIX_ENV: prod
-      ERL_COMPILER_OPTIONS: deterministic
     steps:
       - uses: actions/checkout@v4
 

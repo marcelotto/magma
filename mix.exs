@@ -59,7 +59,6 @@ defmodule Magma.MixProject do
   defp releases do
     [
       magma: [
-        strip_beams: true,
         steps: [:assemble, &Burrito.wrap/1],
         burrito: [
           targets: [
