@@ -40,13 +40,20 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
+      - name: Prepare output directory
+        run: mkdir -p release_out
+
       - name: Build macOS ARM binary
-        run: mix release
+        run: |
+          mix release
+          cp burrito_out/magma_macos_arm release_out/
         env:
           BURRITO_TARGET: macos_arm
 
       - name: Build macOS Intel binary
-        run: mix release
+        run: |
+          mix release
+          cp burrito_out/magma_macos_intel release_out/
         env:
           BURRITO_TARGET: macos_intel
 
@@ -54,9 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-binaries
-          path: |
-            burrito_out/magma_macos_arm
-            burrito_out/magma_macos_intel
+          path: release_out/
 
   build-linux:
     name: Build Linux binaries
@@ -78,13 +83,20 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
+      - name: Prepare output directory
+        run: mkdir -p release_out
+
       - name: Build Linux Intel binary
-        run: mix release
+        run: |
+          mix release
+          cp burrito_out/magma_linux_intel release_out/
         env:
           BURRITO_TARGET: linux_intel
 
       - name: Build Linux ARM binary
-        run: mix release
+        run: |
+          mix release
+          cp burrito_out/magma_linux_arm release_out/
         env:
           BURRITO_TARGET: linux_arm
 
@@ -92,9 +104,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-binaries
-          path: |
-            burrito_out/magma_linux_arm
-            burrito_out/magma_linux_intel
+          path: release_out/
 
   release:
     name: Create GitHub Release
@@ -130,8 +140,8 @@ jobs:
       - name: Prepare release assets
         run: |
           mkdir -p release
-          cp artifacts/macos-binaries/burrito_out/* release/
-          cp artifacts/linux-binaries/burrito_out/* release/
+          cp artifacts/macos-binaries/* release/
+          cp artifacts/linux-binaries/* release/
           chmod +x release/*
 
       - name: Create GitHub Release
