@@ -62,7 +62,10 @@ defmodule Magma.MixProject do
         steps: [:assemble, &Burrito.wrap/1],
         burrito: [
           targets: [
-            macos_arm: [os: :darwin, cpu: :aarch64]
+            macos_arm: [os: :darwin, cpu: :aarch64],
+            macos_intel: [os: :darwin, cpu: :x86_64],
+            linux_arm: [os: :linux, cpu: :aarch64],
+            linux_intel: [os: :linux, cpu: :x86_64]
           ]
         ]
       ]

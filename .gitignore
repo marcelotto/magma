@@ -25,6 +25,8 @@ magma-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
+/burrito_out/
+
 .envrc
 
 /test/data/example_vault/
