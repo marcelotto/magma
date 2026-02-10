@@ -154,24 +154,24 @@ defmodule Magma.MixProject do
 
   def extras() do
     [
-      user_guide_page("Introduction to Magma"),
-      user_guide_page("Installation and setup"),
-      user_guide_page("Transclusion Resolution"),
-      user_guide_page("Custom Prompts and Prompt Execution"),
-      user_guide_page("Creating and Understanding Magma Artefacts"),
-      user_guide_page("Generating Complex Artefacts"),
-      user_guide_page("Current Limitations and Roadmap"),
+      user_guide_page("01-introduction"),
+      user_guide_page("02-installation"),
+      user_guide_page("03-transclusion"),
+      user_guide_page("04-vault-structure"),
+      user_guide_page("05-prompts"),
+      user_guide_page("06-sessions"),
+      user_guide_page("07-limitations"),
       "CHANGELOG.md"
     ]
   end
 
   defp user_guide_page(name) do
-    "docs.magma/artefacts/final/texts/Magma User Guide/article/Magma User Guide - #{name} (article section).md"
+    "docs/user_guide/#{name}.md"
   end
 
   defp groups_for_extras do
     [
-      "User Guide": ~r[docs.magma/artefacts/final/texts/Magma User Guide/article/.?]
+      "User Guide": ~r[docs/user_guide/.?]
     ]
   end
 
