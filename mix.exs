@@ -95,7 +95,7 @@ defmodule Magma.MixProject do
       main: "Magma",
       source_url: @scm_url,
       source_ref: "v#{@version}",
-      logo: "docs.magma/attachments/logo.png",
+      logo: "logo.png",
       skip_undefined_reference_warnings_on: ["CHANGELOG.md"],
       before_closing_head_tag: &before_closing_head_tag/1,
       extra_section: "GUIDES",
