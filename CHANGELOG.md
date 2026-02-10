@@ -5,14 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.1 - 2026-02-10
 
 ### Fixed
 
 - Base vault path was resolved at compile time, embedding the CI runner's absolute path in 
   release binaries and causing `magma init` to fail
 
-[Compare v0.3.0...HEAD](https://github.com/marcelotto/magma/compare/v0.3.0...HEAD)
+[Compare v0.3.0...v0.3.1](https://github.com/marcelotto/magma/compare/v0.3.0...v0.3.1)
 
 
 
