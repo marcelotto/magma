@@ -85,8 +85,8 @@ defmodule Magma.MixProject do
       {:openai, "~> 0.5", optional: true},
       {:clipboard, "~> 0.2"},
       {:burrito, "~> 1.0"},
-      {:exvcr, "~> 0.15", only: [:dev, :test]},
-      {:ex_doc, "~> 0.31", only: :dev, runtime: false}
+      {:exvcr, "~> 0.17", only: [:dev, :test]},
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false}
     ]
   end
 
