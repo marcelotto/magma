@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
-## Unreleased
+## v0.3.0 - 2026-02-10
 
 This release marks a fundamental reorientation of Magma. Originally designed as an
 Elixir-based environment for generating documentation and other artefacts through
@@ -51,7 +51,7 @@ Matter/Artefact system in favor of a simpler, more flexible prompt-centric workf
 
 - No longer produce invalid prompt result filenames with colons (in the timestamp)
 
-[Compare v0.2.0...HEAD](https://github.com/marcelotto/magma/compare/v0.2.0...HEAD)
+[Compare v0.2.0...v0.3.0](https://github.com/marcelotto/magma/compare/v0.2.0...v0.3.0)
 
 
 
