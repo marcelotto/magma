@@ -42,6 +42,15 @@ _Read on in the [User Guide](https://hexdocs.pm/magma/01-introduction.html)_
 
 ## Installation
 
+### Homebrew (macOS & Linux)
+
+```bash
+brew tap marcelotto/tap
+brew install magma
+```
+
+### Manual Installation
+
 Download the latest release for your platform from the [Releases page](https://github.com/marcelotto/magma/releases).
 
 Place the binary in your PATH (e.g., `/usr/local/bin/`):
@@ -49,6 +58,12 @@ Place the binary in your PATH (e.g., `/usr/local/bin/`):
 ```bash
 chmod +x magma_macos_arm
 mv magma_macos_arm /usr/local/bin/magma
+```
+
+### Verify Installation
+
+```bash
+magma version
 ```
 
 ## Quick Start
