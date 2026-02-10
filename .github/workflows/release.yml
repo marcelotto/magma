@@ -40,10 +40,15 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Build macOS binaries
+      - name: Build macOS ARM binary
         run: mix release
         env:
-          BURRITO_TARGET: macos_arm,macos_intel
+          BURRITO_TARGET: macos_arm
+
+      - name: Build macOS Intel binary
+        run: mix release
+        env:
+          BURRITO_TARGET: macos_intel
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -73,10 +78,15 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Build Linux binaries
+      - name: Build Linux Intel binary
         run: mix release
         env:
-          BURRITO_TARGET: linux_intel,linux_arm
+          BURRITO_TARGET: linux_intel
+
+      - name: Build Linux ARM binary
+        run: mix release
+        env:
+          BURRITO_TARGET: linux_arm
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
