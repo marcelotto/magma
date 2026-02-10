@@ -104,6 +104,7 @@ defmodule Magma.MixProject do
       groups_for_modules: [
         Vault: [
           Magma.Vault,
+          Magma.Vault.Discovery,
           Magma.Vault.BaseVault,
           Magma.Vault.Version,
           Magma.Vault.Migration
@@ -114,7 +115,8 @@ defmodule Magma.MixProject do
           Magma.Prompt.Template,
           Magma.PromptResult,
           Magma.Session,
-          Magma.Session.Template
+          Magma.Session.Template,
+          Magma.View
         ],
         DocumentStruct: [
           Magma.DocumentStruct,
@@ -129,6 +131,19 @@ defmodule Magma.MixProject do
           Magma.Config,
           Magma.Config.Document,
           Magma.Config.System
+        ],
+        CLI: [
+          Magma.CLI,
+          Magma.CLI.Command,
+          Magma.CLI.Command.Init,
+          Magma.CLI.Command.CopyPrompt,
+          Magma.CLI.Command.ExecPrompt,
+          Magma.CLI.Command.ImportSession,
+          Magma.CLI.Command.Help,
+          Magma.CLI.Command.Version,
+          Magma.CLI.IO,
+          Magma.CLI.FileOps,
+          Magma.CLI.Helper
         ]
       ]
     ]

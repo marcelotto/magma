@@ -1,4 +1,13 @@
 defmodule Magma.PromptResult do
+  @moduledoc """
+  Stores the result of an LLM prompt execution.
+
+  Each prompt result is linked to its originating `Magma.Prompt` and records
+  the `Magma.Generation` parameters used for execution.
+
+  Stored in the `prompts/__prompt_results__/` directory with timestamped filenames.
+  """
+
   use Magma.Document, fields: [:prompt, :generation]
 
   @type t :: %__MODULE__{}

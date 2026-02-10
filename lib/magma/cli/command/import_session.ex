@@ -1,4 +1,6 @@
 defmodule Magma.CLI.Command.ImportSession do
+  @moduledoc "CLI command to import a response file into a session document."
+
   use Magma.CLI.Command
 
   alias Magma.Session

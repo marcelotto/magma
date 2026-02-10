@@ -17,7 +17,7 @@ defmodule Magma.Vault.BaseVault do
   - [Dataview](https://github.com/blacksmithgu/obsidian-dataview)
 
   Also, it's vital to copy the configurations of the Shell Commands and QuickAdd
-  plugins, as they include the integration with the respective Magma mix tasks.
+  plugins, as they include the integration with the Magma CLI commands.
   """
 
   @path :code.priv_dir(:magma) |> Path.join("base_vault")

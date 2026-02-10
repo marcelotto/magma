@@ -1,12 +1,13 @@
 defmodule Magma do
   @moduledoc """
-  Magma is an environment for writing and executing complex prompts.
+  Magma is a prompt development environment for working with coding agents.
 
-  It is primarily designed to support developers in documenting their projects.
-  It provides a system of documents for predefined workflows, to generate
-  various documentation artefacts.
+  It provides a knowledge base system built on Obsidian-compatible markdown documents
+  that enables rapid composition of prompts through transclusions. The session-based
+  workflow supports iterative conversations with coding agents like Claude Code, Codex,
+  Gemini CLI, OpenCode etc.
 
-  Read the [User Guide](Magma User Guide - Introduction to Magma (article section).md) to learn more.
+  Read the [User Guide](01-introduction.md) to learn more.
   """
 
   def version do

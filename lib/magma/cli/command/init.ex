@@ -1,4 +1,6 @@
 defmodule Magma.CLI.Command.Init do
+  @moduledoc "CLI command to initialize a new Magma vault."
+
   use Magma.CLI.Command
 
   alias Magma.CLI.FileOps

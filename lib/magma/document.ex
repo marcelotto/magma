@@ -61,7 +61,7 @@ defmodule Magma.Document do
     tags: nil,
     # the list of aliases in `aliases` field of the YAML front matter
     aliases: nil,
-    # the list of aliases in `aliases` field of the YAML front matter
+    # the creation timestamp from the `created_at` field of the YAML front matter
     created_at: nil,
     # additional YAML front matter
     custom_metadata: %{}

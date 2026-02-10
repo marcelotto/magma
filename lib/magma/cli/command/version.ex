@@ -1,4 +1,6 @@
 defmodule Magma.CLI.Command.Version do
+  @moduledoc "CLI command to show the Magma version."
+
   use Magma.CLI.Command
 
   alias Magma.CLI

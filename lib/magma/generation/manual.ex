@@ -1,4 +1,11 @@
 defmodule Magma.Generation.Manual do
+  @moduledoc """
+  `Magma.Generation` adapter for manual prompt execution.
+
+  Copies the assembled prompt to the clipboard and optionally waits for
+  the user to paste back the result.
+  """
+
   use Magma.Generation
 
   alias Magma.Prompt.Assembler

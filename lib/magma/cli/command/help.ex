@@ -1,4 +1,6 @@
 defmodule Magma.CLI.Command.Help do
+  @moduledoc "CLI command to show available commands."
+
   use Magma.CLI.Command
 
   alias Magma.CLI

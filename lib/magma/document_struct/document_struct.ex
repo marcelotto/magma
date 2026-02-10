@@ -1,20 +1,15 @@
 defmodule Magma.DocumentStruct do
   @moduledoc """
-  Provides an abstract representation of a Markdown document structured based on the Pandoc AST.
+  Recursive section-based representation of a Markdown document for transclusion resolution.
 
-  The `Magma.DocumentStruct` module provides an Elixir struct for representing
-  the contents of a Markdown document as an Abstract Syntax Tree (AST) based
-  on the Pandoc AST. The struct is designed to access the individual sections
-  including their subsections and facilitate the transclusion resolution feature,
-  which is essential for the prompt generation in Magma.
+  Parses Markdown via Pandoc (through `Panpipe`) into a struct consisting of:
 
-  The `Magma.DocumentStruct` struct consists of a prologue, which is the
-  header-less text before the first section, and all sections of level 1
-  (which in turn consist of sections of level 2 and so on).
-  The core functionalities related to sections are implemented in the
-  `Magma.DocumentStruct.Section` module. The `Magma.DocumentStruct` acts as a
-  wrapper around this recursive section structure and delegates most of its
-  functions to the said module.
+  - a **prologue** (header-less content before the first section)
+  - a list of level-1 **sections** (`Magma.DocumentStruct.Section`), each
+    containing nested subsections recursively
+
+  Most section-level operations are implemented in `Magma.DocumentStruct.Section`
+  and delegated through this module.
   """
 
   defstruct [:prologue, :sections]

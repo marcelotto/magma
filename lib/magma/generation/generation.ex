@@ -26,9 +26,9 @@ defmodule Magma.Generation do
         temperature: 0.6
 
   Except within the `:test` environment, the defaults can be configured also
-  with the `default_generation_type` and `:default_generation_params` properties
-  in YAML frontmatter of the `magma_config.md` document in your vault, taking
-  precedence over the ones from the application config.
+  with the `default_generation_type` and `default_generation_params` properties
+  in YAML frontmatter of the `Magma.system.config.md` document in your vault,
+  taking precedence over the ones from the application config.
 
   Unlike, the default generation params from the `magma_config.md` document,
   the ones from the application config are used also as initial defaults on the

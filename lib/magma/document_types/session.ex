@@ -1,10 +1,30 @@
 defmodule Magma.Session do
+  @moduledoc """
+  An interactive prompt document supporting multi-turn conversations with coding agents.
+
+  Sessions operate in two modes:
+
+  - **Initial mode**: A new session without `***Prompt***` separators, where the
+    entire content (after the controls prologue) forms the prompt.
+  - **Continuation mode**: A session with `***Prompt***` and `***Response***`
+    separators for multi-turn conversations, where only the last prompt section
+    is assembled for execution.
+
+  The `response_mode` controls whether a response instruction is appended
+  to the assembled prompt (`:disabled`, `:enabled`, or `:auto`).
+
+  Stored in the `sessions/` directory of the vault.
+  """
+
   use Magma.Document, fields: [:parts, :response_mode]
+
+  @type section_type :: :initial | :prompt | :response | :notes
+  @type parts :: [{section_type(), [Panpipe.AST.Node.t()]}]
 
   @type response_mode :: :disabled | :enabled | :auto
 
   @type t :: %__MODULE__{
-          parts: Magma.Session.Parser.parts(),
+          parts: parts(),
           response_mode: response_mode() | nil
         }
 

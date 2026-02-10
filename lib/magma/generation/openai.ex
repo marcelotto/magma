@@ -1,5 +1,9 @@
 if Code.ensure_loaded?(OpenAI) do
   defmodule Magma.Generation.OpenAI do
+    @moduledoc """
+    `Magma.Generation` adapter for the OpenAI API.
+    """
+
     use Magma.Generation
 
     alias Magma.Prompt.Assembler

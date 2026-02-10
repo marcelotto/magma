@@ -2,15 +2,14 @@ defmodule Magma.Vault do
   @moduledoc """
   A specialized Obsidian vault with directories for the Magma-specific documents.
 
-  The `Magma.Vault` module serves as a representation and utility module for a Magma vault - a specialized Obsidian vault that resides in an Elixir project. This vault is more than just a collection of Markdown documents; it houses Magma documents, which are special kinds of Markdown documents with specific paths and purposes. The vault itself can be stored by default in the `magma/` directory of a project but can be reconfigured as needed (see `path/0`).
+  The `Magma.Vault` module serves as a representation and utility module for a Magma vault - a specialized Obsidian vault that houses Magma documents, which are special kinds of Markdown documents with specific paths and purposes. The vault itself can be stored by default in the `magma/` directory of a project but can be reconfigured as needed (see `path/0`).
 
   Main functions of this module include:
 
   - Retrieving paths within the vault, like the base path, template paths, etc.
-  - Creating and initializing a new vault (`create/3`).
-  - Synchronizing the vault with the project's codebase (`sync/1`).
+  - Creating and initializing a new vault (`create/2`).
   - Indexing documents by name (`index/1`).
-  - Fetching details of documents, such as their path (`document_path/1`) or type (`document_type/1`) .
+  - Fetching details of documents, such as their path (`document_path/1`) or type (`document_type/1`).
 
   """
 
@@ -51,10 +50,10 @@ defmodule Magma.Vault do
   ### Example
 
       Magma.Vault.path("directory")
-      # returns: "/path/to/project/docs.magma/directory"
+      # returns: "/path/to/project/magma/directory"
 
       Magma.Vault.path(["some", "directory"])
-      # returns: "/path/to/project/docs.magma/some/directory"
+      # returns: "/path/to/project/magma/some/directory"
 
   """
   @spec path(binary | [binary]) :: Path.t()
@@ -72,7 +71,7 @@ defmodule Magma.Vault do
   ### Example
 
       Magma.Vault.template_path("some_template.md")
-      # returns: "/path/to/project/docs.magma/templates/some_template.md"
+      # returns: "/path/to/project/magma/templates/some_template.md"
 
   """
   @spec template_path(binary | [binary]) :: Path.t()

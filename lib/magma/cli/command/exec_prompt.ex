@@ -1,4 +1,6 @@
 defmodule Magma.CLI.Command.ExecPrompt do
+  @moduledoc "CLI command to execute a prompt or session via LLM."
+
   use Magma.CLI.Command
 
   alias Magma.{Generation, PromptResult}

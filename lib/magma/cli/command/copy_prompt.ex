@@ -1,4 +1,6 @@
 defmodule Magma.CLI.Command.CopyPrompt do
+  @moduledoc "CLI command to copy a compiled prompt to the clipboard."
+
   use Magma.CLI.Command
 
   alias Magma.Document.Loader

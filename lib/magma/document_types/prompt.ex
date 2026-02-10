@@ -1,4 +1,15 @@
 defmodule Magma.Prompt do
+  @moduledoc """
+  A standalone prompt document for LLM execution.
+
+  Prompts are composed using Obsidian-compatible markdown with transclusion
+  support (`![[Document#Section|]]`), allowing modular assembly of context
+  and task sections. Each prompt carries a `Magma.Generation` specification
+  that determines which LLM adapter is used for execution.
+
+  Stored in the `prompts/` directory of the vault.
+  """
+
   use Magma.Document, fields: [:generation]
 
   @type t :: %__MODULE__{}

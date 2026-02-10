@@ -8,10 +8,7 @@ defmodule Magma.Session.Parser do
              ---
              """
 
-  alias Magma.DocumentStruct
-
-  @type section_type :: :initial | :prompt | :response | :notes
-  @type parts :: [{section_type(), [Panpipe.AST.Node.t()]}]
+  alias Magma.{DocumentStruct, Session}
 
   @keywords ~w[Prompt Response Notes]
 
@@ -22,7 +19,7 @@ defmodule Magma.Session.Parser do
   Content before the first separator is returned as `{:initial, ast_nodes}`.
   Returns `{:ok, [{:initial, ast_nodes}]}` if no separators are found.
   """
-  @spec parse(binary()) :: {:ok, parts()} | {:error, any()}
+  @spec parse(binary()) :: {:ok, Session.parts()} | {:error, any()}
   def parse(content) when is_binary(content) do
     with {:ok, document} <-
            content
