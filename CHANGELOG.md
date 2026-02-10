@@ -41,6 +41,7 @@ Matter/Artefact system in favor of a simpler, more flexible prompt-centric workf
 - Prompts and initial session prompts now include the top-level header by default (previously
   always removed) for better context visibility in coding agent history previews (e.g., Claude Code)
 - No longer dependent on Rambo causing troubles in MacOS
+- Drop support for Elixir versions < 1.15
 
 ### Removed
 
