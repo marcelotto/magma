@@ -20,7 +20,6 @@ defmodule Magma.Vault.BaseVault do
   plugins, as they include the integration with the Magma CLI commands.
   """
 
-  @path :code.priv_dir(:magma) |> Path.join("base_vault")
   @default_theme :default
 
   @type theme :: atom
@@ -44,8 +43,10 @@ defmodule Magma.Vault.BaseVault do
   """
   def path(path_or_theme \\ nil)
   def path(nil), do: path(@default_theme)
-  def path(theme) when is_atom(theme), do: Path.join(@path, to_string(theme))
+  def path(theme) when is_atom(theme), do: Path.join(base_vault_path(), to_string(theme))
   def path(path) when is_binary(path), do: path
+
+  defp base_vault_path, do: :code.priv_dir(:magma) |> Path.join("base_vault")
 
   @doc """
   Returns the path to a base vault and raises an error when the given base vault does not exist.
