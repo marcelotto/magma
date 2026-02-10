@@ -40,7 +40,7 @@ defmodule Magma.MixProject do
 
   defp description do
     """
-    An IDE for documentation and prompt development.
+    An IDE for prompts.
     """
   end
 
