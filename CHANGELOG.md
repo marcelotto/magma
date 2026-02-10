@@ -7,26 +7,44 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 
 ## Unreleased
 
+This release marks a fundamental reorientation of Magma. Originally designed as an
+Elixir-based environment for generating documentation and other artefacts through
+direct LLM execution, Magma has been redesigned as a prompt IDE for coding agents
+like Claude Code, OpenCode, etc. The focus has shifted from executing prompts
+within Magma itself to composing prompts from project knowledge that are used in
+external coding agents. Key changes include a standalone CLI binary (no Elixir
+installation required), a new Session document type for multi-turn conversations,
+file reference syntax for coding agent compatibility, and the removal of the
+Matter/Artefact system in favor of a simpler, more flexible prompt-centric workflow.
+
 ### Added
 
+- Standalone CLI binary (via Burrito) for use without Elixir installation
+- Vault discovery system with 5-level hierarchy (env var, current dir, `.magma.yaml`, app config, fallback)
 - New document type `Magma.Session` for storing and managing Claude Code conversations within Magma
 - New link resolution style `:at_file_ref` which replaces links with the file path of the linked
   document in the form `@"path/to/file.md"`, that is used by many coding agents (Claude Code,
   Cursor etc.) to reference files
 - New system config option `:include_prompt_header` to control whether the top-level header is
   included in compiled prompts and sessions (can be overridden per document via frontmatter)
-- Support for Elixir v1.16
+- Support for newer Elixir versions
 
 ### Changed
 
+- Default vault directory changed from `docs.magma/` to `magma/`
+- File paths in `@`-references are now relative to vault parent directory
 - Change name of custom prompt directory from `custom_prompts/` to `prompts/`
-- No longer dependent on Rambo causing troubles in MacOS
 - Default prompt/session template now uses "Context" (with "Knowledge Base" subsection) and "Task"
   sections instead of "System prompt" and "Request". The old section names are still recognized as
   fallbacks. The "Context" section is now optional. Persona and context knowledge transclusions are
   no longer included by default but can be added to templates manually.
 - Prompts and initial session prompts now include the top-level header by default (previously
   always removed) for better context visibility in coding agent history previews (e.g., Claude Code)
+- No longer dependent on Rambo causing troubles in MacOS
+
+### Removed
+
+- the complete Matter/Artefact system
 
 ### Fixed
 
