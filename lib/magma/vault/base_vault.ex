@@ -1,4 +1,20 @@
 defmodule Magma.Vault.BaseVault do
+  @default_base_vault_path Path.join(:code.priv_dir(:magma), "base_vault")
+  @default_obsidian_path Path.join([@default_base_vault_path, "default", ".obsidian"])
+
+  @config_files %{
+    shell_commands:
+      Path.join([@default_obsidian_path, "plugins", "obsidian-shellcommands", "data.json"]),
+    quickadd: Path.join([@default_obsidian_path, "plugins", "quickadd", "data.json"])
+  }
+
+  for {_key, path} <- @config_files do
+    @external_resource path
+  end
+
+  @shell_commands_json File.read!(@config_files.shell_commands)
+  @quickadd_json File.read!(@config_files.quickadd)
+
   @moduledoc """
   Utilities for interacting with predefined and custom base vaults.
 
@@ -15,9 +31,22 @@ defmodule Magma.Vault.BaseVault do
   - [Shell commands](https://github.com/Taitava/obsidian-shellcommands)
   - [QuickAdd](https://github.com/chhoumann/quickadd)
   - [Dataview](https://github.com/blacksmithgu/obsidian-dataview)
+  - [Automatic Table of Contents](https://github.com/johansatge/obsidian-automatic-table-of-contents)
 
   Also, it's vital to copy the configurations of the Shell Commands and QuickAdd
   plugins, as they include the integration with the Magma CLI commands.
+
+  ### Shell Commands (`#{Path.relative_to(@config_files.shell_commands, @default_base_vault_path)}`)
+
+  ```json
+  #{@shell_commands_json}
+  ```
+
+  ### QuickAdd (`#{Path.relative_to(@config_files.quickadd, @default_base_vault_path)}`)
+
+  ```json
+  #{@quickadd_json}
+  ```
   """
 
   @default_theme :default

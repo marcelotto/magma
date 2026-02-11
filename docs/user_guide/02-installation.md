@@ -25,7 +25,7 @@ While optional, [Obsidian](https://obsidian.md/) provides the visual "IDE" exper
 
 ## 2. Installing the CLI
 
-### Option A: Homebrew (Preferred)
+### Option A: Homebrew
 
 If you use [Homebrew](https://brew.sh/), you can install Magma with:
 
@@ -61,17 +61,36 @@ magma version
 A Magma "Vault" is simply a folder where your knowledge base and prompts live. You should typically initialize one per project (or one large one for multiple related projects).
 
 ### Default Initialization
+
 Run this in your project root to create a `magma/` folder:
 ```bash
 magma init
 ```
 
 ### Custom Location
+
 If you prefer a different name or location (e.g., `docs.magma/`):
 ```bash
 magma init docs.magma
 ```
 This will create a `.magma.yaml` file in your current directory, telling the CLI where to find your vault.
+
+### Custom Base Vault
+
+When initializing, Magma uses a default "base vault" — a preconfigured Obsidian vault template that includes essential plugins and their configurations (Shell Commands, QuickAdd, Buttons, Dataview). You can provide your own base vault instead:
+
+```bash
+magma init --base-vault-path /path/to/your/base/vault
+```
+
+This is useful if you have a customized Obsidian setup with additional plugins or specific configurations you want to reuse across projects. The `.obsidian` directory from your base vault will be copied into the new vault.
+
+It also enables completely Obsidian-free setups. If you prefer to work with a different setup (e.g., Emacs, VS Code), you can provide an empty directory or one with editor-specific configuration as your base vault, skipping the Obsidian plugins entirely.
+
+Magma also supports named base vault themes bundled with the CLI via `--base-vault <theme>`, though currently only the `default` theme is available.
+
+> #### Creating a Custom Base Vault {: .tip}
+> To create your own base vault, set up an Obsidian vault with your preferred configuration. Make sure to include the required plugins and their configurations from the default base vault. See the `Magma.Vault.BaseVault` module documentation for details.
 
 
 ## 4. Setup in Obsidian
