@@ -138,6 +138,17 @@ defmodule Magma.View do
     |> String.trim_trailing()
   end
 
+  def session_part_separator(keyword) do
+    """
+    ----
+
+    ***#{keyword}***
+
+    ----
+    """
+    |> String.trim_trailing()
+  end
+
   def yaml_list(list) do
     "[" <> (list |> List.wrap() |> Enum.join(", ")) <> "]"
   end

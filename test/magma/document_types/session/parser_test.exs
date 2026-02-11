@@ -28,11 +28,7 @@ defmodule Magma.Session.ParserTest do
 
   Please help me with this task.
 
-  ---
-
-  ***Response***
-
-  ---
+  #{Magma.View.session_part_separator("Response")}
 
   WRITE_RESPONSE_HERE
   """
@@ -44,29 +40,17 @@ defmodule Magma.Session.ParserTest do
 
   Initial request.
 
-  ---
-
-  ***Response***
-
-  ---
+  #{Magma.View.session_part_separator("Response")}
 
   Initial response here.
 
-  ---
-
-  ***Prompt***
-
-  ---
+  #{Magma.View.session_part_separator("Prompt")}
 
   Follow-up request.
 
   Replace "WRITE_RESPONSE_HERE" with your response.
 
-  ---
-
-  ***Response***
-
-  ---
+  #{Magma.View.session_part_separator("Response")}
 
   WRITE_RESPONSE_HERE
   """
@@ -74,43 +58,23 @@ defmodule Magma.Session.ParserTest do
   @doc_with_notes """
   # Test Session
 
-  ---
-
-  ***Prompt***
-
-  ---
+  #{Magma.View.session_part_separator("Prompt")}
 
   First prompt here.
 
-  ---
-
-  ***Response***
-
-  ---
+  #{Magma.View.session_part_separator("Response")}
 
   First response here.
 
-  ---
-
-  ***Notes***
-
-  ---
+  #{Magma.View.session_part_separator("Notes")}
 
   Some notes about the conversation.
 
-  ---
-
-  ***Prompt***
-
-  ---
+  #{Magma.View.session_part_separator("Prompt")}
 
   Second prompt here.
 
-  ---
-
-  ***Response***
-
-  ---
+  #{Magma.View.session_part_separator("Response")}
 
   WRITE_RESPONSE_HERE
   """
@@ -205,21 +169,13 @@ defmodule Magma.Session.ParserTest do
       doc = """
       # Session
 
-      ---
-
-      ***Prompt***
-
-      ---
+      #{Magma.View.session_part_separator("Prompt")}
 
       ## Subheader
 
       Some **bold** text with a [link](url).
 
-      ---
-
-      ***Response***
-
-      ---
+      #{Magma.View.session_part_separator("Response")}
 
       Response content.
       """
@@ -238,11 +194,7 @@ defmodule Magma.Session.ParserTest do
   describe "section type recognition" do
     test "recognizes 'Prompt' keyword" do
       doc = """
-      ---
-
-      ***Prompt***
-
-      ---
+      #{Magma.View.session_part_separator("Prompt")}
 
       Content here.
       """
@@ -252,11 +204,7 @@ defmodule Magma.Session.ParserTest do
 
     test "recognizes 'Response' keyword" do
       doc = """
-      ---
-
-      ***Response***
-
-      ---
+      #{Magma.View.session_part_separator("Response")}
 
       Content here.
       """
@@ -266,11 +214,7 @@ defmodule Magma.Session.ParserTest do
 
     test "recognizes 'Notes' keyword" do
       doc = """
-      ---
-
-      ***Notes***
-
-      ---
+      #{Magma.View.session_part_separator("Notes")}
 
       Content here.
       """

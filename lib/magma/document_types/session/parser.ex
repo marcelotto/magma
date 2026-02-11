@@ -4,7 +4,9 @@ defmodule Magma.Session.Parser do
 
              Separator format:
              ---
+
              ***Keyword***
+
              ---
              """
 

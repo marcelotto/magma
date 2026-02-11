@@ -49,11 +49,7 @@ defmodule Magma.SessionTest do
 
 
 
-             ----
-
-             ***Response***
-
-             ----
+             #{Magma.View.session_part_separator("Response")}
              ## Response
 
              #{Magma.View.button("Import Response", "magma.session.import_response", color: "blue")}
@@ -61,11 +57,7 @@ defmodule Magma.SessionTest do
 
 
 
-             ----
-
-             ***Notes***
-
-             ----
+             #{Magma.View.session_part_separator("Notes")}
              #{Magma.View.button("Copy last prompt to clipboard", "magma.prompt.copy")}
              # Notes
 
@@ -118,19 +110,11 @@ defmodule Magma.SessionTest do
           """
 
 
-          ----
-
-          ***Prompt***
-
-          ----
+          #{Magma.View.session_part_separator("Prompt")}
 
           Follow-up request here.
 
-          ----
-
-          ***Response***
-
-          ----
+          #{Magma.View.session_part_separator("Response")}
 
           WRITE_RESPONSE_HERE
           """
@@ -163,35 +147,19 @@ defmodule Magma.SessionTest do
           """
 
 
-          ----
-
-          ***Prompt***
-
-          ----
+          #{Magma.View.session_part_separator("Prompt")}
 
           First follow-up request.
 
-          ----
-
-          ***Response***
-
-          ----
+          #{Magma.View.session_part_separator("Response")}
 
           First response.
 
-          ----
-
-          ***Prompt***
-
-          ----
+          #{Magma.View.session_part_separator("Prompt")}
 
           Second follow-up request.
 
-          ----
-
-          ***Response***
-
-          ----
+          #{Magma.View.session_part_separator("Response")}
 
           WRITE_RESPONSE_HERE
           """
@@ -238,11 +206,7 @@ defmodule Magma.SessionTest do
 
 
 
-      ----
-
-      ***Response***
-
-      ----
+      #{Magma.View.session_part_separator("Response")}
       ## Response
 
       This is the imported response content.
@@ -250,11 +214,7 @@ defmodule Magma.SessionTest do
 
 
 
-      ----
-
-      ***Notes***
-
-      ----
+      #{Magma.View.session_part_separator("Notes")}
       #{Magma.View.button("Copy last prompt to clipboard", "magma.prompt.copy")}
       # Notes
 
@@ -328,11 +288,7 @@ defmodule Magma.SessionTest do
 
 
 
-      ----
-
-      ***Response***
-
-      ----
+      #{Magma.View.session_part_separator("Response")}
       ## Response
 
       New response
@@ -340,11 +296,7 @@ defmodule Magma.SessionTest do
 
 
 
-      ----
-
-      ***Notes***
-
-      ----
+      #{Magma.View.session_part_separator("Notes")}
       #{Magma.View.button("Copy last prompt to clipboard", "magma.prompt.copy")}
       # Notes
 

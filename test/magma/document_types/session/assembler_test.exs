@@ -68,11 +68,7 @@ defmodule Magma.Session.AssemblerTest do
           """
 
 
-          ---
-
-          ***Prompt***
-
-          ---
+          #{Magma.View.session_part_separator("Prompt")}
 
           ## Follow-up prompt
 
@@ -80,11 +76,7 @@ defmodule Magma.Session.AssemblerTest do
 
           Replace "WRITE_RESPONSE_HERE" with your response in sessions/ContinuationSession.md
 
-          ---
-
-          ***Response***
-
-          ---
+          #{Magma.View.session_part_separator("Response")}
 
           ## Response
 
@@ -126,11 +118,7 @@ defmodule Magma.Session.AssemblerTest do
           """
 
 
-          ---
-
-          ***Prompt***
-
-          ---
+          #{Magma.View.session_part_separator("Prompt")}
 
           ## Follow-up prompt
 
@@ -140,11 +128,7 @@ defmodule Magma.Session.AssemblerTest do
 
           Replace "WRITE_RESPONSE_HERE" with your response in sessions/TransclusionContinuationSession.md
 
-          ---
-
-          ***Response***
-
-          ---
+          #{Magma.View.session_part_separator("Response")}
 
           ## Response
 
@@ -186,11 +170,7 @@ defmodule Magma.Session.AssemblerTest do
           """
 
 
-          ---
-
-          ***Prompt***
-
-          ---
+          #{Magma.View.session_part_separator("Prompt")}
 
           ## Follow-up prompt
 

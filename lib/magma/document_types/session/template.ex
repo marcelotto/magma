@@ -35,11 +35,7 @@ defmodule Magma.Session.Template do
     """ <>
       build_response_section(Session.response_mode(session)) <>
       """
-      ----
-
-      ***Notes***
-
-      ----
+      #{session_part_separator("Notes")}
       #{button("Copy last prompt to clipboard", "magma.prompt.copy")}
       # Notes
 
@@ -52,11 +48,7 @@ defmodule Magma.Session.Template do
 
   defp response_block(content) do
     """
-    ----
-
-    ***Response***
-
-    ----
+    #{session_part_separator("Response")}
     ## Response
 
     #{content}
@@ -88,11 +80,7 @@ defmodule Magma.Session.Template do
     # Note the leading newline, which is required to avoid interpreting the first rule as YAML front matter.
     """
 
-    ----
-
-    ***Prompt***
-
-    ----
+    #{session_part_separator("Prompt")}
     ## Follow-up prompt
 
     <% tp.file.cursor(1) %>
