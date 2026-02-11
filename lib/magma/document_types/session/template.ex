@@ -28,19 +28,22 @@ defmodule Magma.Session.Template do
     -
 
     ## #{Prompt.Template.task_section_title()}
-    #{build_response_section(Session.response_mode(session))}
 
 
 
-    ----
 
-    ***Notes***
+    """ <>
+      build_response_section(Session.response_mode(session)) <>
+      """
+      ----
 
-    ----
-    #{button("Copy last prompt to clipboard", "magma.prompt.copy")}
-    # Notes
+      ***Notes***
 
-    """
+      ----
+      #{button("Copy last prompt to clipboard", "magma.prompt.copy")}
+      # Notes
+
+      """
   end
 
   defp build_response_section(:disabled), do: ""
@@ -49,7 +52,6 @@ defmodule Magma.Session.Template do
 
   defp response_block(content) do
     """
-
     ----
 
     ***Response***
@@ -58,6 +60,10 @@ defmodule Magma.Session.Template do
     ## Response
 
     #{content}
+
+
+
+
     """
   end
 
@@ -90,8 +96,10 @@ defmodule Magma.Session.Template do
     ## Follow-up prompt
 
     <% tp.file.cursor(1) %>
-    #{build_response_section(Magma.Config.system(:session_response_mode))}
-    """
+
+
+
+    """ <> build_response_section(Magma.Config.system(:session_response_mode))
   end
 
   def session_response_prompt_eex_template do

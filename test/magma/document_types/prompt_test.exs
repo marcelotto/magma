@@ -35,6 +35,9 @@ defmodule Magma.PromptTest do
 
              ## Task
 
+
+
+
              """
 
     assert Prompt.load(prompt.path) == {:ok, prompt}

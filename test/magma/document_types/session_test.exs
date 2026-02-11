@@ -46,6 +46,9 @@ defmodule Magma.SessionTest do
 
              ## Task
 
+
+
+
              ----
 
              ***Response***
@@ -232,6 +235,9 @@ defmodule Magma.SessionTest do
 
       ## Task
 
+
+
+
       ----
 
       ***Response***
@@ -318,6 +324,9 @@ defmodule Magma.SessionTest do
       -
 
       ## Task
+
+
+
 
       ----
 

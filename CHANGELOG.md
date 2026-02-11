@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and
 [Keep a CHANGELOG](http://keepachangelog.com).
 
 
+## Unreleased
+
+### Fixed
+
+- Add more space after "Task" header in templates
+
+
+[Compare v0.3.1...HEAD](https://github.com/marcelotto/magma/compare/v0.3.1...HEAD)
+
+
+
 ## v0.3.1 - 2026-02-10
 
 ### Fixed

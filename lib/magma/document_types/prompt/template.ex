@@ -50,6 +50,9 @@ defmodule Magma.Prompt.Template do
 
     ## #{@task_section_title}
 
+
+
+
     """
   end
 
