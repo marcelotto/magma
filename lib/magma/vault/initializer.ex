@@ -11,7 +11,8 @@ defmodule Magma.Vault.Initializer do
   @spec initialize(base_vault :: BaseVault.theme() | Path.t() | nil, keyword) ::
           :ok | {:error, any}
   def initialize(base_vault \\ nil, opts \\ []) do
-    with :ok <- base_vault |> BaseVault.path!() |> create_vault(opts) do
+    with {:ok, base_vault_path} <- BaseVault.validated_path(base_vault),
+         :ok <- create_vault(base_vault_path, opts) do
       create_custom_prompt_template()
       create_session_templates()
     end

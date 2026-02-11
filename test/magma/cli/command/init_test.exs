@@ -60,4 +60,63 @@ defmodule Magma.CLI.Command.InitTest do
       assert {:error, "Too many arguments" <> _} = Init.run(["path1", "path2"])
     end
   end
+
+  describe "run/1 with --base-vault option" do
+    @tag :tmp_dir
+    test "creates vault with named base vault theme", %{tmp_dir: tmp_dir} do
+      with_reset_env(fn ->
+        Application.put_env(:magma, :dir, Path.join(tmp_dir, "vault"))
+
+        assert :ok = Init.run(["--base-vault", "default"])
+        assert File.dir?(Path.join(tmp_dir, "vault/.obsidian"))
+      end)
+    end
+
+    test "returns error for non-existing theme" do
+      assert {:error, "No base vault found at " <> _} =
+               Init.run(["--base-vault", "non_existing"])
+    end
+  end
+
+  describe "run/1 with --base-vault-path option" do
+    @tag :tmp_dir
+    test "creates vault with custom base vault path", %{tmp_dir: tmp_dir} do
+      custom_base = Path.join(tmp_dir, "custom_base")
+      obsidian_dir = Path.join(custom_base, ".obsidian")
+      File.mkdir_p!(obsidian_dir)
+      File.write!(Path.join(obsidian_dir, "test.json"), "{}")
+
+      vault_path = Path.join(tmp_dir, "vault")
+
+      with_reset_env(fn ->
+        Application.put_env(:magma, :dir, vault_path)
+
+        assert :ok = Init.run(["--base-vault-path", custom_base])
+        assert File.exists?(Path.join(vault_path, ".obsidian/test.json"))
+      end)
+    end
+
+    test "returns error for non-existing path" do
+      assert {:error, "No base vault found at /non/existing/base"} =
+               Init.run(["--base-vault-path", "/non/existing/base"])
+    end
+
+    @tag :tmp_dir
+    test "works combined with path argument", %{tmp_dir: tmp_dir} do
+      custom_base = Path.join(tmp_dir, "custom_base")
+      obsidian_dir = Path.join(custom_base, ".obsidian")
+      File.mkdir_p!(obsidian_dir)
+      File.write!(Path.join(obsidian_dir, "custom.json"), "{}")
+
+      vault_path = Path.join(tmp_dir, "my_vault")
+
+      with_reset_env(fn ->
+        File.cd!(tmp_dir, fn ->
+          assert :ok = Init.run([vault_path, "--base-vault-path", custom_base])
+          assert File.exists?(Path.join(vault_path, ".obsidian/custom.json"))
+          assert File.dir?(Path.join(vault_path, "magma.config"))
+        end)
+      end)
+    end
+  end
 end

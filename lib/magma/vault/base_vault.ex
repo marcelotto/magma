@@ -49,17 +49,17 @@ defmodule Magma.Vault.BaseVault do
   defp base_vault_path, do: :code.priv_dir(:magma) |> Path.join("base_vault")
 
   @doc """
-  Returns the path to a base vault and raises an error when the given base vault does not exist.
+  Returns the path to a base vault after validating that it exists.
 
   Accepts the same arguments as `path/1`.
   """
-  def path!(path_or_theme \\ nil) do
+  def validated_path(path_or_theme \\ nil) do
     path = path(path_or_theme)
 
     if File.exists?(path) do
-      path
+      {:ok, path}
     else
-      raise "No base vault found at #{path}"
+      {:error, "No base vault found at #{path}"}
     end
   end
 end
